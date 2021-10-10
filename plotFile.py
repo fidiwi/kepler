@@ -5,7 +5,7 @@ import matplotlib.pyplot as pyplot
 
 windows = 50
 
-file = open('Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv')
+file = open('kepler\Probedaten\Hirnet_subsample\Hirnet7_S7.subsample.csv')
 csvreader = csv.reader(file)
 xAxisDiagram = np.arange(0, 1+1/windows, 1/windows)
 readsPerSection = [[] for _ in range(windows+1)]
@@ -35,7 +35,7 @@ for row in csvreader:
     yList.append(y)
 
     datasetLength+=1
-
+print(readsPerSection)
 #Daten umwandeln Graph
 numberPerSection = [0] * (windows+1)
 
@@ -52,12 +52,14 @@ for section in range(windows+1):
     
     vectorY = 0
     for y in yPosSection[section]:
-        vectorY=y
+        vectorY+=y
 
-    erwartetX = math.cos((1/windows-1/(windows*2))*360)
-    erwartetY = math.sin((1/windows-1/(windows*2))*360)
-    xVectors.append(vectorX/((datasetLength/windows)*erwartetX))
-    yVectors.append(vectorY/((datasetLength/windows)*erwartetY))
+    erwartetX = math.cos((section/windows-(windows/2))*360)
+    erwartetY = math.sin((section/windows-(windows/2))*360)
+    xVectors.append(vectorX/(datasetLength/windows))
+    yVectors.append(vectorY/(datasetLength/windows))
+    print(erwartetX) 
+    print(erwartetY)
 
 print(numberPerSection)
 pyplot.plot(xAxisDiagram, numberPerSection)
@@ -72,7 +74,7 @@ pyplot.ylabel("reads/section")
 #Vektorplot erstellen
 pyplot.figure()
 pyplot.plot(xVectors, yVectors, '.', color='black')
-pyplot.plot([0], [0],  's', color='r')
+pyplot.plot([0], [0], 's', color='r')
 #pyplot.ylim(-0.05,0.05)
 pyplot.gca().set_aspect('equal', adjustable='box')
 pyplot.grid(color='blue', linestyle='-', linewidth=1)
