@@ -3,17 +3,17 @@ import math
 import numpy as np
 import matplotlib.pyplot as pyplot
 
-windows = 50
+windows = 100
 
-file = open('Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
+file = open('Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_8.0_0.0,0.0_pos.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
 csvreader = csv.reader(file)
 xAxisDiagram = np.arange(0, 1, 1/windows)
-readsPerSection = [[] for _ in range(windows)]
+readsPerSection = [[] for _ in range(windows+1)] #Das +1 ist für den Fall des Wertes 1, der dann nicht mehr der größten Sektion zugeordnet werden kann.
 datasetLength = 0
 
 #Daten für den Vektorenplot
-xPosSection = [[] for _ in range(windows)]
-yPosSection = [[] for _ in range(windows)]
+xPosSection = [[] for _ in range(windows+1)]
+yPosSection = [[] for _ in range(windows+1)]
 
 #Daten für den Kreisplot
 xList = [0]
@@ -23,6 +23,7 @@ yList = [0]
 for row in csvreader:
     value = float(row[0])
     index = int(value*windows)
+    print(index)
     readsPerSection[index].append(value)
     degree = value * 360
     x = math.cos(math.radians(degree))
