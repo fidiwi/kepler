@@ -5,7 +5,7 @@ import matplotlib.pyplot as pyplot
 
 windows = 100
 
-file = open('kepler/Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
+file = open('Probedaten/Hirnet_subsample/Hirnet4_S4.subsample.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
 csvreader = csv.reader(file)
 xAxisDiagram = np.arange(0, 1, 1/windows)
 readsPerSection = [[] for _ in range(windows+1)] #Das +1 ist für den Fall des Wertes 1, der dann nicht mehr der größten Sektion zugeordnet werden kann.
@@ -62,6 +62,39 @@ for section in range(windows):
     abstand.append(math.sqrt(xVectors[section]**2 + yVectors[section]**2))
 
 
+ketteY = [yVectors.pop(0)]
+ketteX = [xVectors.pop(0)]
+
+for yVector in ketteY:
+    minAbstand = None
+    pointWithMinAbstand = None
+    for nextPossibleVector in yVectors:
+        if yVector == nextPossibleVector:
+            continue
+        x1 = ketteX[-1]
+        y1 = yVector
+
+        x2 = xVectors[yVectors.index(nextPossibleVector)]
+        y2 = nextPossibleVector
+
+        diffX = abs(x1-x2)
+        diffY = abs(y1-y2)
+
+        abstandP = math.sqrt(diffX**2 + diffY**2)
+        if not minAbstand or minAbstand > abstandP:
+            minAbstand = abstandP
+            pointWithMinAbstand = yVectors.index(nextPossibleVector)
+    if not pointWithMinAbstand:
+        continue
+    ketteY.append(yVectors[pointWithMinAbstand])
+    ketteX.append(xVectors[pointWithMinAbstand])
+    del xVectors[pointWithMinAbstand]
+    del yVectors[pointWithMinAbstand]
+
+print(ketteX)
+print(ketteY)
+
+
 pyplot.plot(xAxisDiagram, readAmountPerSection)
 pyplot.xlabel("Position")
 pyplot.ylabel("reads/section")
@@ -79,7 +112,8 @@ pyplot.gca().set_aspect('equal', adjustable='box')
 
 #Vektorplot erstellen
 pyplot.figure()
-pyplot.plot(xVectors, yVectors, '.', color='black')
+pyplot.plot(ketteX, ketteY, '.', color='black')
+pyplot.plot(xVectors, yVectors, '.', color='red')
 pyplot.plot([0], [0], 's', color='r')
 #pyplot.ylim(-0.05,0.05)
 pyplot.gca().set_aspect('equal', adjustable='box')
