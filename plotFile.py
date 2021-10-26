@@ -84,22 +84,22 @@ for i in range(len(xVectors)):
     produktXX += (xVectors[i]**2)
 
 
-a = (produktXY * window - sum(xVectors) * sum(yVectors)) / (produktXX * window - sum(xVectors)**2)
-b = (produktXX * sum(yVectors) - produktXY * sum(xVectors)) - (produktXX * window - sum(xVectors)**2)
+a = (produktXY * anzahlWindows - sum(xVectors) * sum(yVectors)) / (produktXX * anzahlWindows - sum(xVectors)**2)
+b = (produktXX * sum(yVectors) - produktXY * sum(xVectors)) - (produktXX * anzahlWindows - sum(xVectors)**2)
 c = -(1/a)
-d = (sum(yVectors) / window) - c *(sum(xVectors) / window) 
-xMit = sum(xVectors) / window
-yMit = sum(yVectors) / window
+d = (sum(yVectors) / anzahlWindows) - c *(sum(xVectors) / anzahlWindows) 
+xMit = sum(xVectors) / anzahlWindows
+yMit = sum(yVectors) / anzahlWindows
 
 xTemp = 0
 for xValue in xVectors:
     xTemp += (xValue - xMit)**2 
-f = (xTemp / window)**0.5
+f = (xTemp / anzahlWindows)**0.5
 
 yTemp = 0
 for yValue in yVectors:
     yTemp += (yValue - yMit)**2 
-e = (yTemp / window)**0.5
+e = (yTemp / anzahlWindows)**0.5
 
 ρXY = a * (f / e)
 εL = (abs(e**2 - f**2))**0.5
@@ -121,7 +121,7 @@ for xValue in xVectors:
         xMax = xValue
 
 
-xRegression = np.linspace(xMin, xMax, window)
+xRegression = np.linspace(xMin, xMax, anzahlWindows)
 yRegression = yMit + (B / A) * (xRegression - xMit) + ((e * f) / A) * (A - (xRegression - xMit)**2)**0.5
 yNegativRegression = yMit + (B / A) * (xRegression - xMit) - ((e * f) / A) * (A - (xRegression - xMit)**2)**0.5
 
@@ -134,6 +134,7 @@ print(xMit)
 print(yMit)
 print(f)
 print(e)
+
 
 
 
