@@ -69,6 +69,52 @@ for window in range(anzahlWindows):
     abstand.append(math.sqrt(xVectors[window]**2 + yVectors[window]**2))
 
 
+
+"""
+Die Regression der Ellipse wird berechnet
+Quelle: http://nadirpoint.de/Regression_2D.pdf
+Beispiel auf S.19 wird kopiert:
+"""
+produktXY = 0
+for i in range(len(xVectors)):
+    produktXY += (xVectors[i] * yVectors[i])
+
+produktXX = 0
+for i in range(len(xVectors)):
+    produktXX += (xVectors[i]**2)
+
+
+a = (produktXY * window - sum(xVectors) * sum(yVectors)) / (produktXX * window - sum(xVectors)**2)
+b = (produktXX * sum(yVectors) - produktXY * sum(xVectors)) - (produktXX * window - sum(xVectors)**2)
+c = -(1/a)
+d = (sum(yVectors) / window) - c *(sum(xVectors) / window) 
+xMit = sum(xVectors) / window
+yMit = sum(yVectors) / window
+
+xTemp = 0
+for xValue in xVectors:
+    xTemp += (xValue - xMit)**2 
+
+f = (xTemp / window)**0.5
+
+yTemp = 0
+for yValue in yVectors:
+    yTemp += (yValue - yMit)**2 
+
+e = (yTemp / window)**0.5
+
+print(a)
+print(b)
+print(c)
+print(d)
+print(xMit)
+print(yMit)
+print(f)
+print(e)
+
+
+
+"""
 xMin = 0
 xMax = 0
 for xValue in xVectors:
@@ -77,7 +123,7 @@ for xValue in xVectors:
 
     if xMax < xValue:
         xMax = xValue
-xAchsenLaenge = xMax - xMin
+f = xMax - xMin
 
 yMin = 0
 yMax = 0
@@ -87,38 +133,15 @@ for yValue in yVectors:
 
     if yMax < yValue:
         yMax = yValue
-yAchsenLaenge = yMax - yMin
+e = yMax - yMin
 
 xRegression = np.linspace(-1,2,100)
 yRegression =  (yAchsenLaenge/xAchsenLaenge) * (xAchsenLaenge**2 - (xRegression - 0.4))**0.5
 yNegativRegression = -(yAchsenLaenge/xAchsenLaenge) * (xAchsenLaenge**2 - (xRegression - 0.4))**0.5
 
-#print(xAchsenLaenge)
-#print(yAchsenLaenge)
-
-
+print(xAchsenLaenge)
+print(yAchsenLaenge)
 """
-Die Regression der Ellipse wird berechnet
-Quelle: http://nadirpoint.de/Regression_2D.pdf
-Beispiel auf S.19 wird kopiert:
-"""
-
-a = (sum(xVectors * yVectors) * window - sum(xVectors) * sum(yVectors)) / (sum(xVectors**2) * window - sum(xVectors)**2)
-b = (sum(xVectors**2) * sum(yVectors) - sum(xVectors * yVectors) * sum(xVectors)) - (sum(xVectors**2)*window - sum(xVectors)**2)
-c = -(1/a)
-d = (sum(yVectors) / window) - c *(sum(xVectors) / window) 
-xMit = sum(xVectors) / window
-yMit = sum(yVectors) / window
-
-"""
-print(a)
-print(b)
-print(c)
-print(d)
-print(xMit)
-print(yMit)
-"""
-
 
 
 
@@ -174,8 +197,8 @@ pyplot.figure()
 pyplot.plot(ketteX, ketteY, '.', color='black')
 pyplot.plot(xVectors, yVectors, '.', color='red')
 pyplot.plot([0], [0], 's', color='r')
-pyplot.plot(xRegression, yRegression, color='black')
-pyplot.plot(xRegression, yNegativRegression, color='red')
+#pyplot.plot(xRegression, yRegression, color='black')
+#pyplot.plot(xRegression, yNegativRegression, color='red')
 #pyplot.ylim(-0.05,0.05)
 pyplot.gca().set_aspect('equal', adjustable='box')
 pyplot.grid(color='blue', linestyle='-', linewidth=1)
