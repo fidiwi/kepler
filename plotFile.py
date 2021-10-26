@@ -94,14 +94,37 @@ yMit = sum(yVectors) / window
 xTemp = 0
 for xValue in xVectors:
     xTemp += (xValue - xMit)**2 
-
 f = (xTemp / window)**0.5
 
 yTemp = 0
 for yValue in yVectors:
     yTemp += (yValue - yMit)**2 
-
 e = (yTemp / window)**0.5
+
+ρXY = a * (f / e)
+εL = (abs(e**2 - f**2))**0.5
+if e**2 > f**2:
+    εN = εL / e
+else:
+    εN = εL / f
+ 
+A = (e**2 * a**2 + f**2) / 1 + a**2
+B = a * ((f**2 - e**2) / 1 + a**2)
+
+xMin = 0
+xMax = 0
+for xValue in xVectors:
+    if xMin > xValue:
+        xMin = xValue
+
+    if xMax < xValue:
+        xMax = xValue
+
+
+xRegression = np.linspace(xMin, xMax, window)
+yRegression = yMit + (B / A) * (xRegression - xMit) + ((e * f) / A) * (A - (xRegression - xMit)**2)**0.5
+yNegativRegression = yMit + (B / A) * (xRegression - xMit) - ((e * f) / A) * (A - (xRegression - xMit)**2)**0.5
+
 
 print(a)
 print(b)
@@ -197,8 +220,8 @@ pyplot.figure()
 pyplot.plot(ketteX, ketteY, '.', color='black')
 pyplot.plot(xVectors, yVectors, '.', color='red')
 pyplot.plot([0], [0], 's', color='r')
-#pyplot.plot(xRegression, yRegression, color='black')
-#pyplot.plot(xRegression, yNegativRegression, color='red')
+pyplot.plot(xRegression, yRegression, color='green')
+pyplot.plot(xRegression, yNegativRegression, color='green')
 #pyplot.ylim(-0.05,0.05)
 pyplot.gca().set_aspect('equal', adjustable='box')
 pyplot.grid(color='blue', linestyle='-', linewidth=1)
