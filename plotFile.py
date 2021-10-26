@@ -12,7 +12,7 @@ def abstandZwPunkten(x1, y1, x2, y2):
 
 anzahlWindows = 100
 
-file = open('Probedaten/Beispiesamples/Mail_lutz_3/LБcken/20_percent/10000_2.0_20_.10000,.30000_pos.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
+file = open('kepler/Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
 csvreader = csv.reader(file)
 xAxisDiagram = np.arange(0, 1, 1/anzahlWindows)
 readsPerSection = [[] for _ in range(anzahlWindows)] #Das +1 ist für den Fall des Wertes 1, der dann nicht mehr der größten Sektion zugeordnet werden kann
@@ -69,6 +69,60 @@ for window in range(anzahlWindows):
     abstand.append(math.sqrt(xVectors[window]**2 + yVectors[window]**2))
 
 
+xMin = 0
+xMax = 0
+for xValue in xVectors:
+    if xMin > xValue:
+        xMin = xValue
+
+    if xMax < xValue:
+        xMax = xValue
+xAchsenLaenge = xMax - xMin
+
+yMin = 0
+yMax = 0
+for yValue in yVectors:
+    if yMin > yValue:
+        yMin = yValue
+
+    if yMax < yValue:
+        yMax = yValue
+yAchsenLaenge = yMax - yMin
+
+xRegression = np.linspace(-1,2,100)
+yRegression =  (yAchsenLaenge/xAchsenLaenge) * (xAchsenLaenge**2 - (xRegression - 0.4))**0.5
+yNegativRegression = -(yAchsenLaenge/xAchsenLaenge) * (xAchsenLaenge**2 - (xRegression - 0.4))**0.5
+
+#print(xAchsenLaenge)
+#print(yAchsenLaenge)
+
+
+"""
+Die Regression der Ellipse wird berechnet
+Quelle: http://nadirpoint.de/Regression_2D.pdf
+Beispiel auf S.19 wird kopiert:
+"""
+
+a = (sum(xVectors * yVectors) * window - sum(xVectors) * sum(yVectors)) / (sum(xVectors**2) * window - sum(xVectors)**2)
+b = (sum(xVectors**2) * sum(yVectors) - sum(xVectors * yVectors) * sum(xVectors)) - (sum(xVectors**2)*window - sum(xVectors)**2)
+c = -(1/a)
+d = (sum(yVectors) / window) - c *(sum(xVectors) / window) 
+xMit = sum(xVectors) / window
+yMit = sum(yVectors) / window
+
+"""
+print(a)
+print(b)
+print(c)
+print(d)
+print(xMit)
+print(yMit)
+"""
+
+
+
+
+
 ketteY = [yVectors.pop(0)]
 ketteX = [xVectors.pop(0)]
 
@@ -96,8 +150,8 @@ for yVector in ketteY:
     del xVectors[pointWithMinAbstand]
     del yVectors[pointWithMinAbstand]
 
-print(ketteX)
-print(ketteY)
+#print(ketteX)
+#print(ketteY)
 
 
 pyplot.plot(xAxisDiagram, readAmountPerSection)
@@ -120,8 +174,11 @@ pyplot.figure()
 pyplot.plot(ketteX, ketteY, '.', color='black')
 pyplot.plot(xVectors, yVectors, '.', color='red')
 pyplot.plot([0], [0], 's', color='r')
+pyplot.plot(xRegression, yRegression, color='black')
+pyplot.plot(xRegression, yNegativRegression, color='red')
 #pyplot.ylim(-0.05,0.05)
 pyplot.gca().set_aspect('equal', adjustable='box')
 pyplot.grid(color='blue', linestyle='-', linewidth=1)
+
 
 pyplot.show()
