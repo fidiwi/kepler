@@ -12,7 +12,7 @@ def abstandZwPunkten(x1, y1, x2, y2):
 
 anzahlWindows = 100
 
-file = open('kepler/Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
+file = open('kepler/Probedaten/Beispiesamples/Mail_lutz_3/LБcken/5_percent/10000_4.0_05_.77500,.82500_pos.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
 csvreader = csv.reader(file)
 xAxisDiagram = np.arange(0, 1, 1/anzahlWindows)
 readsPerSection = [[] for _ in range(anzahlWindows)] #Das +1 ist für den Fall des Wertes 1, der dann nicht mehr der größten Sektion zugeordnet werden kann
@@ -107,7 +107,7 @@ if e**2 > f**2:
     εN = εL / e
 else:
     εN = εL / f
- 
+
 A = (e**2 * a**2 + f**2) / (1 + a**2)
 B = a * ((f**2 - e**2) / (1 + a**2))
 
@@ -122,8 +122,11 @@ for xValue in xVectors:
 
 
 xRegression = np.linspace(xMin, xMax, anzahlWindows)
-yRegression = yMit + (B / A) * (xRegression - xMit) + ((e * f) / A) * ((A - (xRegression - xMit)**2)**0.5)
-yNegativRegression = yMit + (B / A) * (xRegression - xMit) - ((e * f) / A) * ((A - (xRegression - xMit)**2)**0.5)
+#yRegression = yMit + (B / A) * (xRegression - xMit) + ((e * f) / A) * ((A - (xRegression - xMit)**2)**0.5)
+#yNegativRegression = yMit + (B / A) * (xRegression - xMit) - ((e * f) / A) * ((A - (xRegression - xMit)**2)**0.5)
+
+yRegression = (e/f) * (f**2 - (xRegression - xMit)**2)**0.5 + yMit
+yNegativRegression = -(e/f) * (f**2 - (xRegression - xMit)**2)**0.5 + yMit
 
 
 print(a)
