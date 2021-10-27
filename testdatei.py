@@ -4,7 +4,7 @@ import numpy as np
 
 
 
-def __init__(fileName, anzahlWindows):
+def vectorenBerechnen(fileName, anzahlWindows):
     fileName = fileName
     anzahlWindows = anzahlWindows
     file = open(fileName)
