@@ -10,7 +10,7 @@ def abstandZwPunkten(x1, y1, x2, y2):
     return(math.sqrt(diffX**2 + diffY**2))
 
 
-anzahlWindows = 100
+anzahlWindows = 1000
 
 file = open('kepler/Probedaten/Beispiesamples/Mail_lutz_3/LБcken/5_percent/10000_4.0_05_.77500,.82500_pos.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
 csvreader = csv.reader(file)
