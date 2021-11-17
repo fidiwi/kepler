@@ -12,7 +12,7 @@ def abstandZwPunkten(x1, y1, x2, y2):
 
 anzahlWindows = 100
 
-file = open('kepler/Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
+file = open('Probedaten/Beispiesamples/Mail_lutz_3/LБcken/20_percent/10000_2.0_20_.50000,.70000_pos.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
 csvreader = csv.reader(file)
 xAxisDiagram = np.arange(0, 1, 1/anzahlWindows)
 readsPerSection = [[] for _ in range(anzahlWindows)] #Das +1 ist für den Fall des Wertes 1, der dann nicht mehr der größten Sektion zugeordnet werden kann
