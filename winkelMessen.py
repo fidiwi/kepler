@@ -42,11 +42,20 @@ def calcWinkel2(sortedData, messabstand):
 
     return [degreeDiffList, xList, avg, standardAbw]
 
+def getEinzelAbweichung(degreeDiffList, avg):
+    #Einzelabweichung = ea
+    avgAbwVonStandardabw = 0
+    eaList = []
+    relEaList = [] # Relative Abweichung von Durchschnitt
+    for degreeDiff in degreeDiffList:
+        eaList.append(abs(degreeDiff-avg))
+        relEaList.append(abs(degreeDiff-avg) / avg)
+    return [eaList, relEaList]
 
 
 anzahlWindows = 100
 
-file = open('Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_8.0_0.0,0.0_pos.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
+file = open('Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_3.0_20_.20000,.40000_pos.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
 csvreader = csv.reader(file)
 xAxisDiagram = np.arange(0, 1, 1/anzahlWindows)
 readsPerSection = [[] for _ in range(anzahlWindows)] 
@@ -109,6 +118,10 @@ pyplot.ylabel("Abstand zum Zentrum")
 #Winkeldifferenzgraph
 pyplot.figure()
 pyplot.plot(degreeDiff[1], degreeDiff[0])
+pyplot.plot(degreeDiff[1], getEinzelAbweichung(degreeDiff[0], degreeDiff[2])[0])
+pyplot.plot(degreeDiff[1], getEinzelAbweichung(degreeDiff[0], degreeDiff[2])[1])
+pyplot.plot(degreeDiff[1], [degreeDiff[2]] * len(degreeDiff[1]))
+pyplot.plot(degreeDiff[1], [degreeDiff[3]] * len(degreeDiff[1]))
 pyplot.title(f"Abstand = {degreeDiff[1][1] - degreeDiff[1][0]}; Standardabw: {degreeDiff[3]} Durchschn: {degreeDiff[2]};")
 pyplot.xlabel(f"Abstand = {degreeDiff[1][1] - degreeDiff[1][0]}")
 pyplot.ylabel("Differenz der Winkel")
