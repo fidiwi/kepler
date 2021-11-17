@@ -22,22 +22,31 @@ def calcWinkel(mittelpunkt, p1, p2, ): #p1, p2 im Format [x, y]
     pass
 
 def calcWinkel2(sortedData, messabstand):
-    degreeList = []
+    degreeDiffList = []
     xList = []
+    totalSum = 0
     for i in range(0, len(sortedData)-messabstand, messabstand):
         degree1 = sortedData[i]*360
         degree2 = sortedData[i+messabstand]*360
-        degree = degree2 - degree1
-        degreeList.append(degree)
+        degreeDiff = degree2 - degree1
+        degreeDiffList.append(degreeDiff)
         xList.append(i)
+        totalSum += degreeDiff
+    
+    avg = totalSum/len(degreeDiffList)
+    varianz = 0
+    for degreeDiff in degreeDiffList:
+        varianz += (degreeDiff - avg)**2
+    varianz = varianz/len(degreeDiffList)
+    standardAbw = math.sqrt(varianz)
 
-    return [degreeList, xList]
+    return [degreeDiffList, xList, avg, standardAbw]
 
 
 
 anzahlWindows = 100
 
-file = open('Probedaten/Beispiesamples/Mail_lutz_3/LБcken/20_percent/10000_2.0_20_.50000,.70000_pos.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
+file = open('Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_8.0_0.0,0.0_pos.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
 csvreader = csv.reader(file)
 xAxisDiagram = np.arange(0, 1, 1/anzahlWindows)
 readsPerSection = [[] for _ in range(anzahlWindows)] 
@@ -100,6 +109,7 @@ pyplot.ylabel("Abstand zum Zentrum")
 #Winkeldifferenzgraph
 pyplot.figure()
 pyplot.plot(degreeDiff[1], degreeDiff[0])
+pyplot.title(f"Abstand = {degreeDiff[1][1] - degreeDiff[1][0]}; Standardabw: {degreeDiff[3]} Durchschn: {degreeDiff[2]};")
 pyplot.xlabel(f"Abstand = {degreeDiff[1][1] - degreeDiff[1][0]}")
 pyplot.ylabel("Differenz der Winkel")
 
