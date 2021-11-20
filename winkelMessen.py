@@ -2,6 +2,7 @@ import csv
 import math
 import numpy as np
 import matplotlib.pyplot as pyplot
+from sklearn.linear_model import LinearRegression
 
 def defineMittlepunkt(xValues, yValues):
     
@@ -18,10 +19,7 @@ def defineMittlepunkt(xValues, yValues):
 
     return [avgX, avgY]
 
-def calcWinkel(mittelpunkt, p1, p2, ): #p1, p2 im Format [x, y]
-    pass
-
-def calcWinkel2(sortedData, messabstand):
+def calcWinkel(sortedData, messabstand):
     degreeDiffList = []
     xList = []
     totalSum = 0
@@ -52,10 +50,64 @@ def getEinzelAbweichung(degreeDiffList, avg):
         relEaList.append(abs(degreeDiff-avg) / avg)
     return [eaList, relEaList]
 
+def determineGaps(relEaList, datasetList, threshold = 1): # Threshold von 1 = 100% Abweichung
+    gaps = []
+    bereiche = []
+    for relEaIndex in range(len(relEaList)):
+        if relEaList[relEaIndex] >= 1:
+            gap = relEaIndex
+            x = len(datasetList)/len(relEaList)
+            anfang = datasetList[int(gap*x)]
+            ende = datasetList[int((gap+1)*x)]
+            gaps.append(relEaIndex)
+            bereiche.append([anfang, ende])
+    print(gap)
+    print(bereiche)
+    return bereiche
+
+def fillGaps(gap_bereich, readAmountPerSection, xAxisDiagram):
+    selectedSections = []
+    readAmount1 = readAmountPerSection[:len(readAmountPerSection)//2]
+    readAmount2 = readAmountPerSection[len(readAmountPerSection)//2:]
+    xAxis1 = xAxisDiagram[:len(xAxisDiagram)//2]
+    xAxis2 = xAxisDiagram[len(xAxisDiagram)//2:]
+    x = len(readAmountPerSection)
+    for gap in gap_bereich:
+        if gap[1] < 0.5:
+            deletedWindows = []
+            for i in range(len(readAmount1)):
+                if gap[0]*x <= i and gap[1]*x >= i:
+                    deletedWindows.append(i)
+            deletedWindows = sorted(deletedWindows, reverse=True)
+            for delWindow in deletedWindows:
+                del readAmount1[delWindow]
+                print(xAxis1)
+                del xAxis1[delWindow]
+        elif gap[0] > 0.5:
+            deletedWindows = []
+            for i in range(len(readAmount2)):
+                if gap[0]*x/2 <= i and gap[1]*x/2 >= i:
+                    deletedWindows.append(i)
+            deletedWindows = sorted(deletedWindows, reverse=True)
+            for delWindow in deletedWindows:
+                del readAmount2[delWindow]
+                del xAxis2[delWindow]
+        else: # Für den Fall dass es um 0.5 herum ist.
+            pass
+    model1 = LinearRegression()
+    model1.fit(xAxis1, readAmount1)
+    linReg1 = model1.predict(xAxis1)
+
+    model2 = LinearRegression()
+    model2.fit(xAxis2, readAmount2)
+    linReg2 = model2.predict(xAxis2)
+
+    return[[xAxis1, linReg1], [xAxis2, linReg2]]
+
 
 anzahlWindows = 100
 
-file = open('Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_3.0_20_.20000,.40000_pos.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
+file = open('Probedaten/Beispiesamples/Mail_lutz_3/Luecken/5_percent/10000_2.0_05_.07500,.12500_pos.csv') #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
 csvreader = csv.reader(file)
 xAxisDiagram = np.arange(0, 1, 1/anzahlWindows)
 readsPerSection = [[] for _ in range(anzahlWindows)] 
@@ -87,7 +139,8 @@ readAmountPerSection = [0] * (anzahlWindows)
 
 datasetList.sort()
 
-degreeDiff = calcWinkel2(datasetList, 100)
+degreeDiff = calcWinkel(datasetList, 100)
+determineGaps(getEinzelAbweichung(degreeDiff[0], degreeDiff[2])[1], datasetList)
 #Positionen addieren Vektorplot
 xVectors = []
 yVectors = []
@@ -110,10 +163,14 @@ for window in range(anzahlWindows):
     abstand.append(math.sqrt(xVectors[window]**2 + yVectors[window]**2))
 
 
-pyplot.plot(xAxisDiagram, abstand)
-pyplot.plot(xAxisDiagram, vergleich1, color='red')
+linReg1, linReg2 = fillGaps(determineGaps(getEinzelAbweichung(degreeDiff[0], degreeDiff[2])[1], datasetList), readAmountPerSection, xAxisDiagram)
+
+pyplot.plot(xAxisDiagram, readAmountPerSection)
+pyplot.plot(linReg1[0], linReg1[1])
+pyplot.plot(linReg2[0], linReg2[1])
+#pyplot.plot(xAxisDiagram, vergleich1, color='red')
 pyplot.xlabel("Position")
-pyplot.ylabel("Abstand zum Zentrum")
+pyplot.ylabel("Anzahl pro Ausschnitt")
 
 #Winkeldifferenzgraph
 pyplot.figure()

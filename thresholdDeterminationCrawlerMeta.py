@@ -14,7 +14,7 @@ for filename in os.listdir(dir):
         value = float(row[0])
         datasetList.append(value)
     datasetList.sort()
-    degreeDiff = winkelMessen.calcWinkel2(datasetList, degreeDiffParameter)
+    degreeDiff = winkelMessen.calcWinkel(datasetList, degreeDiffParameter)
     eaList, relEaList = winkelMessen.getEinzelAbweichung(degreeDiff[0], degreeDiff[2])
     
 
