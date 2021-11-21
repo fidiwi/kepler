@@ -114,8 +114,9 @@ class UltraClass:
         xAxis1 = xAxisDiagram[:len(xAxisDiagram)//2]
         xAxis2 = xAxisDiagram[len(xAxisDiagram)//2:]
 
-        print(xAxis2)
+        #print(xAxis2)
         x = len(readAmountPerSection)
+        print(x)
         for gap in gapBereiche:
             foundWindows = []
             if gap[1] < 0.5:
@@ -147,13 +148,19 @@ class UltraClass:
         linReg2 = model2.predict(np.array(xAxis2).reshape((-1, 1)))
 
         filledValues = []
+        xValuesEllipse = []
+        yValuesEllipse = []
         for w in foundWindows:
             if w > 0.5:
-                filledValues.append(model2.predict(np.array([w]).reshape((-1, 1))))
+                filledValue = model2.predict(np.array([w]).reshape((-1, 1)))
             elif w < 0.5:
-                filledValues.append(model1.predict(np.array([w]).reshape((-1, 1)))[0])
+                filledValue = model1.predict(np.array([w]).reshape((-1, 1)))[0]
 
-        return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues]]
+            filledValues.append(filledValue)
+            xValuesEllipse.append(math.cos(math.radians(w*360)))
+            yValuesEllipse.append(math.sin(math.radians((filledValue/x)*360)))
+
+        return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [xValuesEllipse, yValuesEllipse]]
 
 
     def defineMittelpunkt(xValues, yValues):
