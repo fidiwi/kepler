@@ -1,7 +1,7 @@
 from UltraClass import UltraClass
 import matplotlib.pyplot as pyplot
 
-filename = 'kepler/Probedaten/Beispiesamples/Mail_lutz_3/Luecken/5_percent/10000_2.0_05_.37500,.42500_pos.csv'
+filename = 'Probedaten/Beispiesamples/Mail_lutz_3/neg_samples/5_percent/10000_3.0_95_0,.57500_.62500,1_pos.csv'
 anzahlWindows = 100
 
 ultraClass = UltraClass(filename)
@@ -10,7 +10,6 @@ datasetList, readAmountPerSection, xVectors, yVectors, xAxisDiagram = ultraClass
 degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList, anzahlWindows)
 gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
 linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
-print(filledGaps)
 # Anzahl pro Window, mit LinRegs
 pyplot.plot(xAxisDiagram, readAmountPerSection)
 pyplot.plot(linReg1[0], linReg1[1])
@@ -32,7 +31,7 @@ pyplot.ylabel("Differenz der Winkel")
 #Vektorplot erstellen
 pyplot.figure()
 pyplot.plot(xVectors, yVectors, '.')
-pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='orange')
+#pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='orange')
 pyplot.plot([0], [0], 's', color='r')
 #pyplot.plot([m[0]], [m[1]], 'v', color='green')
 pyplot.gca().set_aspect('equal', adjustable='box')

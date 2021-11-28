@@ -62,6 +62,8 @@ class UltraClass:
 
         datasetList.sort()
 
+        self.datasetLength = datasetLength
+
         return [datasetList, readAmountPerSection, xVectors, yVectors, xAxisDiagram]
 
 
@@ -99,9 +101,12 @@ class UltraClass:
         for relEaIndex in range(len(relEaList)):
             if relEaList[relEaIndex] >= threshold:
                 gap = relEaIndex
-                x = len(datasetList)/len(relEaList)
+                x = len(datasetList)/len(relEaList) #len relEaList ist wahrscheinlich = anzahlWindows
                 anfang = datasetList[int(gap*x)]
-                ende = datasetList[int((gap+1)*x)]
+                if gap*x >= len(datasetList)-x:
+                    ende = anfang
+                else:
+                    ende = datasetList[int((gap+1)*x)]
                 gapBereiche.append([anfang, ende])
         return gapBereiche
 
@@ -113,16 +118,15 @@ class UltraClass:
         readAmount2 = readAmountPerSection[len(readAmountPerSection)//2:]
         xAxis1 = xAxisDiagram[:len(xAxisDiagram)//2]
         xAxis2 = xAxisDiagram[len(xAxisDiagram)//2:]
-
+        print(gapBereiche)
         #print(xAxis2)
-        x = len(readAmountPerSection)
-        print(x)
+        anzahlWindows = len(readAmountPerSection)        
+        foundWindows = []
         for gap in gapBereiche:
-            foundWindows = []
             if gap[1] < 0.5:
                 deletedWindows = []
-                for i in range(len(readAmount1)):
-                    if gap[0]*x <= i and gap[1]*x >= i:
+                for i in range(len(xAxis1)):
+                    if gap[0] <= xAxis1[i] and gap[1] >= xAxis1[i]:
                         deletedWindows.append(i)
                 deletedWindows = sorted(deletedWindows, reverse=True)
                 for delWindow in deletedWindows:
@@ -130,8 +134,8 @@ class UltraClass:
                     foundWindows.append(xAxis1.pop(delWindow))
             elif gap[0] > 0.5:
                 deletedWindows = []
-                for i in range(len(readAmount2)):
-                    if gap[0]*(x/2) <= i and gap[1]*(x/2) >= i:
+                for i in range(len(xAxis2)):
+                    if gap[0] <= xAxis2[i] and gap[1] >= xAxis2[i]:
                         deletedWindows.append(i)
                 deletedWindows = sorted(deletedWindows, reverse=True)
                 for delWindow in deletedWindows:
@@ -139,6 +143,7 @@ class UltraClass:
                     foundWindows.append(xAxis2.pop(delWindow))
             else: # Für den Fall dass es um 0.5 herum ist.
                 pass
+            
         model1 = LinearRegression()
         model1.fit(np.array(xAxis1).reshape((-1, 1)), readAmount1)
         linReg1 = model1.predict(np.array(xAxis1).reshape((-1, 1)))
@@ -157,8 +162,12 @@ class UltraClass:
                 filledValue = model1.predict(np.array([w]).reshape((-1, 1)))[0]
 
             filledValues.append(filledValue)
-            xValuesEllipse.append(math.cos(math.radians(w*360)))
-            yValuesEllipse.append(math.sin(math.radians((filledValue/x)*360)))
+
+            x = math.cos(math.radians(w*360))
+            y = math.sin(math.radians(w*360))
+
+            xValuesEllipse.append(x*filledValue/(self.datasetLength/anzahlWindows))
+            yValuesEllipse.append(y*filledValue/(self.datasetLength/anzahlWindows))
 
         return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [xValuesEllipse, yValuesEllipse]]
 
