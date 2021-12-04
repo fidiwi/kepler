@@ -193,7 +193,7 @@ class UltraClass:
             fv = filledValues[i]
             originalValue = readAmountPerSectionDict[fw]
             diff = float(originalValue - fv)
-            relDiff = float(originalValue / fv)
+            relDiff = str(int((originalValue / fv)*10000)/100) +"%"
 
             windowAbwDict[fw] = [diff, relDiff]
         return windowAbwDict
