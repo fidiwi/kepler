@@ -1,15 +1,19 @@
 from UltraClass import UltraClass
 import matplotlib.pyplot as pyplot
 
-filename = 'kepler/Probedaten/Hirnet_subsample/Hirnet4_S4.subsample.csv'
-anzahlWindows = 200
+filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.60000,.80000_pos.csv'
+anzahlWindows = 100
 
 ultraClass = UltraClass(filename)
 
-datasetList, readAmountPerSection, xVectors, yVectors, xAxisDiagram = ultraClass.readFile(anzahlWindows)
+datasetList, readAmountPerSection, readAmountPerSectionDict, xVectors, yVectors, xAxisDiagram = ultraClass.readFile(anzahlWindows)
 degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList, anzahlWindows)
 gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
 linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
+windowAbwDict = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict)
+
+print (windowAbwDict)
+print (gapBereiche)
 # Anzahl pro Window, mit LinRegs
 pyplot.plot(xAxisDiagram, readAmountPerSection)
 pyplot.plot(linReg1[0], linReg1[1])

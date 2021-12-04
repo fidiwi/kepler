@@ -64,7 +64,11 @@ class UltraClass:
 
         self.datasetLength = datasetLength
 
-        return [datasetList, readAmountPerSection, xVectors, yVectors, xAxisDiagram]
+        readAmountPerSectionDict = {}
+        for i in range(len(list(xAxisDiagram))):
+            readAmountPerSectionDict[xAxisDiagram[i]] = readAmountPerSection[i]
+
+        return [datasetList, readAmountPerSection, readAmountPerSectionDict, xVectors, yVectors, xAxisDiagram]
 
 
     def calcWinkel(self, sortedData, anzahlWindows):
@@ -96,11 +100,11 @@ class UltraClass:
         return [degreeDiffList, xList, avg, standardAbw, relEaList]
 
 
-    def determineGaps(self, relEaList, datasetList, thresholdLuecke = 1, thresholdUeberschuss = -0.1): # thresholdLuecke von 1 = 100% Abweichung
+    def determineGaps(self, relEaList, datasetList, thresholdLuecke = 1, thresholdUeberschuss = -1): # thresholdLuecke von 1 = 100% Abweichung
         gapBereiche = []
         gapUeberschuss = []
         for relEaIndex in range(len(relEaList)):
-            """if relEaList[relEaIndex] >= thresholdLuecke:
+            if relEaList[relEaIndex] >= thresholdLuecke:
                 gap = relEaIndex
                 x = len(datasetList)/len(relEaList) #len relEaList ist wahrscheinlich = anzahlWindows
                 anfang = datasetList[int(gap*x)]
@@ -108,7 +112,7 @@ class UltraClass:
                     ende = anfang
                 else:
                     ende = datasetList[int((gap+1)*x)]
-                gapBereiche.append([anfang, ende])"""
+                gapBereiche.append([anfang, ende])
             if relEaList[relEaIndex] <= thresholdUeberschuss:
                 gap = relEaIndex
                 x = len(datasetList)/len(relEaList) #len relEaList ist wahrscheinlich = anzahlWindows
@@ -182,20 +186,17 @@ class UltraClass:
         return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [xValuesEllipse, yValuesEllipse]]
 
 
-    def defineMittelpunkt(xValues, yValues):
-        
-        totalX = 0
-        for x in xValues:
-            totalX += x
+    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict):
+        windowAbwDict = {}
+        for i in range(len(foundWindows)):
+            fw = foundWindows[i]
+            fv = filledValues[i]
+            originalValue = readAmountPerSectionDict[fw]
+            diff = originalValue - fv
+            relDiff = originalValue / fv
 
-        totalY = 0
-        for y in yValues:
-            totalY += y
-        
-        avgX = totalX / len(xValues)
-        avgY = totalY / len(yValues)
-
-        return [avgX, avgY]
+            windowAbwDict[fw] = [diff, relDiff]
+        return windowAbwDict
 
 
     
