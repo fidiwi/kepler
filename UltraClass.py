@@ -192,8 +192,8 @@ class UltraClass:
             fw = foundWindows[i]
             fv = filledValues[i]
             originalValue = readAmountPerSectionDict[fw]
-            diff = originalValue - fv
-            relDiff = originalValue / fv
+            diff = float(originalValue - fv)
+            relDiff = float(originalValue / fv)
 
             windowAbwDict[fw] = [diff, relDiff]
         return windowAbwDict
