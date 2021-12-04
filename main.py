@@ -1,8 +1,8 @@
 from UltraClass import UltraClass
 import matplotlib.pyplot as pyplot
 
-filename = 'Probedaten/Beispiesamples/Mail_lutz_3/neg_samples/5_percent/10000_3.0_95_0,.57500_.62500,1_pos.csv'
-anzahlWindows = 100
+filename = 'kepler/Probedaten/Hirnet_subsample/Hirnet4_S4.subsample.csv'
+anzahlWindows = 200
 
 ultraClass = UltraClass(filename)
 
@@ -31,7 +31,7 @@ pyplot.ylabel("Differenz der Winkel")
 #Vektorplot erstellen
 pyplot.figure()
 pyplot.plot(xVectors, yVectors, '.')
-#pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='orange')
+pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='orange')
 pyplot.plot([0], [0], 's', color='r')
 #pyplot.plot([m[0]], [m[1]], 'v', color='green')
 pyplot.gca().set_aspect('equal', adjustable='box')

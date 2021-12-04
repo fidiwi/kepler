@@ -91,15 +91,25 @@ class UltraClass:
         #Einzelabweichung = ea
         relEaList = [] # Relative Abweichung von Durchschnitt
         for degreeDiff in degreeDiffList:
-            relEaList.append(abs(degreeDiff-avg) / avg)
+            relEaList.append((degreeDiff-avg) / avg)
 
         return [degreeDiffList, xList, avg, standardAbw, relEaList]
 
 
-    def determineGaps(self, relEaList, datasetList, threshold = 1): # Threshold von 1 = 100% Abweichung
+    def determineGaps(self, relEaList, datasetList, thresholdLuecke = 1, thresholdUeberschuss = -0.1): # thresholdLuecke von 1 = 100% Abweichung
         gapBereiche = []
+        gapUeberschuss = []
         for relEaIndex in range(len(relEaList)):
-            if relEaList[relEaIndex] >= threshold:
+            """if relEaList[relEaIndex] >= thresholdLuecke:
+                gap = relEaIndex
+                x = len(datasetList)/len(relEaList) #len relEaList ist wahrscheinlich = anzahlWindows
+                anfang = datasetList[int(gap*x)]
+                if gap*x >= len(datasetList)-x:
+                    ende = anfang
+                else:
+                    ende = datasetList[int((gap+1)*x)]
+                gapBereiche.append([anfang, ende])"""
+            if relEaList[relEaIndex] <= thresholdUeberschuss:
                 gap = relEaIndex
                 x = len(datasetList)/len(relEaList) #len relEaList ist wahrscheinlich = anzahlWindows
                 anfang = datasetList[int(gap*x)]
