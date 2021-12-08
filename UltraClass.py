@@ -65,10 +65,12 @@ class UltraClass:
         self.datasetLength = datasetLength
 
         readAmountPerSectionDict = {}
+        readsPerSectionDict = {}
         for i in range(len(list(xAxisDiagram))):
             readAmountPerSectionDict[xAxisDiagram[i]] = readAmountPerSection[i]
+            readsPerSectionDict[xAxisDiagram[i]] = readsPerSection[i]
 
-        return [datasetList, readAmountPerSection, readAmountPerSectionDict, xVectors, yVectors, xAxisDiagram]
+        return [datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram]
 
 
     def calcWinkel(self, sortedData, anzahlWindows):
@@ -77,6 +79,7 @@ class UltraClass:
         degreeDiffList = []
         xList = []
         totalSum = 0
+        # ??? Könnten hier nicht theoretisch Daten ausgelassen werden wenn sich sortedData nicht durch messabsand teilen lässt?
         for i in range(0, len(sortedData)-messabstand, messabstand):
             degree1 = sortedData[i]*360
             degree2 = sortedData[i+messabstand]*360
@@ -100,7 +103,7 @@ class UltraClass:
         return [degreeDiffList, xList, avg, standardAbw, relEaList]
 
 
-    def determineGaps(self, relEaList, datasetList, thresholdLuecke = 1, thresholdUeberschuss = -1): # thresholdLuecke von 1 = 100% Abweichung
+    def determineGaps(self, relEaList, datasetList, thresholdLuecke = 1, thresholdUeberschuss = -1): # thresholdLuecke von 1 = 100% Abweichung(Bezogen auf die Abweichung vom Durchschnittabstand[avg])
         gapBereiche = []
         gapUeberschuss = []
         for relEaIndex in range(len(relEaList)):
@@ -169,6 +172,7 @@ class UltraClass:
         filledValues = []
         xValuesEllipse = []
         yValuesEllipse = []
+        # filledValue gibt die prognostizierte Anzahl an Reads im jeweiligen Windows an
         for w in foundWindows:
             if w > 0.5:
                 filledValue = model2.predict(np.array([w]).reshape((-1, 1)))
@@ -186,7 +190,7 @@ class UltraClass:
         return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [xValuesEllipse, yValuesEllipse]]
 
 
-    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict):
+    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict):
         windowAbwDict = {}
         for i in range(len(foundWindows)):
             fw = foundWindows[i]
@@ -194,6 +198,20 @@ class UltraClass:
             originalValue = readAmountPerSectionDict[fw]
             diff = float(originalValue - fv)
             relDiff = str(int((originalValue / fv)*10000)/100) +"%"
+
+            #Alte Werte mit generierten Ersetzen
+            readsPerSectionDict[fw] = [fw]*fv #Setze fv mal (prognostizierte Häufigkeit) den Wert des Windows ein
+
+            #Daten in csv schreiben
+            newFile = open(f'Output/test.csv', 'w')
+            writer = csv.writer(newFile)
+
+                
+            for key in readsPerSectionDict:
+                for value in readsPerSectionDict[key]:
+                    writer.writerow([value])
+
+            newFile.close()
 
             windowAbwDict[fw] = [diff, relDiff]
         return windowAbwDict
