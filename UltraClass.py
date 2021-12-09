@@ -111,7 +111,7 @@ class UltraClass:
             if relEaList[relEaIndex] >= self.thresholdLuecke:
                 gap = relEaIndex
                 x = len(datasetList)/len(relEaList) #len relEaList ist wahrscheinlich = anzahlWindows
-                anfang = datasetList[int(gap*x)]
+                anfang = datasetList[int((gap)*x)]
                 if gap*x >= len(datasetList)-x:
                     ende = anfang
                 else:
@@ -216,6 +216,7 @@ class UltraClass:
 
             windowAbwDict[fw] = [diff, relDiff]
         
+        nameFile = self.filename.rsplit('/', 1)[-1]
         infoDataset2 = str(windows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
         cd = 'Output/AnalyseReads/Analyse_' + infoDataset2 + nameFile
         with open(cd, 'w', newline='') as csvfile2:
