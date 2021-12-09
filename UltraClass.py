@@ -7,8 +7,10 @@ from sklearn.linear_model import LinearRegression
 
 class UltraClass:
 
-    def __init__(self, filename):
+    def __init__(self, filename, thresholdLuecke, thresholdUeberschuss):
         self.filename = filename
+        self.thresholdLuecke = thresholdLuecke
+        self.thresholdUeberschuss = thresholdUeberschuss
 
 
     def readFile(self, anzahlWindows):
@@ -103,11 +105,10 @@ class UltraClass:
         return [degreeDiffList, xList, avg, standardAbw, relEaList]
 
 
-    def determineGaps(self, relEaList, datasetList, thresholdLuecke = 1, thresholdUeberschuss = -1): # thresholdLuecke von 1 = 100% Abweichung(Bezogen auf die Abweichung vom Durchschnittabstand[avg])
+    def determineGaps(self, relEaList, datasetList): # thresholdLuecke von 1 = 100% Abweichung(Bezogen auf die Abweichung vom Durchschnittabstand[avg])
         gapBereiche = []
-        gapUeberschuss = []
         for relEaIndex in range(len(relEaList)):
-            if relEaList[relEaIndex] >= thresholdLuecke:
+            if relEaList[relEaIndex] >= self.thresholdLuecke:
                 gap = relEaIndex
                 x = len(datasetList)/len(relEaList) #len relEaList ist wahrscheinlich = anzahlWindows
                 anfang = datasetList[int(gap*x)]
@@ -116,7 +117,7 @@ class UltraClass:
                 else:
                     ende = datasetList[int((gap+1)*x)]
                 gapBereiche.append([anfang, ende])
-            if relEaList[relEaIndex] <= thresholdUeberschuss:
+            if relEaList[relEaIndex] <= self.thresholdUeberschuss:
                 gap = relEaIndex
                 x = len(datasetList)/len(relEaList) #len relEaList ist wahrscheinlich = anzahlWindows
                 anfang = datasetList[int(gap*x)]
@@ -190,7 +191,7 @@ class UltraClass:
         return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [xValuesEllipse, yValuesEllipse]]
 
 
-    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict):
+    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, windows):
         windowAbwDict = {}
         for i in range(len(foundWindows)):
             fw = foundWindows[i]
@@ -203,24 +204,27 @@ class UltraClass:
             readsPerSectionDict[fw] = [fw]*int(fv) #Setze fv mal (prognostizierte Häufigkeit) den Wert des Windows ein
 
             #Daten in csv schreiben
-            newFile = open(f'Output/test.csv', 'w')
-            writer = csv.writer(newFile)
-            writer.writerow([self.filename])
-                
-            for key in readsPerSectionDict:
-                for value in readsPerSectionDict[key]:
-                    writer.writerow([value])
+            nameFile = self.filename.rsplit('/', 1)[-1]
+            infoDataset = str(windows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
+            cd = 'Output/BetterDataset/NewData_' + infoDataset + nameFile
+            with open(cd, 'w', newline='') as csvfile:
+                writer = csv.writer(csvfile, delimiter=' ', quotechar='|')    
+                for key in readsPerSectionDict:
+                    for value in readsPerSectionDict[key]:
+                        writer.writerow([value])
+                csvfile.close()
 
-            newFile.close()
             windowAbwDict[fw] = [diff, relDiff]
-
-        newFile2 = open(f'Output/reads.csv', 'w', newline='')
-        writer2 = csv.writer(newFile2, delimiter=' ', quotechar='|')
-        writer2.writerow([self.filename])
-        for key in windowAbwDict:
-            writer2.writerow([key]+[windowAbwDict[key][0]+[windowAbwDict[key][1]]])
-        newFile2.close()
         
+        cd = 'Output/AnalyseReads/Analyse_' + nameFile
+        with open(cd, 'w', newline='') as csvfile2:
+            writer2 = csv.writer(csvfile2, delimiter=' ', quotechar='|')
+            writer2.writerow([windows] + [self.datasetLength] + [self.thresholdLuecke] + [self.thresholdUeberschuss])
+            writer2.writerow(["Position"] + ["Read"] + ["Relative Abweichung"])
+            for key in windowAbwDict:
+                writer2.writerow([key] + [windowAbwDict[key][0]] + [windowAbwDict[key][1]])
+            csvfile2.close()
+            
         return windowAbwDict
 
 
