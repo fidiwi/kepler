@@ -200,20 +200,27 @@ class UltraClass:
             relDiff = str(int((originalValue / fv)*10000)/100) +"%"
 
             #Alte Werte mit generierten Ersetzen
-            readsPerSectionDict[fw] = [fw]*fv #Setze fv mal (prognostizierte Häufigkeit) den Wert des Windows ein
+            readsPerSectionDict[fw] = [fw]*int(fv) #Setze fv mal (prognostizierte Häufigkeit) den Wert des Windows ein
 
             #Daten in csv schreiben
             newFile = open(f'Output/test.csv', 'w')
             writer = csv.writer(newFile)
-
+            writer.writerow([self.filename])
                 
             for key in readsPerSectionDict:
                 for value in readsPerSectionDict[key]:
                     writer.writerow([value])
 
             newFile.close()
-
             windowAbwDict[fw] = [diff, relDiff]
+
+        newFile2 = open(f'Output/reads.csv', 'w', newline='')
+        writer2 = csv.writer(newFile2, delimiter=' ', quotechar='|')
+        writer2.writerow([self.filename])
+        for key in windowAbwDict:
+            writer2.writerow([key]+[windowAbwDict[key][0]+[windowAbwDict[key][1]]])
+        newFile2.close()
+        
         return windowAbwDict
 
 
