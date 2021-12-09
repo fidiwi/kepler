@@ -16,21 +16,25 @@ def berechnen(fileName, minWindows, maxWindows, stepSize):
     #iterationen = (maxWindows - minWindows) / stepSize
     
     for i in range(minWindows, maxWindows, stepSize):
-        curWindows = minWindows + i*stepSize
+    
+        for i in range(minWindows, maxWindows, stepSize):
+            curWindows = minWindows + i*stepSize
 
-        VectorenListe = testdatei.vectorenBerechnen(fileName, curWindows)
-        xVektoren = VectorenListe[0]
-        yVektoren = VectorenListe[1]
+            VectorenListe = testdatei.vectorenBerechnen(fileName, curWindows)
+            xVektoren = VectorenListe[0]
+            yVektoren = VectorenListe[1]
 
-        xs.extend(xVektoren)
-        ys.extend(yVektoren)
-        zs.extend([curWindows]*curWindows)
+            xs.extend(xVektoren)
+            ys.extend(yVektoren)
+            zs.extend([curWindows]*curWindows)
 
-        
+            
 
-        #print(VectorenListe)
-        #print(xVektoren)
-        #print(yVektoren)
+            
+
+            #print(VectorenListe)
+            #print(xVektoren)
+            #print(yVektoren)
 
 
 fig = pyplot.figure()
