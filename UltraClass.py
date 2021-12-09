@@ -216,11 +216,11 @@ class UltraClass:
 
             windowAbwDict[fw] = [diff, relDiff]
         
-        cd = 'Output/AnalyseReads/Analyse_' + nameFile
+        infoDataset2 = str(windows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
+        cd = 'Output/AnalyseReads/Analyse_' + infoDataset2 + nameFile
         with open(cd, 'w', newline='') as csvfile2:
             writer2 = csv.writer(csvfile2, delimiter=' ', quotechar='|')
-            writer2.writerow([windows] + [self.datasetLength] + [self.thresholdLuecke] + [self.thresholdUeberschuss])
-            writer2.writerow(["Position"] + ["Read"] + ["Relative Abweichung"])
+            #writer2.writerow(["Position"] + ["Read"] + ["Relative Abweichung"])
             for key in windowAbwDict:
                 writer2.writerow([key] + [windowAbwDict[key][0]] + [windowAbwDict[key][1]])
             csvfile2.close()
