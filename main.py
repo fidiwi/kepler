@@ -2,8 +2,8 @@ from UltraClass import UltraClass
 import matplotlib.pyplot as pyplot
 import os
 
-filename = 'Probedaten/Beispiesamples/Mail_lutz_3/neg_samples/20_percent/10000_2.0_80_.10000,.90000_pos.csv'
-anzahlWindows = 200
+filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.40000,.60000_pos.csv'
+anzahlWindows = 50
 thresholdLuecke = 1
 thresholdUeberschuss = -1
 
@@ -15,7 +15,7 @@ gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
 linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
 windowAbwDict = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, anzahlWindows)
 
-
+"""
 folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent")
 for file in folderPosFiles:
     ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/"+str(file), thresholdLuecke, thresholdUeberschuss)
@@ -26,7 +26,7 @@ for file in folderPosFiles:
     windowAbwDict = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, anzahlWindows)
 
 thresholdLuecke = 100
-thresholdUeberschuss = -0.2
+thresholdUeberschuss = -0.2 # sonst funktioniert es nicht!!!
 folderNegFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/neg_samples/20_percent")
 for file in folderNegFiles:
     ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/neg_samples/20_percent/"+str(file), thresholdLuecke, thresholdUeberschuss)
@@ -58,9 +58,10 @@ for file in folderAnalyseReads:
         else:
             print("Read nicht gefunden!")
 
+print(foundFiles)
+"""
 print (windowAbwDict)
 print (gapBereiche)
-print(foundFiles)
 # Anzahl pro Window, mit LinRegs
 pyplot.plot(xAxisDiagram, readAmountPerSection)
 pyplot.plot(linReg1[0], linReg1[1])
