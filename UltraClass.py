@@ -112,17 +112,21 @@ class UltraClass:
                 gap = relEaIndex
                 x = len(datasetList)/len(relEaList) #len relEaList ist wahrscheinlich = anzahlWindows
                 anfang = datasetList[int((gap)*x)]
+                if anfang < 0.005:
+                    anfang = 0
                 if gap*x >= len(datasetList)-x:
-                    ende = anfang
+                    ende = datasetList[-1]
                 else:
                     ende = datasetList[int((gap+1)*x)]
                 gapBereiche.append([anfang, ende])
-            if relEaList[relEaIndex] <= self.thresholdUeberschuss:
+            elif relEaList[relEaIndex] <= self.thresholdUeberschuss:
                 gap = relEaIndex
                 x = len(datasetList)/len(relEaList) #len relEaList ist wahrscheinlich = anzahlWindows
                 anfang = datasetList[int(gap*x)]
+                if anfang < 0.005:
+                    anfang = 0
                 if gap*x >= len(datasetList)-x:
-                    ende = anfang
+                    ende = datasetList[-1]
                 else:
                     ende = datasetList[int((gap+1)*x)]
                 gapBereiche.append([anfang, ende])
@@ -131,17 +135,16 @@ class UltraClass:
 
     def fillGaps(self, gapBereiche, readAmountPerSection, xAxisDiagram):
         xAxisDiagram = list(xAxisDiagram) # Weil es vorher ein np.arange()-Objekt ist
-        
-        readAmount1 = readAmountPerSection[:len(readAmountPerSection)//2]
+        readAmount1 = readAmountPerSection[:len(readAmountPerSection)//2] # Listen aufteilen 0-0.5; 0.5-1
         readAmount2 = readAmountPerSection[len(readAmountPerSection)//2:]
         xAxis1 = xAxisDiagram[:len(xAxisDiagram)//2]
         xAxis2 = xAxisDiagram[len(xAxisDiagram)//2:]
         print(gapBereiche)
-        #print(xAxis2)
-        anzahlWindows = len(readAmountPerSection)        
+        anzahlWindows = len(readAmountPerSection) 
+
         foundWindows = []
         for gap in gapBereiche:
-            deletedWindows = []
+            deletedWindows = [] # bis 0.5
             for i in range(len(xAxis1)):
                 if gap[0] <= xAxis1[i] and gap[1] >= xAxis1[i]:
                     deletedWindows.append(i)
@@ -149,7 +152,7 @@ class UltraClass:
             for delWindow in deletedWindows:
                 del readAmount1[delWindow]
                 foundWindows.append(xAxis1.pop(delWindow))
-            deletedWindows = []
+            deletedWindows = [] # ab 0.5
             for i in range(len(xAxis2)):
                 if gap[0] <= xAxis2[i] and gap[1] >= xAxis2[i]:
                     deletedWindows.append(i)
