@@ -141,41 +141,22 @@ class UltraClass:
         anzahlWindows = len(readAmountPerSection)        
         foundWindows = []
         for gap in gapBereiche:
-            if gap[1] < 0.5:
-                deletedWindows = []
-                for i in range(len(xAxis1)):
-                    if gap[0] <= xAxis1[i] and gap[1] >= xAxis1[i]:
-                        deletedWindows.append(i)
-                deletedWindows = sorted(deletedWindows, reverse=True)
-                for delWindow in deletedWindows:
-                    del readAmount1[delWindow]
-                    foundWindows.append(xAxis1.pop(delWindow))
-            elif gap[0] > 0.5:
-                deletedWindows = []
-                for i in range(len(xAxis2)):
-                    if gap[0] <= xAxis2[i] and gap[1] >= xAxis2[i]:
-                        deletedWindows.append(i)
-                deletedWindows = sorted(deletedWindows, reverse=True)
-                for delWindow in deletedWindows:
-                    del readAmount2[delWindow]
-                    foundWindows.append(xAxis2.pop(delWindow))
-            else: # Für den Fall dass es um 0.5 herum ist.
-                deletedWindows = []
-                for i in range(len(xAxis1)):
-                    if gap[0] <= xAxis1[i] and gap[1] >= xAxis1[i]:
-                        deletedWindows.append(i)
-                deletedWindows = sorted(deletedWindows, reverse=True)
-                for delWindow in deletedWindows:
-                    del readAmount1[delWindow]
-                    foundWindows.append(xAxis1.pop(delWindow))
-                deletedWindows = []
-                for i in range(len(xAxis2)):
-                    if gap[0] <= xAxis2[i] and gap[1] >= xAxis2[i]:
-                        deletedWindows.append(i)
-                deletedWindows = sorted(deletedWindows, reverse=True)
-                for delWindow in deletedWindows:
-                    del readAmount2[delWindow]
-                    foundWindows.append(xAxis2.pop(delWindow))
+            deletedWindows = []
+            for i in range(len(xAxis1)):
+                if gap[0] <= xAxis1[i] and gap[1] >= xAxis1[i]:
+                    deletedWindows.append(i)
+            deletedWindows = sorted(deletedWindows, reverse=True)
+            for delWindow in deletedWindows:
+                del readAmount1[delWindow]
+                foundWindows.append(xAxis1.pop(delWindow))
+            deletedWindows = []
+            for i in range(len(xAxis2)):
+                if gap[0] <= xAxis2[i] and gap[1] >= xAxis2[i]:
+                    deletedWindows.append(i)
+            deletedWindows = sorted(deletedWindows, reverse=True)
+            for delWindow in deletedWindows:
+                del readAmount2[delWindow]
+                foundWindows.append(xAxis2.pop(delWindow))
             
         model1 = LinearRegression()
         model1.fit(np.array(xAxis1).reshape((-1, 1)), readAmount1)
