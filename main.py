@@ -1,7 +1,7 @@
 from UltraClass import UltraClass
 import matplotlib.pyplot as pyplot
 
-filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv'
+filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.40000,.60000_pos.csv'
 anzahlWindows = 50
 
 ultraClass = UltraClass(filename, 1, -1)
