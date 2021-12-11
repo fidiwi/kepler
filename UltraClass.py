@@ -139,7 +139,6 @@ class UltraClass:
         readAmount2 = readAmountPerSection[len(readAmountPerSection)//2:]
         xAxis1 = xAxisDiagram[:len(xAxisDiagram)//2]
         xAxis2 = xAxisDiagram[len(xAxisDiagram)//2:]
-        print(gapBereiche)
         anzahlWindows = len(readAmountPerSection) 
 
         foundWindows = []
@@ -160,7 +159,7 @@ class UltraClass:
             for delWindow in deletedWindows:
                 del readAmount2[delWindow]
                 foundWindows.append(xAxis2.pop(delWindow))
-            
+
         model1 = LinearRegression()
         model1.fit(np.array(xAxis1).reshape((-1, 1)), readAmount1)
         linReg1 = model1.predict(np.array(xAxis1).reshape((-1, 1)))
@@ -226,6 +225,19 @@ class UltraClass:
             csvfile2.close()
             
         return windowAbwDict
+
+
+    def calcMatchingReads(self):
+        searchReads = []
+
+        with open(self.filename, newline='') as csvfile:
+            file = csv.reader(csvfile, delimiter=' ', quotechar='|')
+            for row in file:
+                value = [float(row[0]), float(row[1])]
+                searchReads.append(value)
+        
+        return(searchReads)
+            
 
 
     
