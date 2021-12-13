@@ -233,7 +233,7 @@ class UltraClass:
         with open(self.filename, newline='') as csvfile:
             file = csv.reader(csvfile, delimiter=' ', quotechar='|')
             for row in file:
-                value = [float(row[0]), float(row[1])]
+                value = [round(float(row[0]),3), round(float(row[1]))]
                 searchReads.append(value)
         
         return(searchReads)

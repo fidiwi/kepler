@@ -3,7 +3,7 @@ import matplotlib.pyplot as pyplot
 import os
 
 filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.40000,.60000_pos.csv'
-anzahlWindows = 50
+anzahlWindows = 250
 thresholdLuecke = 1
 thresholdUeberschuss = -1
 
@@ -16,6 +16,15 @@ linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, r
 windowAbwDict = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, anzahlWindows)
 
 """
+folderPosFiles = os.listdir("./Output/AnalyseReads") #alle erstellten Dateien werden gelöscht
+for file in folderPosFiles:
+    os.remove("./Output/AnalyseReads/"+str(file))
+
+folderPosFiles = os.listdir("./Output/BetterDataset")
+for file in folderPosFiles:
+    os.remove("./Output/BetterDataset/"+str(file))
+"""
+
 folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent")
 for file in folderPosFiles:
     ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/"+str(file), thresholdLuecke, thresholdUeberschuss)
@@ -41,27 +50,36 @@ ultraReadsList = []
 for file in folderAnalyseReads:
     ultraClass = UltraClass("Output/AnalyseReads/"+str(file), thresholdLuecke, thresholdUeberschuss)
     ultraReadsList.append(ultraClass.calcMatchingReads())
-    foundFiles = []
-    for searchedWindows in ultraReadsList[-1]:
-        temp = searchedWindows[1]
 
-        i = 0
-        for allReadsList in ultraReadsList:
-            for allReads2 in allReadsList:
-                if searchedWindows[0] == allReads2[0] and allReads2[1] > 0:
-                    foundFiles.append(i)
-                    temp + allReads2[1]
-            i+=1
-        
-        if temp > 0:
-            print("Read gefunden!")
-        else:
-            print("Read nicht gefunden!")
+
+foundFiles = []
+readList = []
+for searchedWindows in ultraReadsList[-1]:
+    temp = searchedWindows[1]
+    posListReads =[]
+    for i in range(len(ultraReadsList)):
+        for reads in ultraReadsList[i]:
+            if searchedWindows[0] == reads[0] and reads[1] > 0:
+                posListReads.append(i)
+                temp += reads[1]
+    
+    if len(posListReads) > 0:
+        foundFiles.append(posListReads)
+    i+=1
+
+    readList.append(temp)
+    if temp > 0:
+        print("Read gefunden!")
+    else:
+        print("Read nicht gefunden!")
 
 print(foundFiles)
-"""
-print (windowAbwDict)
-print (gapBereiche)
+print(readList)
+print(ultraReadsList[-1])
+
+#print (windowAbwDict)
+#print (gapBereiche)
+
 # Anzahl pro Window, mit LinRegs
 pyplot.plot(xAxisDiagram, readAmountPerSection)
 pyplot.plot(linReg1[0], linReg1[1])
