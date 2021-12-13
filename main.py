@@ -2,8 +2,8 @@ from UltraClass import UltraClass
 import matplotlib.pyplot as pyplot
 import os
 
-filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.40000,.60000_pos.csv'
-anzahlWindows = 50 #250 bei den Code weiter unten l.19
+filename = 'Probedaten/Hirnet_subsample/Hirnet4_S4.subsample.csv'
+anzahlWindows = 250 #250 bei den Code weiter unten l.19
 thresholdLuecke = 1
 thresholdUeberschuss = -1
 
@@ -81,7 +81,8 @@ print(ultraReadsList[-1])
 print (windowAbwDict)
 print (gapBereiche)
 
-# Anzahl pro Window, mit LinRegs
+#Readamount pro Window, mit LinRegs
+pyplot.figure(num='Readamount pro Window')
 pyplot.plot(xAxisDiagram, readAmountPerSection)
 pyplot.plot(linReg1[0], linReg1[1])
 pyplot.plot(linReg2[0], linReg2[1])
@@ -90,7 +91,7 @@ pyplot.xlabel("Position")
 pyplot.ylabel("Anzahl pro Ausschnitt")
 
 #Winkeldifferenzgraph
-pyplot.figure()
+pyplot.figure(num='Winkeldifferenzengraph')
 pyplot.plot(xList, degreeDiffList)
 pyplot.plot(xList, relEaList)
 pyplot.plot(xList, [avg] * len(xList))
@@ -102,14 +103,13 @@ pyplot.xlabel(f"""blau: Winkeldifferenz in Grad\n
                     rot: Standardabweichung""")
 pyplot.ylabel("Differenz der Winkel")
 
-#Vektorplot erstellen
-pyplot.figure()
+#Vektorengraph
+pyplot.figure(num='Vektorengraph')
 pyplot.plot(xVectors, yVectors, '.')
 pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='orange')
 pyplot.plot([0], [0], 's', color='r')
 #pyplot.plot([m[0]], [m[1]], 'v', color='green')
 pyplot.gca().set_aspect('equal', adjustable='box')
 pyplot.grid(color='blue', linestyle='-', linewidth=1)
-
 
 pyplot.show()
