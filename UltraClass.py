@@ -189,7 +189,7 @@ class UltraClass:
         return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [xValuesEllipse, yValuesEllipse]]
 
 
-    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, windows):
+    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, anzahlWindows):
         windowAbwDict = {}
         for i in range(len(foundWindows)):
             fw = foundWindows[i]
@@ -199,11 +199,21 @@ class UltraClass:
             relDiff = str(int((originalValue / fv)*10000)/100) +"%"
 
             #Alte Werte mit generierten Ersetzen
-            readsPerSectionDict[fw] = [fw]*int(fv) #Setze fv mal (prognostizierte Häufigkeit) den Wert des Windows ein
+            #readsPerSectionDict[fw] = [fw]*int(fv) #Setze fv mal (prognostizierte Häufigkeit) den Wert des Windows ein
+            #Alternative:
+            newWindowData = []
+            halfWindowSize = (1/anzahlWindows)/2
+            lowerBound = fw-halfWindowSize if fw-halfWindowSize >= 0 else 0
+            upperBound = fw+halfWindowSize if fw+halfWindowSize <= 1 else 1
+            stepSize = (upperBound-lowerBound) / int(fv)
 
+            for v in np.arange(lowerBound, upperBound, stepSize):
+                newWindowData.append(v)
+            readsPerSectionDict[fw] = newWindowData
+            
             #Daten in csv schreiben
             nameFile = self.filename.rsplit('/', 1)[-1]
-            infoDataset = str(windows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
+            infoDataset = str(anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
             cd = 'Output/BetterDataset/NewData_' + infoDataset + nameFile
             with open(cd, 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile, delimiter=' ', quotechar='|')    
@@ -215,7 +225,7 @@ class UltraClass:
             windowAbwDict[fw] = [diff, relDiff]
         
         nameFile = self.filename.rsplit('/', 1)[-1]
-        infoDataset2 = str(windows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
+        infoDataset2 = str(anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
         cd = 'Output/AnalyseReads/Analyse_' + infoDataset2 + nameFile
         with open(cd, 'w', newline='') as csvfile2:
             writer2 = csv.writer(csvfile2, delimiter=' ', quotechar='|')
