@@ -3,7 +3,7 @@ import matplotlib.pyplot as pyplot
 import os
 
 filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.40000,.60000_pos.csv'
-anzahlWindows = 250
+anzahlWindows = 50 #250 bei den Code weiter unten l.19
 thresholdLuecke = 1
 thresholdUeberschuss = -1
 
@@ -24,7 +24,7 @@ folderPosFiles = os.listdir("./Output/BetterDataset")
 for file in folderPosFiles:
     os.remove("./Output/BetterDataset/"+str(file))
 """
-
+"""
 folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent")
 for file in folderPosFiles:
     ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/"+str(file), thresholdLuecke, thresholdUeberschuss)
@@ -76,9 +76,10 @@ for searchedWindows in ultraReadsList[-1]:
 print(foundFiles)
 print(readList)
 print(ultraReadsList[-1])
+"""
 
-#print (windowAbwDict)
-#print (gapBereiche)
+print (windowAbwDict)
+print (gapBereiche)
 
 # Anzahl pro Window, mit LinRegs
 pyplot.plot(xAxisDiagram, readAmountPerSection)
