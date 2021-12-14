@@ -78,6 +78,8 @@ class UltraClass:
     def calcWinkel(self, sortedData, anzahlWindows):
 
         messabstand = int(len(sortedData)/anzahlWindows)
+        print(sortedData)
+        print(anzahlWindows)
         degreeDiffList = []
         xList = []
         totalSum = 0
@@ -191,6 +193,7 @@ class UltraClass:
 
     def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, anzahlWindows):
         windowAbwDict = {}
+        betterDataFileName = ""
         for i in range(len(foundWindows)):
             fw = foundWindows[i]
             fv = filledValues[i]
@@ -208,14 +211,14 @@ class UltraClass:
             stepSize = (upperBound-lowerBound) / int(fv)
 
             for v in np.arange(lowerBound, upperBound, stepSize):
-                newWindowData.append(v)
+                newWindowData.append(v.item()) #.item macht aus v ein float anstelle von numpy float
             readsPerSectionDict[fw] = newWindowData
             
             #Daten in csv schreiben
             nameFile = self.filename.rsplit('/', 1)[-1]
             infoDataset = str(anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
-            cd = 'Output/BetterDataset/NewData_' + infoDataset + nameFile
-            with open(cd, 'w', newline='') as csvfile:
+            betterDataFileName = 'Output/BetterDataset/NewData_' + infoDataset + nameFile
+            with open(betterDataFileName, 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile, delimiter=' ', quotechar='|')    
                 for key in readsPerSectionDict:
                     for value in readsPerSectionDict[key]:
@@ -234,7 +237,7 @@ class UltraClass:
                 writer2.writerow([key] + [windowAbwDict[key][0]] + [windowAbwDict[key][1]])
             csvfile2.close()
             
-        return windowAbwDict
+        return [windowAbwDict, betterDataFileName]
 
 
     def calcMatchingReads(self):

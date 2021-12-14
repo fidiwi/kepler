@@ -2,7 +2,7 @@ from UltraClass import UltraClass
 import matplotlib.pyplot as pyplot
 import os
 
-filename = 'Probedaten/Hirnet_subsample/Hirnet4_S4.subsample.csv'
+filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/5_percent/10000_2.0_05_.27500,.32500_pos.csv'
 anzahlWindows = 250 #250 bei den Code weiter unten l.19
 thresholdLuecke = 1
 thresholdUeberschuss = -1
@@ -13,7 +13,12 @@ datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict
 degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList, anzahlWindows)
 gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
 linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
-windowAbwDict = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, anzahlWindows)
+windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, anzahlWindows)
+
+reAnalyse = UltraClass(betterDataFileName, thresholdLuecke, thresholdUeberschuss)
+reDatasetList = reAnalyse.readFile(anzahlWindows)
+reDegreeDiffList, reXList, reAvg, reStandardAbw = reAnalyse.calcWinkel(reDatasetList, anzahlWindows)
+print(f"Zweite Standardardabweichung: {reStandardAbw}")
 
 """
 folderPosFiles = os.listdir("./Output/AnalyseReads") #alle erstellten Dateien werden gelöscht
@@ -78,8 +83,8 @@ print(readList)
 print(ultraReadsList[-1])
 """
 
-print (windowAbwDict)
-print (gapBereiche)
+#print (windowAbwDict)
+#print (gapBereiche)
 
 #Readamount pro Window, mit LinRegs
 pyplot.figure(num='Readamount pro Window')
