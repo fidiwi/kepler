@@ -2,7 +2,7 @@ from UltraClass import UltraClass
 import matplotlib.pyplot as pyplot
 import os
 
-filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/5_percent/10000_2.0_05_.27500,.32500_pos.csv'
+filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/5_percent/10000_4.0_05_.77500,.82500_pos.csv'
 anzahlWindows = 250 #250 bei den Code weiter unten l.19
 thresholdLuecke = 1
 thresholdUeberschuss = -1
@@ -17,7 +17,7 @@ windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0]
 
 reAnalyse = UltraClass(betterDataFileName, thresholdLuecke, thresholdUeberschuss)
 reDatasetList = reAnalyse.readFile(anzahlWindows)
-reDegreeDiffList, reXList, reAvg, reStandardAbw = reAnalyse.calcWinkel(reDatasetList, anzahlWindows)
+reDegreeDiffList, reXList, reAvg, reStandardAbw, reRelEaList = reAnalyse.calcWinkel(reDatasetList[0], anzahlWindows)
 print(f"Zweite Standardardabweichung: {reStandardAbw}")
 
 """

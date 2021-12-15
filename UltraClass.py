@@ -78,8 +78,6 @@ class UltraClass:
     def calcWinkel(self, sortedData, anzahlWindows):
 
         messabstand = int(len(sortedData)/anzahlWindows)
-        print(sortedData)
-        print(anzahlWindows)
         degreeDiffList = []
         xList = []
         totalSum = 0
@@ -191,7 +189,7 @@ class UltraClass:
         return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [xValuesEllipse, yValuesEllipse]]
 
 
-    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, anzahlWindows):
+    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, anzahlWindows, createFiles = True):
         windowAbwDict = {}
         betterDataFileName = ""
         for i in range(len(foundWindows)):
@@ -213,7 +211,9 @@ class UltraClass:
             for v in np.arange(lowerBound, upperBound, stepSize):
                 newWindowData.append(v.item()) #.item macht aus v ein float anstelle von numpy float
             readsPerSectionDict[fw] = newWindowData
-            
+            windowAbwDict[fw] = [diff, relDiff]
+        
+        if createFiles:
             #Daten in csv schreiben
             nameFile = self.filename.rsplit('/', 1)[-1]
             infoDataset = str(anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
@@ -225,17 +225,16 @@ class UltraClass:
                         writer.writerow([value])
                 csvfile.close()
 
-            windowAbwDict[fw] = [diff, relDiff]
-        
-        nameFile = self.filename.rsplit('/', 1)[-1]
-        infoDataset2 = str(anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
-        cd = 'Output/AnalyseReads/Analyse_' + infoDataset2 + nameFile
-        with open(cd, 'w', newline='') as csvfile2:
-            writer2 = csv.writer(csvfile2, delimiter=' ', quotechar='|')
-            #writer2.writerow(["Position"] + ["Read"] + ["Relative Abweichung"])
-            for key in windowAbwDict:
-                writer2.writerow([key] + [windowAbwDict[key][0]] + [windowAbwDict[key][1]])
-            csvfile2.close()
+            
+            nameFile = self.filename.rsplit('/', 1)[-1]
+            infoDataset2 = str(anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
+            cd = 'Output/AnalyseReads/Analyse_' + infoDataset2 + nameFile
+            with open(cd, 'w', newline='') as csvfile2:
+                writer2 = csv.writer(csvfile2, delimiter=' ', quotechar='|')
+                #writer2.writerow(["Position"] + ["Read"] + ["Relative Abweichung"])
+                for key in windowAbwDict:
+                    writer2.writerow([key] + [windowAbwDict[key][0]] + [windowAbwDict[key][1]])
+                csvfile2.close()
             
         return [windowAbwDict, betterDataFileName]
 
