@@ -2,6 +2,7 @@ from UltraClass import UltraClass
 import matplotlib.pyplot as pyplot
 import os
 
+# Eingaben: Dateiname, Abzahl Windows, Treshold
 filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/5_percent/10000_4.0_05_.77500,.82500_pos.csv'
 anzahlWindows = 250 #250 bei den Code weiter unten l.19
 thresholdLuecke = 1
@@ -9,18 +10,21 @@ thresholdUeberschuss = -1
 
 ultraClass = UltraClass(filename, thresholdLuecke, thresholdUeberschuss)
 
+# für die originale Datei werden die Daten für die Diagramme bestimmt
 datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram = ultraClass.readFile(anzahlWindows)
 degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList, anzahlWindows)
 gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
 linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
 windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, anzahlWindows)
 
+# die Standardabweichung wird von der neue erstellte Datei bestimmt 
 reAnalyse = UltraClass(betterDataFileName, thresholdLuecke, thresholdUeberschuss)
 reDatasetList = reAnalyse.readFile(anzahlWindows)
 reDegreeDiffList, reXList, reAvg, reStandardAbw, reRelEaList = reAnalyse.calcWinkel(reDatasetList[0], anzahlWindows)
 print(f"Zweite Standardardabweichung: {reStandardAbw}")
 
 """
+# alle Daten in den Output-Ordner werden gelöscht
 folderPosFiles = os.listdir("./Output/AnalyseReads") #alle erstellten Dateien werden gelöscht
 for file in folderPosFiles:
     os.remove("./Output/AnalyseReads/"+str(file))
@@ -30,6 +34,7 @@ for file in folderPosFiles:
     os.remove("./Output/BetterDataset/"+str(file))
 """
 """
+# die Daten mit den Lücken werden untersucht und werden in den AnalyseReads gespeichert
 folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent")
 for file in folderPosFiles:
     ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/"+str(file), thresholdLuecke, thresholdUeberschuss)
@@ -39,6 +44,7 @@ for file in folderPosFiles:
     linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
     windowAbwDict = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, anzahlWindows)
 
+# die Daten mit den Überschuss werden untersucht und werden in den AnalyseReads gespeichert
 thresholdLuecke = 100
 thresholdUeberschuss = -0.2 # sonst funktioniert es nicht!!!
 folderNegFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/neg_samples/20_percent")
@@ -50,13 +56,14 @@ for file in folderNegFiles:
     linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
     windowAbwDict = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, anzahlWindows)
 
+# eine Liste mit den AnalyseReads wird erstellt
 folderAnalyseReads = os.listdir("./Output/AnalyseReads")
 ultraReadsList = []
 for file in folderAnalyseReads:
     ultraClass = UltraClass("Output/AnalyseReads/"+str(file), thresholdLuecke, thresholdUeberschuss)
     ultraReadsList.append(ultraClass.calcMatchingReads())
 
-
+# für die letze Datei werden die fehlende Reads gesucht 
 foundFiles = []
 readList = []
 for searchedWindows in ultraReadsList[-1]:
@@ -78,8 +85,8 @@ for searchedWindows in ultraReadsList[-1]:
     else:
         print("Read nicht gefunden!")
 
-print(foundFiles)
-print(readList)
+print(foundFiles) # in welche Dateien welche Reads gefunden wurden
+print(readList) # wie viel insgesamt gefunden wurde
 print(ultraReadsList[-1])
 """
 
