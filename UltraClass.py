@@ -14,7 +14,7 @@ class UltraClass:
 
 
     def readFile(self, anzahlWindows):
-        file = open(self.filename) #Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
+        file = open(self.filename)
         csvreader = csv.reader(file)
         xAxisDiagram = np.arange(0, 1, 1/anzahlWindows)
         readsPerSection = [[] for _ in range(anzahlWindows)] 
@@ -32,9 +32,9 @@ class UltraClass:
             index = int(value*anzahlWindows)
             if value == 1:
                 index = 0
-            readsPerSection[index].append(value)
+            readsPerSection[index].append(value) # dem jeweiligen Window zugeordnet
             degree = value * 360
-            x = math.cos(math.radians(degree)) 
+            x = math.cos(math.radians(degree)) # x- und y-Position werden bestimmt
             y = math.sin(math.radians(degree)) 
 
             xPosSection[index].append(x)
@@ -47,6 +47,7 @@ class UltraClass:
         abstand = []
         readAmountPerSection = [0] * (anzahlWindows)
         
+        # Windows werden erstellt 
         for window in range(anzahlWindows):
             readAmountPerSection[window] = len(readsPerSection[window])
 
@@ -74,14 +75,14 @@ class UltraClass:
 
         return [datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram]
 
-
+    
     def calcWinkel(self, sortedData, anzahlWindows):
-
         messabstand = int(len(sortedData)/anzahlWindows)
         degreeDiffList = []
         xList = []
         totalSum = 0
         # ??? Könnten hier nicht theoretisch Daten ausgelassen werden wenn sich sortedData nicht durch messabsand teilen lässt?
+        # der Winkel wird berechnet und die Differenz angegeben
         for i in range(0, len(sortedData)-messabstand, messabstand):
             degree1 = sortedData[i]*360
             degree2 = sortedData[i+messabstand]*360
@@ -90,6 +91,7 @@ class UltraClass:
             xList.append(i)
             totalSum += degreeDiff
         
+        # die Standartabweichung wird bestimmt
         avg = totalSum/len(degreeDiffList)
         varianz = 0
         for degreeDiff in degreeDiffList:
@@ -97,7 +99,7 @@ class UltraClass:
         varianz = varianz/len(degreeDiffList)
         standardAbw = math.sqrt(varianz)
 
-        #Einzelabweichung = ea
+        # Einzelabweichung = ea
         relEaList = [] # Relative Abweichung von Durchschnitt
         for degreeDiff in degreeDiffList:
             relEaList.append((degreeDiff-avg) / avg)
@@ -105,10 +107,10 @@ class UltraClass:
         return [degreeDiffList, xList, avg, standardAbw, relEaList]
 
 
-    def determineGaps(self, relEaList, datasetList): # thresholdLuecke von 1 = 100% Abweichung(Bezogen auf die Abweichung vom Durchschnittabstand[avg])
+    def determineGaps(self, relEaList, datasetList): # thresholdLuecke von 1 = 100% Abweichung (Bezogen auf die Abweichung vom Durchschnittabstand[avg])
         gapBereiche = []
         for relEaIndex in range(len(relEaList)):
-            if relEaList[relEaIndex] >= self.thresholdLuecke:
+            if relEaList[relEaIndex] >= self.thresholdLuecke: # wenn die Abweichung zu stark ist -> Lücke
                 gap = relEaIndex
                 x = len(datasetList)/len(relEaList) #len relEaList ist wahrscheinlich = anzahlWindows
                 anfang = datasetList[int((gap)*x)]
@@ -121,7 +123,7 @@ class UltraClass:
                 gapBereiche.append([anfang, ende])
             elif relEaList[relEaIndex] <= self.thresholdUeberschuss:
                 gap = relEaIndex
-                x = len(datasetList)/len(relEaList) #len relEaList ist wahrscheinlich = anzahlWindows
+                x = len(datasetList)/len(relEaList) 
                 anfang = datasetList[int(gap*x)]
                 if anfang < 0.005:
                     anfang = 0
@@ -143,7 +145,7 @@ class UltraClass:
 
         foundWindows = []
         for gap in gapBereiche:
-            deletedWindows = [] # bis 0.5
+            deletedWindows = [] # bis 0.5 werden alle falschen Windows gesucht
             for i in range(len(xAxis1)):
                 if gap[0] <= xAxis1[i] and gap[1] >= xAxis1[i]:
                     deletedWindows.append(i)
@@ -151,7 +153,7 @@ class UltraClass:
             for delWindow in deletedWindows:
                 del readAmount1[delWindow]
                 foundWindows.append(xAxis1.pop(delWindow))
-            deletedWindows = [] # ab 0.5
+            deletedWindows = [] # ab 0.5 werden alle falschen Windows gesucht
             for i in range(len(xAxis2)):
                 if gap[0] <= xAxis2[i] and gap[1] >= xAxis2[i]:
                     deletedWindows.append(i)
@@ -160,7 +162,8 @@ class UltraClass:
                 del readAmount2[delWindow]
                 foundWindows.append(xAxis2.pop(delWindow))
 
-        model1 = LinearRegression()
+        # zeigt den allgemeinen Durchschnitt in einem Graph an 
+        model1 = LinearRegression() 
         model1.fit(np.array(xAxis1).reshape((-1, 1)), readAmount1)
         linReg1 = model1.predict(np.array(xAxis1).reshape((-1, 1)))
 
@@ -176,7 +179,7 @@ class UltraClass:
             if w >= 0.5:
                 filledValue = model2.predict(np.array([w]).reshape((-1, 1)))
             elif w < 0.5:
-                filledValue = model1.predict(np.array([w]).reshape((-1, 1)))[0]
+                filledValue = model1.predict(np.array([w]).reshape((-1, 1)))
 
             filledValues.append(filledValue)
 
@@ -196,8 +199,8 @@ class UltraClass:
             fw = foundWindows[i]
             fv = filledValues[i]
             originalValue = readAmountPerSectionDict[fw]
-            diff = float(originalValue - fv)
-            relDiff = str(int((originalValue / fv)*10000)/100) +"%"
+            diff = float(originalValue - fv) # wie viele Reads zu viel bzw. zu wenig sind 
+            relDiff = str(int((originalValue / fv)*10000)/100) +"%" # realtiv zum erwartetem Wert
 
             #Alte Werte mit generierten Ersetzen
             #readsPerSectionDict[fw] = [fw]*int(fv) #Setze fv mal (prognostizierte Häufigkeit) den Wert des Windows ein
@@ -240,8 +243,8 @@ class UltraClass:
 
 
     def calcMatchingReads(self):
+        # die AnalyseReads-Dateien werden ausgelesen und als Liste zurückgegeben 
         searchReads = []
-
         with open(self.filename, newline='') as csvfile:
             file = csv.reader(csvfile, delimiter=' ', quotechar='|')
             for row in file:
