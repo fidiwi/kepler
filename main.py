@@ -3,8 +3,8 @@ import matplotlib.pyplot as pyplot
 import os
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/5_percent/10000_4.0_05_.77500,.82500_pos.csv'
-anzahlWindows = 250 #250 bei den Code weiter unten l.19
+filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_0,.10000_.90000,1_pos.csv'
+anzahlWindows = 250 #250 bei den Code weiter unten l.38
 thresholdLuecke = 1
 thresholdUeberschuss = -1
 
