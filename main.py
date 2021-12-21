@@ -104,16 +104,14 @@ pyplot.ylabel("Anzahl pro Ausschnitt")
 
 #Winkeldifferenzgraph
 pyplot.figure(num='Winkeldifferenzengraph')
-pyplot.plot(xList, degreeDiffList)
-pyplot.plot(xList, relEaList)
-pyplot.plot(xList, [avg] * len(xList))
-pyplot.plot(xList, [standardAbw] * len(xList))
+pyplot.plot(xList, degreeDiffList, label='Winkeldifferenz in Grad')
+pyplot.plot(xList, relEaList, label='Relative Einzelabweichung der Ausschnitte vom Durchschnittswert')
+pyplot.plot(xList, [avg] * len(xList), label='Durschnittswert')
+pyplot.plot(xList, [standardAbw] * len(xList), label='Standartabweichung')
 pyplot.title(f"Abstand = {degreeDiffList[1] - degreeDiffList[0]}; Standardabw: {standardAbw} Durchschn: {avg};")
-pyplot.xlabel(f"""blau: Winkeldifferenz in Grad\n
-                    orange: Relative Einzelabweichung der Ausschnitte vom Durchschnittswert\n
-                    grün: Durchschnittswert\n
-                    rot: Standardabweichung""")
+pyplot.xlabel(f"Reads (sortiert)")
 pyplot.ylabel("Differenz der Winkel")
+pyplot.legend()
 
 #Vektorengraph
 pyplot.figure(num='Vektorengraph')
