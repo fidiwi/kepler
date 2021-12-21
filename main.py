@@ -3,12 +3,13 @@ import matplotlib.pyplot as pyplot
 import os
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv'
+filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
 anzahlWindows = 150 #250 bei den Code weiter unten l.38
 thresholdLuecke = 1
 thresholdUeberschuss = -1
 wachstumsdiagramme = False # True-> Wachstumsdiagramme werden angezeigt
 windowsSuche = False # True-> Windowssuche wird durchgeführt
+createFiles = False
 
 ultraClass = UltraClass(filename, thresholdLuecke, thresholdUeberschuss)
 
@@ -17,15 +18,16 @@ datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict
 degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList, anzahlWindows)
 gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
 linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
-windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, anzahlWindows)
+windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, anzahlWindows, createFiles)
 readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 
 
 # die Standardabweichung wird von der neue erstellte Datei bestimmt 
-reAnalyse = UltraClass(betterDataFileName, thresholdLuecke, thresholdUeberschuss)
-reDatasetList = reAnalyse.readFile(anzahlWindows)
-reDegreeDiffList, reXList, reAvg, reStandardAbw, reRelEaList = reAnalyse.calcWinkel(reDatasetList[0], anzahlWindows)
-print(f"Zweite Standardardabweichung: {reStandardAbw}")
+if createFiles:
+    reAnalyse = UltraClass(betterDataFileName, thresholdLuecke, thresholdUeberschuss)
+    reDatasetList = reAnalyse.readFile(anzahlWindows)
+    reDegreeDiffList, reXList, reAvg, reStandardAbw, reRelEaList = reAnalyse.calcWinkel(reDatasetList[0], anzahlWindows)
+    print(f"Zweite Standardardabweichung: {reStandardAbw}")
 
 if wachstumsdiagramme:
     folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken")
