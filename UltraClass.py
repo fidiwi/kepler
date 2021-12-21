@@ -275,8 +275,12 @@ class UltraClass:
             for abstand in abstandListe:
                 varianz += (avg-abstand)**2
             varianz = varianz/len(abstandListe)
-            readAbweichungProWindow.append(math.sqrt(varianz)*100000) #Um eine bessere Darstellung zu ermöglichen, werden die Werte hochskaliert
-        
+            standartabweichung = math.sqrt(varianz)
+            if standartabweichung==0:
+                #print(window)
+                pass
+            readAbweichungProWindow.append(standartabweichung*100000) #Um eine bessere Darstellung zu ermöglichen, werden die Werte hochskaliert
+
         
         return readAbweichungProWindow
 
