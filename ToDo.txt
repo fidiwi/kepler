@@ -1,1 +1,10 @@
 -Abstand zur ersten linReg benutzen, um Lücken zu erkennen (über ein noch zu bestimmendes) Threshhold
+
+-Selber Werte generieren, um 
+
+-Streuung in einem Window  (evtl. Standartabweichung) WICHTIG: niedrige Streuung != gutes Window => auch in einer Lücke kann die Streuung niedrig sein!
+
+
+nice to have:
+-bessere Benennung von Variablen etc., matplotlib usus verwenden
+-> Einheitliche Bennenung verwenden (Fachsprache), z.B. Window/Section/Abschnitt genauer definieren oder für eins entscheiden und dann nur das verwenden
