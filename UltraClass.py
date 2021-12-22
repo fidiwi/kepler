@@ -305,7 +305,9 @@ class UltraClass:
         """
     
 
-    
+    def calcGrowth(self, anzahlWindows, datasetList, standardAbw):
+        growth = ((1+len(datasetList)/(len(datasetList)*100))**anzahlWindows)**standardAbw
+        return growth
 
     
 
