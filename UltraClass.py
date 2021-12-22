@@ -254,7 +254,55 @@ class UltraClass:
         return(searchReads)
             
 
+    def windowQualität(self, readsPerSectionDict):
+        #Aktuell wird nur die Qualität des angegebenen Windows berechnet und noch nicht für jedes Window.
+        #das erste window (von 0 bis ...) hat hier den Index 0
 
+        readAbweichungProWindow = []
+        for windowkey in readsPerSectionDict:
+            window = readsPerSectionDict[windowkey]
+        
+         #Standartabweichung der Readabstände in einem Window:
+            window.sort()
+            abstandSumme = 0
+            abstandListe = []
+            for read in range(len(window)-1):
+                abstandListe.append(window[read+1] - window[read])
+                abstandSumme += window[read+1] - window[read] #Aktuell nur die "inneren Abstände" -> nur die Abstände zwischen den Reads, also nicht zu den Windowbounds
+            avg = abstandSumme/len(abstandListe)
+
+            varianz = 0
+            for abstand in abstandListe:
+                varianz += (avg-abstand)**2
+            varianz = varianz/len(abstandListe)
+            standartabweichung = math.sqrt(varianz)
+            if standartabweichung==0:
+                #print(window)
+                pass
+            readAbweichungProWindow.append(standartabweichung*100000) #Um eine bessere Darstellung zu ermöglichen, werden die Werte hochskaliert
+
+        
+        return readAbweichungProWindow
+
+        """
+        winLowerBound = 1/anzahlWindows * windowIndex
+        winUpperBound = 1/anzahlWindows * (windowIndex+1)
+        winHaelfte =  (winLowerBound+winUpperBound)/2
+
+        #avg berechnen:
+        totalSum = 0
+        anzahlReads = 0
+        for read in readsPerSection[windowIndex]:
+            totalSum += read
+            anzahlReads +=1
+        avg = totalSum/anzahlReads
+
+        #Standartabweichung (von den Abständen zu winHaelfte):
+        varianz = 0
+        for read in window:
+            varianz += read**2
+        varianz = varianz/anzahlReads
+        """
     
 
     

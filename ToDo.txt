@@ -1,8 +1,9 @@
 -Abstand zur ersten linReg benutzen, um Lücken zu erkennen (über ein noch zu bestimmendes) Threshhold
 
--Selber Werte generieren, um 
+-Selber Werte generieren, um Vektorenplot-Templates zu erzeugen, die über den Vektorenplot gelegt werden. Dann kann man die ungefähre Wachstumsrate schon vom Vektorenplot ablesen
 
 -Streuung in einem Window  (evtl. Standartabweichung) WICHTIG: niedrige Streuung != gutes Window => auch in einer Lücke kann die Streuung niedrig sein!
+
 
 
 nice to have:
