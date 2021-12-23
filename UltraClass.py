@@ -242,7 +242,7 @@ class UltraClass:
         return [windowAbwDict, betterDataFileName]
 
 
-    def calcMatchingReads(self):
+    def windowsSucheOpenFile(self):
         # die AnalyseReads-Dateien werden ausgelesen und als Liste zurückgegeben 
         searchReads = []
         with open(self.filename, newline='') as csvfile:
@@ -250,8 +250,44 @@ class UltraClass:
             for row in file:
                 value = [round(float(row[0]),3), round(float(row[1]))]
                 searchReads.append(value)
-        
+            csvfile.close()
+
         return(searchReads)
+
+
+    def calcMatchingReads(self, anzahlWindows, ultraReadsList, folderAnalyseReads, filename):
+        # Datei mit den gefundenen Reads wird erstellt
+        cd = 'Output/WindowsSuche/' + filename
+        with open(cd, 'w', newline='') as csvfile:
+            windowsSucheCSV = csv.writer(csvfile, delimiter=' ', quotechar='|')
+            windowsSucheCSV.writerow(["Window"]+["SummeReads"])
+            for window in range(anzahlWindows):
+                ReadsInAllWindows = 0
+                filesNeg = []
+                valueNeg = []
+                filesPos = []
+                valuePos = []
+                cd = 'Output/WindowsSuche_' + "test1.csv"
+
+                for i in range(len(ultraReadsList)):
+                    for j in range(len(ultraReadsList[i])):
+                        if ultraReadsList[i][j][0] == window/anzahlWindows:
+                            if ultraReadsList[i][j][1] > 0:
+                                filesPos.append(folderAnalyseReads[i])
+                                valuePos.append(ultraReadsList[i][j][1])
+                            else:
+                                filesNeg.append(folderAnalyseReads[i])
+                                valueNeg.append(ultraReadsList[i][j][1])
+                            ReadsInAllWindows += ultraReadsList[i][j][1]
+
+                if len(filesNeg) == 0:
+                    filesNeg.append("null")
+                    valueNeg.append("0")
+                if len(filesPos) == 0:
+                    filesPos.append("null")
+                    valuePos.append("0")
+
+                windowsSucheCSV.writerow([window/anzahlWindows]+[ReadsInAllWindows]+[filesNeg]+[valueNeg]+[filesPos]+[valuePos])
             
 
     def windowQualität(self, readsPerSectionDict):

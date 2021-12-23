@@ -3,12 +3,12 @@ import matplotlib.pyplot as pyplot
 import os
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename = 'Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_8.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
-anzahlWindows = 125 #250 bei den Code weiter unten l.38
+filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.40000,.60000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
+anzahlWindows = 100 #250 bei den Code weiter unten l.38
 thresholdLuecke = 1
 thresholdUeberschuss = -1
 wachstumsdiagramme = False # True-> Wachstumsdiagramme werden angezeigt
-windowsSuche = False # True-> Windowssuche wird durchgeführt
+windowsSuche = True # True-> Windowssuche wird durchgeführt
 createFiles = True
 
 ultraClass = UltraClass(filename, thresholdLuecke, thresholdUeberschuss)
@@ -20,7 +20,7 @@ gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
 linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
 windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, anzahlWindows, createFiles)
 #readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
-
+print(len(datasetList))
 
 # die Standardabweichung wird von der neue erstellte Datei bestimmt 
 if createFiles:
@@ -86,11 +86,17 @@ if windowsSuche:
     ultraReadsList = []
     for file in folderAnalyseReads:
         ultraClass = UltraClass("Output/AnalyseReads/"+str(file), thresholdLuecke, thresholdUeberschuss)
-        ultraReadsList.append(ultraClass.calcMatchingReads())
+        ultraReadsList.append(ultraClass.windowsSucheOpenFile())
 
-    # für die letze Datei werden die fehlende Reads gesucht 
+    # für alle Datei werden die fehlende Reads gesucht 
+    fileNameWindowsSuche ="WindowsSucheTestDateien_"+str(anzahlWindows)+".csv"
+    ultraClass.calcMatchingReads(anzahlWindows, ultraReadsList, folderAnalyseReads, fileNameWindowsSuche)
+
+    """
+    # für die letze Datei werden die fehlende Reads gesucht
     foundFiles = []
     readList = []
+
     for searchedWindows in ultraReadsList[-1]:
         temp = searchedWindows[1]
         posListReads =[]
@@ -112,7 +118,7 @@ if windowsSuche:
 
     print(foundFiles) # in welche Dateien welche Reads gefunden wurden
     print(readList) # wie viel insgesamt gefunden wurde
-    print(ultraReadsList[-1])
+    print(ultraReadsList)"""
 
 
 #print (windowAbwDict)
