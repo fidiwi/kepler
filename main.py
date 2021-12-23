@@ -3,36 +3,17 @@ import matplotlib.pyplot as pyplot
 import os
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.40000,.60000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
+filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_4.0_20_.40000,.60000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
 anzahlWindows = 100 #250 bei den Code weiter unten l.38
 thresholdLuecke = 1
 thresholdUeberschuss = -1
-wachstumsdiagramme = False # True-> Wachstumsdiagramme werden angezeigt
-windowsSuche = True # True-> Windowssuche wird durchgeführt
+wachstumsdiagramme = True # True-> Wachstumsdiagramme werden angezeigt
+windowsSuche = False # True-> Windowssuche wird durchgeführt
 createFiles = True
 
-ultraClass = UltraClass(filename, thresholdLuecke, thresholdUeberschuss)
-
-# für die originale Datei werden die Daten für die Diagramme bestimmt
-datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram = ultraClass.readFile(anzahlWindows)
-degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList, anzahlWindows)
-gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
-linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
-windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, anzahlWindows, createFiles)
-#readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
-print(len(datasetList))
-
-# die Standardabweichung wird von der neue erstellte Datei bestimmt 
-if createFiles:
-    reAnalyse = UltraClass(betterDataFileName, thresholdLuecke, thresholdUeberschuss)
-    reDatasetList = reAnalyse.readFile(anzahlWindows)
-    reDegreeDiffList, reXList, reAvg, reStandardAbw, reRelEaList = reAnalyse.calcWinkel(reDatasetList[0], anzahlWindows)
-    print(f"Zweite Standardardabweichung: {reStandardAbw}")
-    growth = reAnalyse.calcGrowth(anzahlWindows, datasetList, reStandardAbw)
-    print(f"Wachstumsrate: {growth}")
-
+# Wachstumsdiagramme!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 if wachstumsdiagramme:
-    folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken")
+    folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken") # ./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken || ./Probedaten/Beispiesamples/Mail_lutz_3/5000 Achtung: int(anzahlWindows/2)
     liste = []
     liste2 = []
     filledGapsListe = []
@@ -49,7 +30,31 @@ if wachstumsdiagramme:
         filledGapsListe.append(filledGaps)
         filledEllipseListe.append(filledEllipse)
 
+"Main!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+ultraClass = UltraClass(filename, thresholdLuecke, thresholdUeberschuss)
+
+# für die originale Datei werden die Daten für die Diagramme bestimmt
+datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram = ultraClass.readFile(anzahlWindows)
+degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList, anzahlWindows)
+gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
+linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
+windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, anzahlWindows, createFiles)
+#readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
+
+
+# die Standardabweichung wird von der neue erstellte Datei bestimmt 
+if createFiles:
+    reAnalyse = UltraClass(betterDataFileName, thresholdLuecke, thresholdUeberschuss)
+    reDatasetList = reAnalyse.readFile(anzahlWindows)
+    reDegreeDiffList, reXList, reAvg, reStandardAbw, reRelEaList = reAnalyse.calcWinkel(reDatasetList[0], anzahlWindows)
+    print(f"Zweite Standardardabweichung: {reStandardAbw}")
+    growth = reAnalyse.calcGrowth(anzahlWindows, datasetList, reStandardAbw)
+    print(f"Wachstumsrate: {growth}")
+
+
 if windowsSuche:
+    windowsSucheEineDatei = False # True -> nur für eine spezielle Datei!
+
     # alle Daten in den Output-Ordner werden gelöscht
     folderPosFiles = os.listdir("./Output/AnalyseReads") #alle erstellten Dateien werden gelöscht
     for file in folderPosFiles:
@@ -87,38 +92,38 @@ if windowsSuche:
     for file in folderAnalyseReads:
         ultraClass = UltraClass("Output/AnalyseReads/"+str(file), thresholdLuecke, thresholdUeberschuss)
         ultraReadsList.append(ultraClass.windowsSucheOpenFile())
+    if windowsSucheEineDatei:
+        # für die letze Datei werden die fehlende Reads gesucht
+        fileNumber = -1
+        foundFiles = []
+        readList = []
+        for searchedWindows in ultraReadsList[fileNumber]:
+            temp = searchedWindows[1]
+            posListReads =[]
+            for i in range(len(ultraReadsList)):
+                for reads in ultraReadsList[i]:
+                    if searchedWindows[0] == reads[0] and reads[1] > 0:
+                        posListReads.append(i)
+                        temp += reads[1]
+            
+            if len(posListReads) > 0:
+                foundFiles.append(posListReads)
+            i+=1
 
-    # für alle Datei werden die fehlende Reads gesucht 
-    fileNameWindowsSuche ="WindowsSucheTestDateien_"+str(anzahlWindows)+".csv"
-    ultraClass.calcMatchingReads(anzahlWindows, ultraReadsList, folderAnalyseReads, fileNameWindowsSuche)
+            readList.append(temp)
+            if temp > 0:
+                print("Read gefunden!")
+            else:
+                print("Read nicht gefunden!")
 
-    """
-    # für die letze Datei werden die fehlende Reads gesucht
-    foundFiles = []
-    readList = []
+        print(foundFiles) # in welche Dateien welche Reads gefunden wurden
+        print(readList) # wie viel insgesamt gefunden wurde
+        print(ultraReadsList[fileNumber])
 
-    for searchedWindows in ultraReadsList[-1]:
-        temp = searchedWindows[1]
-        posListReads =[]
-        for i in range(len(ultraReadsList)):
-            for reads in ultraReadsList[i]:
-                if searchedWindows[0] == reads[0] and reads[1] > 0:
-                    posListReads.append(i)
-                    temp += reads[1]
-        
-        if len(posListReads) > 0:
-            foundFiles.append(posListReads)
-        i+=1
-
-        readList.append(temp)
-        if temp > 0:
-            print("Read gefunden!")
-        else:
-            print("Read nicht gefunden!")
-
-    print(foundFiles) # in welche Dateien welche Reads gefunden wurden
-    print(readList) # wie viel insgesamt gefunden wurde
-    print(ultraReadsList)"""
+    else:
+        # für alle Datei werden die fehlende Reads gesucht 
+        fileNameWindowsSuche ="WindowsSucheTestDatei_"+str(anzahlWindows)+".csv"
+        ultraClass.calcMatchingReads(anzahlWindows, ultraReadsList, folderAnalyseReads, fileNameWindowsSuche)
 
 
 #print (windowAbwDict)
@@ -128,13 +133,18 @@ if windowsSuche:
 pyplot.figure(num='Readamount pro Window')
 if wachstumsdiagramme:
     for item in liste:
-        pyplot.plot(item[0][0], item[0][1])
-        pyplot.plot(item[1][0], item[1][1])
+        pyplot.plot(item[0][0], item[0][1], color='black')
+        pyplot.plot(item[1][0], item[1][1], color='black')
+
+    pyplot.plot(xAxisDiagram, readAmountPerSection, color='blue', label='gemessener readAmountPerSection')
+    pyplot.plot(filledGaps[0], filledGaps[1], ".", color='red', label='vermuteter ReadAmountPerSection')
+    pyplot.plot(linReg1[0], linReg1[1], color='green', label='linReg 1')
+    pyplot.plot(linReg2[0], linReg2[1], color='green', label='linReg 2')
 else:
-    pyplot.plot(xAxisDiagram, readAmountPerSection, label='gemessener readAmountPerSection')
-    pyplot.plot(filledGaps[0], filledGaps[1], ".", label='vermuteter ReadAmountPerSection')
-    pyplot.plot(linReg1[0], linReg1[1], label='linReg 1')
-    pyplot.plot(linReg2[0], linReg2[1], label='linReg 2')
+    pyplot.plot(xAxisDiagram, readAmountPerSection, color='blue', label='gemessener readAmountPerSection')
+    pyplot.plot(filledGaps[0], filledGaps[1], ".", color='red', label='vermuteter ReadAmountPerSection')
+    pyplot.plot(linReg1[0], linReg1[1], color='green', label='linReg 1')
+    pyplot.plot(linReg2[0], linReg2[1], color='green', label='linReg 2')
 #    pyplot.plot(xAxisDiagram, readAbweichungProWindow, color='purple', label='Windowqualität')
 pyplot.legend()
 
@@ -160,6 +170,9 @@ if wachstumsdiagramme:
         pyplot.plot(item[0],item[1], '.')
     for item in filledEllipseListe:
         pyplot.plot(item[0], item[1], '.')
+    pyplot.plot(xVectors, yVectors, '.', color='blue')
+    pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='orange')
+
 else:
     pyplot.plot(xVectors, yVectors, '.')
     pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='orange')
