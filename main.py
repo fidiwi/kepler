@@ -1,9 +1,10 @@
 from UltraClass import UltraClass
 import matplotlib.pyplot as pyplot
 import os
+import math
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_4.0_20_.40000,.60000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
+filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_4.0_20_.20000,.40000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
 anzahlWindows = 100 #250 bei den Code weiter unten l.38
 thresholdLuecke = 1
 thresholdUeberschuss = -1
@@ -18,6 +19,8 @@ if wachstumsdiagramme:
     liste2 = []
     filledGapsListe = []
     filledEllipseListe = []
+    xValuesList = []
+    yValuesList = []
     for file in folderPosFiles:
         ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken/"+str(file), thresholdLuecke, thresholdUeberschuss)
         datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram = ultraClass.readFile(anzahlWindows)
@@ -26,9 +29,12 @@ if wachstumsdiagramme:
         linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
         windowAbwDict = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, anzahlWindows)
         liste.append([linReg1, linReg2])
-        liste2.append([xVectors, yVectors])
         filledGapsListe.append(filledGaps)
-        filledEllipseListe.append(filledEllipse)
+        #liste2.append([xVectors, yVectors])
+        xValuesL, yValuesL = ultraClass.idealeEllipse(linReg1[1], anzahlWindows)
+        xValuesList.append(xValuesL)
+        yValuesList.append(yValuesL)
+        #filledEllipseListe.append(filledEllipse)
 
 "Main!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 ultraClass = UltraClass(filename, thresholdLuecke, thresholdUeberschuss)
@@ -136,15 +142,11 @@ if wachstumsdiagramme:
         pyplot.plot(item[0][0], item[0][1], color='black')
         pyplot.plot(item[1][0], item[1][1], color='black')
 
-    pyplot.plot(xAxisDiagram, readAmountPerSection, color='blue', label='gemessener readAmountPerSection')
-    pyplot.plot(filledGaps[0], filledGaps[1], ".", color='red', label='vermuteter ReadAmountPerSection')
-    pyplot.plot(linReg1[0], linReg1[1], color='green', label='linReg 1')
-    pyplot.plot(linReg2[0], linReg2[1], color='green', label='linReg 2')
-else:
-    pyplot.plot(xAxisDiagram, readAmountPerSection, color='blue', label='gemessener readAmountPerSection')
-    pyplot.plot(filledGaps[0], filledGaps[1], ".", color='red', label='vermuteter ReadAmountPerSection')
-    pyplot.plot(linReg1[0], linReg1[1], color='green', label='linReg 1')
-    pyplot.plot(linReg2[0], linReg2[1], color='green', label='linReg 2')
+pyplot.plot(xAxisDiagram, readAmountPerSection, color='blue', label='gemessener readAmountPerSection')
+pyplot.plot(filledGaps[0], filledGaps[1], ".", color='red', label='vermuteter ReadAmountPerSection')
+pyplot.plot(linReg1[0], linReg1[1], color='green', label='linReg 1')
+pyplot.plot(linReg2[0], linReg2[1], color='green', label='linReg 2')
+
 #    pyplot.plot(xAxisDiagram, readAbweichungProWindow, color='purple', label='Windowqualität')
 pyplot.legend()
 
@@ -166,16 +168,11 @@ pyplot.legend()
 #Vektorengraph
 pyplot.figure(num='Vektorengraph')
 if wachstumsdiagramme:
-    for item in liste2:
-        pyplot.plot(item[0],item[1], '.')
-    for item in filledEllipseListe:
-        pyplot.plot(item[0], item[1], '.')
-    pyplot.plot(xVectors, yVectors, '.', color='blue')
-    pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='orange')
+    for i in range(len(xValuesList)):
+        pyplot.plot(xValuesList[i], yValuesList[i])
 
-else:
-    pyplot.plot(xVectors, yVectors, '.')
-    pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='orange')
+pyplot.plot(xVectors, yVectors, '.', color='blue')
+pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='orange')
 pyplot.plot([0], [0], 's', color='r')
 #pyplot.plot([m[0]], [m[1]], 'v', color='green')
 pyplot.gca().set_aspect('equal', adjustable='box')

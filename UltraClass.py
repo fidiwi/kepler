@@ -242,6 +242,22 @@ class UltraClass:
         return [windowAbwDict, betterDataFileName]
 
 
+    def idealeEllipse(self, linReg1, anzahlWindows):
+        xValuesList = []
+        yValuesList = []
+        linReg1List = np.array(linReg1)
+        linReg1List = linReg1List.flatten().tolist()
+        for i in range(len(linReg1List)):
+            xValuesList.append(math.cos(math.radians((i/anzahlWindows)*360))*(linReg1List[i]/anzahlWindows))
+            yValuesList.append(math.sin(math.radians((i/anzahlWindows)*360))*(linReg1List[i]/anzahlWindows))
+        linReg1List.reverse()
+        for i in range(len(linReg1List)):
+            xValuesList.append(math.cos(math.radians(((i/anzahlWindows)+0.5)*360))*(linReg1List[i]/anzahlWindows))
+            yValuesList.append(math.sin(math.radians(((i/anzahlWindows)+0.5)*360))*(linReg1List[i]/anzahlWindows))
+
+        return [xValuesList, yValuesList]
+
+
     def windowsSucheOpenFile(self):
         # die AnalyseReads-Dateien werden ausgelesen und als Liste zurückgegeben 
         searchReads = []
