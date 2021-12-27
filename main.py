@@ -4,7 +4,7 @@ import os
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
 filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_4.0_20_.20000,.40000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
-readsPerWindow = 50 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
+readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
 thresholdLuecke = 1
 thresholdUeberschuss = -1
 wachstumsdiagramme = True # True-> Wachstumsdiagramme werden angezeigt
