@@ -22,7 +22,7 @@ if wachstumsdiagramme:
     xValuesList = []
     yValuesList = []
     for file in folderPosFiles:
-        ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken/"+str(file), thresholdLuecke, thresholdUeberschuss)
+        ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken/"+str(file), thresholdLuecke, thresholdUeberschuss, readsPerWindow)
         datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram = ultraClass.readFile(readsPerWindow)
         degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
         gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
@@ -37,10 +37,10 @@ if wachstumsdiagramme:
         #filledEllipseListe.append(filledEllipse)
 
 "Main!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-ultraClass = UltraClass(filename, thresholdLuecke, thresholdUeberschuss)
+ultraClass = UltraClass(filename, thresholdLuecke, thresholdUeberschuss, readsPerWindow)
 
 # für die originale Datei werden die Daten für die Diagramme bestimmt
-datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram = ultraClass.readFile(readsPerWindow)
+datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram = ultraClass.readFile()
 degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
 gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
 linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
@@ -50,8 +50,8 @@ windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0]
 
 # die Standardabweichung wird von der neue erstellte Datei bestimmt 
 if createFiles:
-    reAnalyse = UltraClass(betterDataFileName, thresholdLuecke, thresholdUeberschuss)
-    reDatasetList = reAnalyse.readFile(readsPerWindow)
+    reAnalyse = UltraClass(betterDataFileName, thresholdLuecke, thresholdUeberschuss, readsPerWindow)
+    reDatasetList = reAnalyse.readFile()
     reDegreeDiffList, reXList, reAvg, reStandardAbw, reRelEaList = reAnalyse.calcWinkel(reDatasetList[0])
     print(f"Zweite Standardardabweichung: {reStandardAbw}")
     growth = reAnalyse.calcGrowth(datasetList, reStandardAbw)
@@ -73,8 +73,8 @@ if windowsSuche:
     # die Daten mit den Lücken werden untersucht und werden in den AnalyseReads gespeichert
     folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent")
     for file in folderPosFiles:
-        ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/"+str(file), thresholdLuecke, thresholdUeberschuss)
-        datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram = ultraClass.readFile(readsPerWindow)
+        ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/"+str(file), thresholdLuecke, thresholdUeberschuss, readsPerWindow)
+        datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram = ultraClass.readFile()
         degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
         gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
         linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
@@ -85,8 +85,8 @@ if windowsSuche:
     thresholdUeberschuss = -0.2 # sonst funktioniert es nicht!!!
     folderNegFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/neg_samples/20_percent")
     for file in folderNegFiles:
-        ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/neg_samples/20_percent/"+str(file), thresholdLuecke, thresholdUeberschuss)
-        datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram = ultraClass.readFile(readsPerWindow)
+        ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/neg_samples/20_percent/"+str(file), thresholdLuecke, thresholdUeberschuss, readsPerWindow)
+        datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram = ultraClass.readFile()
         degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
         gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
         linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
@@ -96,7 +96,7 @@ if windowsSuche:
     folderAnalyseReads = os.listdir("./Output/AnalyseReads")
     ultraReadsList = []
     for file in folderAnalyseReads:
-        ultraClass = UltraClass("Output/AnalyseReads/"+str(file), thresholdLuecke, thresholdUeberschuss)
+        ultraClass = UltraClass("Output/AnalyseReads/"+str(file), thresholdLuecke, thresholdUeberschuss, readsPerWindow)
         ultraReadsList.append(ultraClass.windowsSucheOpenFile())
     if windowsSucheEineDatei:
         # für die letze Datei werden die fehlende Reads gesucht

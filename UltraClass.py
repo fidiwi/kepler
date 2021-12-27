@@ -7,18 +7,22 @@ from sklearn.linear_model import LinearRegression
 
 class UltraClass:
 
-    def __init__(self, filename, thresholdLuecke, thresholdUeberschuss):
+    def __init__(self, filename, thresholdLuecke, thresholdUeberschuss, readsPerWindow):
         self.filename = filename
         self.thresholdLuecke = thresholdLuecke
         self.thresholdUeberschuss = thresholdUeberschuss
-
-
-    def readFile(self, readsPerWindow):
         file = open(self.filename)
         csvreader = csv.reader(file)
         csvreaderlist = list(csvreader)
         datasetLength = len(csvreaderlist)
         self.anzahlWindows = datasetLength//readsPerWindow
+
+
+    def readFile(self):
+        file = open(self.filename)
+        csvreader = csv.reader(file)
+        csvreaderlist = list(csvreader)
+        datasetLength = len(csvreaderlist)
         xAxisDiagram = np.arange(0, 1, 1/self.anzahlWindows)
         readsPerSection = [[] for _ in range(self.anzahlWindows)] 
 
