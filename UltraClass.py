@@ -42,8 +42,8 @@ class UltraClass:
                 index = 0
             readsPerSection[index].append(value) # dem jeweiligen Window zugeordnet
             degree = value * 360
-            x = math.cos(math.radians(degree)) # x- und y-Position werden bestimmt
-            y = math.sin(math.radians(degree)) 
+            x = math.sin(math.radians(degree)) # x- und y-Position werden bestimmt
+            y = math.cos(math.radians(degree)) 
 
             xPosSection[index].append(x)
             yPosSection[index].append(y)
@@ -189,8 +189,8 @@ class UltraClass:
 
             filledValues.append(filledValue)
 
-            x = math.cos(math.radians(w*360))
-            y = math.sin(math.radians(w*360))
+            x = math.sin(math.radians(w*360))
+            y = math.cos(math.radians(w*360))
 
             xValuesEllipse.append(x*filledValue/(self.datasetLength/self.anzahlWindows))
             yValuesEllipse.append(y*filledValue/(self.datasetLength/self.anzahlWindows))
@@ -260,12 +260,12 @@ class UltraClass:
         linReg1List = np.array(linReg1)
         linReg1List = linReg1List.flatten().tolist()
         for i in range(len(linReg1List)):
-            xValuesList.append(math.cos(math.radians((i/self.anzahlWindows)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
-            yValuesList.append(math.sin(math.radians((i/self.anzahlWindows)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
+            xValuesList.append(math.sin(math.radians((i/self.anzahlWindows)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
+            yValuesList.append(math.cos(math.radians((i/self.anzahlWindows)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
         linReg1List.reverse()
         for i in range(len(linReg1List)):
-            xValuesList.append(math.cos(math.radians(((i/self.anzahlWindows)+0.5)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
-            yValuesList.append(math.sin(math.radians(((i/self.anzahlWindows)+0.5)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
+            xValuesList.append(math.sin(math.radians(((i/self.anzahlWindows)+0.5)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
+            yValuesList.append(math.cos(math.radians(((i/self.anzahlWindows)+0.5)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
         return [xValuesList, yValuesList]
 
 
