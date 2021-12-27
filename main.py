@@ -42,7 +42,7 @@ datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict
 degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
 gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
 linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
-windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
+windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles, iteration=4)
 #readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 
 

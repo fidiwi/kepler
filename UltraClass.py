@@ -1,3 +1,4 @@
+import os
 import csv
 import math
 import numpy as np
@@ -19,7 +20,6 @@ class UltraClass:
 
 
     def readFile(self):
-        print("A")
         file = open(self.filename)
         csvreader = csv.reader(file)
         csvreaderlist = list(csvreader)
@@ -198,7 +198,7 @@ class UltraClass:
         return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [xValuesEllipse, yValuesEllipse]]
 
 
-    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, createFiles = True):
+    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, createFiles = True, iteration = 1, originalFile = None):
         windowAbwDict = {}
         betterDataFileName = ""
         for i in range(len(foundWindows)):
@@ -224,9 +224,14 @@ class UltraClass:
         
         if createFiles:
             #Daten in csv schreiben
-            nameFile = self.filename.rsplit('/', 1)[-1]
+            if not originalFile:
+                nameFile = self.filename.rsplit('/', 1)[-1]
+            else:
+                nameFile = originalFile.rsplit('/', 1)[-1]
             infoDataset = str(self.anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
-            betterDataFileName = 'Output/BetterDataset/NewData_' + infoDataset + nameFile
+            if not os.path.isdir(f'Output/BetterDataset/{iteration}'):
+                os.mkdir(f'Output/BetterDataset/{iteration}')
+            betterDataFileName = f'Output/BetterDataset/{iteration}/NewData_{infoDataset}{nameFile}'
             with open(betterDataFileName, 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile, delimiter=' ', quotechar='|')    
                 for key in readsPerSectionDict:
@@ -313,7 +318,6 @@ class UltraClass:
             
 
     def windowQualität(self, readsPerSectionDict):
-        #Aktuell wird nur die Qualität des angegebenen Windows berechnet und noch nicht für jedes Window.
         #das erste window (von 0 bis ...) hat hier den Index 0
 
         readAbweichungProWindow = []
