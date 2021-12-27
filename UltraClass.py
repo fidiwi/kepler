@@ -19,6 +19,7 @@ class UltraClass:
 
 
     def readFile(self):
+        print("A")
         file = open(self.filename)
         csvreader = csv.reader(file)
         csvreaderlist = list(csvreader)
