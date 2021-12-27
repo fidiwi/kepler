@@ -259,7 +259,7 @@ class UltraClass:
         for i in range(len(linReg1List)):
             xValuesList.append(math.cos(math.radians(((i/self.anzahlWindows)+0.5)*360))*(linReg1List[i]/self.anzahlWindows))
             yValuesList.append(math.sin(math.radians(((i/self.anzahlWindows)+0.5)*360))*(linReg1List[i]/self.anzahlWindows))
-
+        print("lel")
         return [xValuesList, yValuesList]
 
 
