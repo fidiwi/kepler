@@ -1,4 +1,3 @@
-import os
 import csv
 import math
 import numpy as np
@@ -20,6 +19,7 @@ class UltraClass:
 
 
     def readFile(self):
+        print("A")
         file = open(self.filename)
         csvreader = csv.reader(file)
         csvreaderlist = list(csvreader)
@@ -202,7 +202,7 @@ class UltraClass:
         return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [xValuesEllipse, yValuesEllipse]]
 
 
-    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, createFiles = True, iteration = 1, originalFile = None):
+    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, createFiles = True):
         windowAbwDict = {}
         betterDataFileName = ""
         for i in range(len(foundWindows)):
@@ -228,14 +228,9 @@ class UltraClass:
         
         if createFiles:
             #Daten in csv schreiben
-            if not originalFile:
-                nameFile = self.filename.rsplit('/', 1)[-1]
-            else:
-                nameFile = originalFile.rsplit('/', 1)[-1]
+            nameFile = self.filename.rsplit('/', 1)[-1]
             infoDataset = str(self.anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
-            if not os.path.isdir(f'Output/BetterDataset/{iteration}'):
-                os.mkdir(f'Output/BetterDataset/{iteration}')
-            betterDataFileName = f'Output/BetterDataset/{iteration}/NewData_{infoDataset}{nameFile}'
+            betterDataFileName = 'Output/BetterDataset/NewData_' + infoDataset + nameFile
             with open(betterDataFileName, 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile, delimiter=' ', quotechar='|')    
                 for key in readsPerSectionDict:
@@ -322,6 +317,7 @@ class UltraClass:
             
 
     def windowQualität(self, readsPerSectionDict):
+        #Aktuell wird nur die Qualität des angegebenen Windows berechnet und noch nicht für jedes Window.
         #das erste window (von 0 bis ...) hat hier den Index 0
 
         readAbweichungProWindow = []
@@ -375,6 +371,14 @@ class UltraClass:
         growth = ((1+len(datasetList)/(len(datasetList)*100))**self.anzahlWindows)**standardAbw
         return growth
 
+    def calcGrowthVector(self, vPos, readProWindowList):
+        #LinReg1 geht nur von 0 bis 0.5
+        linReg1List = np.array(readProWindowList)
+        linReg1List = linReg1List.flatten().tolist()
+        betrag = linReg1List[vPos]
+        print("ENNO "+str(betrag))
+
+    
     # Get-Methoden
     def getAnzahlWindows(self):
         return self.anzahlWindows
