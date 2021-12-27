@@ -13,23 +13,26 @@ class UltraClass:
         self.thresholdUeberschuss = thresholdUeberschuss
 
 
-    def readFile(self, anzahlWindows):
+    def readFile(self, readsPerWindow):
         file = open(self.filename)
         csvreader = csv.reader(file)
-        xAxisDiagram = np.arange(0, 1, 1/anzahlWindows)
-        readsPerSection = [[] for _ in range(anzahlWindows)] 
+        csvreaderlist = list(csvreader)
+        datasetLength = len(csvreaderlist)
+        self.anzahlWindows = datasetLength//readsPerWindow
+        xAxisDiagram = np.arange(0, 1, 1/self.anzahlWindows)
+        readsPerSection = [[] for _ in range(self.anzahlWindows)] 
 
         #Daten für den Vektorenplot
-        xPosSection = [[] for _ in range(anzahlWindows)]
-        yPosSection = [[] for _ in range(anzahlWindows)]
+        xPosSection = [[] for _ in range(self.anzahlWindows)]
+        yPosSection = [[] for _ in range(self.anzahlWindows)]
 
-        datasetLength = 0
         datasetList = []
+
         #Daten auslesen und einordnen
-        for row in csvreader:
+        for row in csvreaderlist:
             value = float(row[0])
             datasetList.append(value)
-            index = int(value*anzahlWindows)
+            index = int(value*self.anzahlWindows)
             if value == 1:
                 index = 0
             readsPerSection[index].append(value) # dem jeweiligen Window zugeordnet
@@ -40,15 +43,14 @@ class UltraClass:
             xPosSection[index].append(x)
             yPosSection[index].append(y)
 
-            datasetLength+=1
 
         xVectors = []
         yVectors = []
         abstand = []
-        readAmountPerSection = [0] * (anzahlWindows)
+        readAmountPerSection = [0] * (self.anzahlWindows)
         
         # Windows werden erstellt 
-        for window in range(anzahlWindows):
+        for window in range(self.anzahlWindows):
             readAmountPerSection[window] = len(readsPerSection[window])
 
             vectorX = 0
@@ -59,8 +61,8 @@ class UltraClass:
             for y in yPosSection[window]:
                 vectorY+=y
 
-            xVectors.append(vectorX/(datasetLength/anzahlWindows))
-            yVectors.append(vectorY/(datasetLength/anzahlWindows))
+            xVectors.append(vectorX/(datasetLength/self.anzahlWindows))
+            yVectors.append(vectorY/(datasetLength/self.anzahlWindows))
             abstand.append(math.sqrt(xVectors[window]**2 + yVectors[window]**2))
 
         datasetList.sort()
@@ -76,8 +78,8 @@ class UltraClass:
         return [datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram]
 
     
-    def calcWinkel(self, sortedData, anzahlWindows):
-        messabstand = int(len(sortedData)/anzahlWindows)
+    def calcWinkel(self, sortedData):
+        messabstand = int(len(sortedData)/self.anzahlWindows)
         degreeDiffList = []
         xList = []
         totalSum = 0
@@ -141,7 +143,6 @@ class UltraClass:
         readAmount2 = readAmountPerSection[len(readAmountPerSection)//2:]
         xAxis1 = xAxisDiagram[:len(xAxisDiagram)//2]
         xAxis2 = xAxisDiagram[len(xAxisDiagram)//2:]
-        anzahlWindows = len(readAmountPerSection) 
 
         foundWindows = []
         for gap in gapBereiche:
@@ -186,13 +187,13 @@ class UltraClass:
             x = math.cos(math.radians(w*360))
             y = math.sin(math.radians(w*360))
 
-            xValuesEllipse.append(x*filledValue/(self.datasetLength/anzahlWindows))
-            yValuesEllipse.append(y*filledValue/(self.datasetLength/anzahlWindows))
+            xValuesEllipse.append(x*filledValue/(self.datasetLength/self.anzahlWindows))
+            yValuesEllipse.append(y*filledValue/(self.datasetLength/self.anzahlWindows))
 
         return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [xValuesEllipse, yValuesEllipse]]
 
 
-    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, anzahlWindows, createFiles = True):
+    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, createFiles = True):
         windowAbwDict = {}
         betterDataFileName = ""
         for i in range(len(foundWindows)):
@@ -206,7 +207,7 @@ class UltraClass:
             #readsPerSectionDict[fw] = [fw]*int(fv) #Setze fv mal (prognostizierte Häufigkeit) den Wert des Windows ein
             #Alternative:
             newWindowData = []
-            halfWindowSize = (1/anzahlWindows)/2
+            halfWindowSize = (1/self.anzahlWindows)/2
             lowerBound = fw-halfWindowSize if fw-halfWindowSize >= 0 else 0
             upperBound = fw+halfWindowSize if fw+halfWindowSize <= 1 else 1
             stepSize = (upperBound-lowerBound) / int(fv)
@@ -219,7 +220,7 @@ class UltraClass:
         if createFiles:
             #Daten in csv schreiben
             nameFile = self.filename.rsplit('/', 1)[-1]
-            infoDataset = str(anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
+            infoDataset = str(self.anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
             betterDataFileName = 'Output/BetterDataset/NewData_' + infoDataset + nameFile
             with open(betterDataFileName, 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile, delimiter=' ', quotechar='|')    
@@ -230,7 +231,7 @@ class UltraClass:
 
             
             nameFile = self.filename.rsplit('/', 1)[-1]
-            infoDataset2 = str(anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
+            infoDataset2 = str(self.anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
             cd = 'Output/AnalyseReads/Analyse_' + infoDataset2 + nameFile
             with open(cd, 'w', newline='') as csvfile2:
                 writer2 = csv.writer(csvfile2, delimiter=' ', quotechar='|')
@@ -242,18 +243,18 @@ class UltraClass:
         return [windowAbwDict, betterDataFileName]
 
 
-    def idealeEllipse(self, linReg1, anzahlWindows):
+    def idealeEllipse(self, linReg1):
         xValuesList = []
         yValuesList = []
         linReg1List = np.array(linReg1)
         linReg1List = linReg1List.flatten().tolist()
         for i in range(len(linReg1List)):
-            xValuesList.append(math.cos(math.radians((i/anzahlWindows)*360))*(linReg1List[i]/anzahlWindows))
-            yValuesList.append(math.sin(math.radians((i/anzahlWindows)*360))*(linReg1List[i]/anzahlWindows))
+            xValuesList.append(math.cos(math.radians((i/self.anzahlWindows)*360))*(linReg1List[i]/self.anzahlWindows))
+            yValuesList.append(math.sin(math.radians((i/self.anzahlWindows)*360))*(linReg1List[i]/self.anzahlWindows))
         linReg1List.reverse()
         for i in range(len(linReg1List)):
-            xValuesList.append(math.cos(math.radians(((i/anzahlWindows)+0.5)*360))*(linReg1List[i]/anzahlWindows))
-            yValuesList.append(math.sin(math.radians(((i/anzahlWindows)+0.5)*360))*(linReg1List[i]/anzahlWindows))
+            xValuesList.append(math.cos(math.radians(((i/self.anzahlWindows)+0.5)*360))*(linReg1List[i]/self.anzahlWindows))
+            yValuesList.append(math.sin(math.radians(((i/self.anzahlWindows)+0.5)*360))*(linReg1List[i]/self.anzahlWindows))
 
         return [xValuesList, yValuesList]
 
@@ -271,13 +272,13 @@ class UltraClass:
         return(searchReads)
 
 
-    def calcMatchingReads(self, anzahlWindows, ultraReadsList, folderAnalyseReads, filename):
+    def calcMatchingReads(self, ultraReadsList, folderAnalyseReads, filename):
         # Datei mit den gefundenen Reads wird erstellt
         cd = 'Output/WindowsSuche/' + filename
         with open(cd, 'w', newline='') as csvfile:
             windowsSucheCSV = csv.writer(csvfile, delimiter=' ', quotechar='|')
             windowsSucheCSV.writerow(["Window"]+["SummeReads"])
-            for window in range(anzahlWindows):
+            for window in range(self.anzahlWindows):
                 ReadsInAllWindows = 0
                 filesNeg = []
                 valueNeg = []
@@ -287,7 +288,7 @@ class UltraClass:
 
                 for i in range(len(ultraReadsList)):
                     for j in range(len(ultraReadsList[i])):
-                        if ultraReadsList[i][j][0] == window/anzahlWindows:
+                        if ultraReadsList[i][j][0] == window/self.anzahlWindows:
                             if ultraReadsList[i][j][1] > 0:
                                 filesPos.append(folderAnalyseReads[i])
                                 valuePos.append(ultraReadsList[i][j][1])
@@ -303,7 +304,7 @@ class UltraClass:
                     filesPos.append("null")
                     valuePos.append("0")
 
-                windowsSucheCSV.writerow([window/anzahlWindows]+[ReadsInAllWindows]+[filesNeg]+[valueNeg]+[filesPos]+[valuePos])
+                windowsSucheCSV.writerow([window/self.anzahlWindows]+[ReadsInAllWindows]+[filesNeg]+[valueNeg]+[filesPos]+[valuePos])
             
 
     def windowQualität(self, readsPerSectionDict):
@@ -357,11 +358,13 @@ class UltraClass:
         """
     
 
-    def calcGrowth(self, anzahlWindows, datasetList, standardAbw):
-        growth = ((1+len(datasetList)/(len(datasetList)*100))**anzahlWindows)**standardAbw
+    def calcGrowth(self, datasetList, standardAbw):
+        growth = ((1+len(datasetList)/(len(datasetList)*100))**self.anzahlWindows)**standardAbw
         return growth
 
-    
+    # Get-Methoden
+    def getAnzahlWindows(self):
+        return self.anzahlWindows
 
 
 
