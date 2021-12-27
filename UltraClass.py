@@ -280,8 +280,8 @@ class UltraClass:
         # Datei mit den gefundenen Reads wird erstellt
         cd = 'Output/WindowsSuche/' + filename
         with open(cd, 'w', newline='') as csvfile:
-            windowsSucheCSV = csv.writer(csvfile, delimiter=' ', quotechar='|')
-            windowsSucheCSV.writerow(["Window"]+["SummeReads"])
+            windowsSucheCSV = csv.writer(csvfile, delimiter=';', quotechar='|')
+            windowsSucheCSV.writerow(["Window"]+["Summe Reads"]+["Datensätze mit Lücken"]+["Tiefe der Lücken"]+["Datensätze mit Überschüssen"]+["Höhe der Überschüsse"])
             for window in range(self.anzahlWindows):
                 ReadsInAllWindows = 0
                 filesNeg = []

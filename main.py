@@ -9,7 +9,7 @@ readsPerWindow = 50 # Wieviele Reads in einem Window erwartet werden sollen, Win
 thresholdLuecke = 1
 thresholdUeberschuss = -1
 wachstumsdiagramme = False # True-> Wachstumsdiagramme werden angezeigt
-windowsSuche = False # True-> Windowssuche wird durchgeführt
+windowsSuche = True # True-> Windowssuche wird durchgeführt
 createFiles = True
 
 # Wachstumsdiagramme!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
