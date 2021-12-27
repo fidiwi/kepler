@@ -7,7 +7,7 @@ filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_4.0_20
 readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
 thresholdLuecke = 1
 thresholdUeberschuss = -1
-wachstumsdiagramme = True # True-> Wachstumsdiagramme werden angezeigt
+wachstumsdiagramme = False # True-> Wachstumsdiagramme werden angezeigt
 createFiles = True
 
 # Wachstumsdiagramme!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -21,7 +21,7 @@ if wachstumsdiagramme:
     yValuesList = []
     for file in folderPosFiles:
         ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken/"+str(file), thresholdLuecke, thresholdUeberschuss, readsPerWindow)
-        datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram = ultraClass.readFile()
+        datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
         degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
         gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
         linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
@@ -38,7 +38,7 @@ if wachstumsdiagramme:
 ultraClass = UltraClass(filename, thresholdLuecke, thresholdUeberschuss, readsPerWindow)
 
 # für die originale Datei werden die Daten für die Diagramme bestimmt
-datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram = ultraClass.readFile()
+datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
 degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
 gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
 linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
@@ -73,10 +73,14 @@ pyplot.plot(linReg2[0], linReg2[1], color='green', label='linReg 2')
 
 #    pyplot.plot(xAxisDiagram, readAbweichungProWindow, color='purple', label='Windowqualität')
 pyplot.legend()
-
-
 pyplot.xlabel("Position")
 pyplot.ylabel("Anzahl pro Ausschnitt")
+
+pyplot.figure()
+pyplot.plot(xAxisDiagram, readAmountPerSectionPercentage, color='blue', label='gemessener readAmountPerSection')
+pyplot.title("Relative Reads pro Abschnitt")
+pyplot.xlabel("Position")
+pyplot.ylabel("Prozent an Reads")
 
 #Winkeldifferenzgraph
 pyplot.figure(num='Winkeldifferenzengraph')

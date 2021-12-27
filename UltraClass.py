@@ -80,7 +80,11 @@ class UltraClass:
             readAmountPerSectionDict[xAxisDiagram[i]] = readAmountPerSection[i]
             readsPerSectionDict[xAxisDiagram[i]] = readsPerSection[i]
 
-        return [datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram]
+        readAmountPerSectionPercentage = []
+        for readAmount in readAmountPerSection:
+            readAmountPerSectionPercentage.append(readAmount/(self.datasetLength/self.anzahlWindows))
+
+        return [datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage]
 
     
     def calcWinkel(self, sortedData):
