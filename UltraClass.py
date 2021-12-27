@@ -1,4 +1,3 @@
-import os
 import csv
 import math
 import numpy as np
@@ -42,8 +41,8 @@ class UltraClass:
                 index = 0
             readsPerSection[index].append(value) # dem jeweiligen Window zugeordnet
             degree = value * 360
-            x = math.cos(math.radians(degree)) # x- und y-Position werden bestimmt
-            y = math.sin(math.radians(degree)) 
+            x = math.sin(math.radians(degree)) # x- und y-Position werden bestimmt
+            y = math.cos(math.radians(degree)) 
 
             xPosSection[index].append(x)
             yPosSection[index].append(y)
@@ -80,7 +79,11 @@ class UltraClass:
             readAmountPerSectionDict[xAxisDiagram[i]] = readAmountPerSection[i]
             readsPerSectionDict[xAxisDiagram[i]] = readsPerSection[i]
 
-        return [datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram]
+        readAmountPerSectionPercentage = []
+        for readAmount in readAmountPerSection:
+            readAmountPerSectionPercentage.append(readAmount/(self.datasetLength/self.anzahlWindows))
+
+        return [datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage]
 
     
     def calcWinkel(self, sortedData):
@@ -189,8 +192,8 @@ class UltraClass:
 
             filledValues.append(filledValue)
 
-            x = math.cos(math.radians(w*360))
-            y = math.sin(math.radians(w*360))
+            x = math.sin(math.radians(w*360))
+            y = math.cos(math.radians(w*360))
 
             xValuesEllipse.append(x*filledValue/(self.datasetLength/self.anzahlWindows))
             yValuesEllipse.append(y*filledValue/(self.datasetLength/self.anzahlWindows))
@@ -198,7 +201,7 @@ class UltraClass:
         return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [xValuesEllipse, yValuesEllipse]]
 
 
-    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, createFiles = True, iteration = 1, originalFile = None):
+    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, createFiles = True):
         windowAbwDict = {}
         betterDataFileName = ""
         for i in range(len(foundWindows)):
@@ -224,14 +227,9 @@ class UltraClass:
         
         if createFiles:
             #Daten in csv schreiben
-            if not originalFile:
-                nameFile = self.filename.rsplit('/', 1)[-1]
-            else:
-                nameFile = originalFile.rsplit('/', 1)[-1]
+            nameFile = self.filename.rsplit('/', 1)[-1]
             infoDataset = str(self.anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
-            if not os.path.isdir(f'Output/BetterDataset/{iteration}'):
-                os.mkdir(f'Output/BetterDataset/{iteration}')
-            betterDataFileName = f'Output/BetterDataset/{iteration}/NewData_{infoDataset}{nameFile}'
+            betterDataFileName = 'Output/BetterDataset/NewData_' + infoDataset + nameFile
             with open(betterDataFileName, 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile, delimiter=' ', quotechar='|')    
                 for key in readsPerSectionDict:
@@ -260,12 +258,12 @@ class UltraClass:
         linReg1List = np.array(linReg1)
         linReg1List = linReg1List.flatten().tolist()
         for i in range(len(linReg1List)):
-            xValuesList.append(math.cos(math.radians((i/self.anzahlWindows)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
-            yValuesList.append(math.sin(math.radians((i/self.anzahlWindows)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
+            xValuesList.append(math.sin(math.radians((i/self.anzahlWindows)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
+            yValuesList.append(math.cos(math.radians((i/self.anzahlWindows)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
         linReg1List.reverse()
         for i in range(len(linReg1List)):
-            xValuesList.append(math.cos(math.radians(((i/self.anzahlWindows)+0.5)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
-            yValuesList.append(math.sin(math.radians(((i/self.anzahlWindows)+0.5)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
+            xValuesList.append(math.sin(math.radians(((i/self.anzahlWindows)+0.5)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
+            yValuesList.append(math.cos(math.radians(((i/self.anzahlWindows)+0.5)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
         return [xValuesList, yValuesList]
 
 
@@ -318,6 +316,7 @@ class UltraClass:
             
 
     def windowQualität(self, readsPerSectionDict):
+        #Aktuell wird nur die Qualität des angegebenen Windows berechnet und noch nicht für jedes Window.
         #das erste window (von 0 bis ...) hat hier den Index 0
 
         readAbweichungProWindow = []
@@ -371,6 +370,14 @@ class UltraClass:
         growth = ((1+len(datasetList)/(len(datasetList)*100))**self.anzahlWindows)**standardAbw
         return growth
 
+    def calcGrowthVector(self, vPos, readProWindowList):
+        #LinReg1 geht nur von 0 bis 0.5
+        linReg1List = np.array(readProWindowList)
+        linReg1List = linReg1List.flatten().tolist()
+        betrag = linReg1List[vPos]
+        print("ENNO "+str(betrag))
+
+    
     # Get-Methoden
     def getAnzahlWindows(self):
         return self.anzahlWindows
