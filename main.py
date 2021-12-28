@@ -45,7 +45,7 @@ linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, r
 readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
 #--------------------Wachstumsrate Enno--------------------
-ultraClass.calcGrowthVector(2, linReg1[1])
+ultraClass.calcGrowthVector(xVectors, yVectors)
 #readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 
 
