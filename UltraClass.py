@@ -367,7 +367,7 @@ class UltraClass:
     
 
     def calcGrowth(self, datasetList, standardAbw):
-        growth = ((1+len(datasetList)/(len(datasetList)*100))**self.anzahlWindows)**standardAbw
+        growth = 0.8*((1+len(datasetList)/(len(datasetList)*100))**self.anzahlWindows)**standardAbw
         return growth
 
     def calcGrowthVector(self, vPos, readProWindowList):
