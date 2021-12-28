@@ -3,7 +3,7 @@ import matplotlib.pyplot as pyplot
 import os
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename= 'Output/BackMovedDataset/backMovedDataset_0.2_verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv
+filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.70000,.90000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv
 readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
 thresholdLuecke = 1
 thresholdUeberschuss = -1
@@ -44,7 +44,7 @@ gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
 linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
 windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
 #--------------------Wachstumsrate Enno--------------------
-ultraClass.calcGrowthVector(2, linReg1[1])
+ultraClass.calcGrowthVector(xVectors, yVectors)
 #readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 
 
