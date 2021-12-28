@@ -3,16 +3,16 @@ import matplotlib.pyplot as pyplot
 import os
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.60000,.80000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
-readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
+filename= 'Output/BackMovedDataset/backMovedDataset_0.2_verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv
+readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
 thresholdLuecke = 1
 thresholdUeberschuss = -1
-wachstumsdiagramme = False # True-> Wachstumsdiagramme werden angezeigt
+wachstumsdiagramme = True # True-> Wachstumsdiagramme werden angezeigt
 createFiles = True
 
 # Wachstumsdiagramme!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 if wachstumsdiagramme:
-    folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/5000") # ./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken || ./Probedaten/Beispiesamples/Mail_lutz_3/5000 Achtung: int(anzahlWindows/2)
+    folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken") # ./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken || ./Probedaten/Beispiesamples/Mail_lutz_3/5000 Achtung: int(anzahlWindows/2)
     liste = []
     liste2 = []
     filledGapsListe = []

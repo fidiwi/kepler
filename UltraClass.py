@@ -85,7 +85,41 @@ class UltraClass:
 
         return [datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage]
 
-    
+
+    def datensatzVerschieben(self, datasetList, readAmountPerSection):
+        max = 0
+        maxPos = 0
+        min = 1000
+        minPos = 0
+        resetValue = 0 
+        for windowIndex in range(len(readAmountPerSection)):
+            if max < readAmountPerSection[windowIndex]:
+                max = readAmountPerSection[windowIndex]
+                maxPos = windowIndex/self.anzahlWindows
+            if min > readAmountPerSection[windowIndex]:
+                min = readAmountPerSection[windowIndex]
+                minPos = windowIndex/self.anzahlWindows
+        
+        if minPos < 0.45 or minPos > 0.55:
+            resetValue = minPos - 0.5
+            resetValue = round(resetValue, 5)
+        
+        print(maxPos)
+        print(minPos)
+        nameFile = self.filename.rsplit('/', 1)[-1]
+        cd = 'Output/BackMovedDataset/backMovedDataset_' + str(resetValue) + "_"+ nameFile
+        with open(cd, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter=' ', quotechar='|')
+            #writer2.writerow(["Position"] + ["Read"] + ["Relative Abweichung"])
+            for row in datasetList:
+                value = row - resetValue 
+                if value < 0:
+                    value += 1
+                writer.writerow([value])
+            csvfile.close()
+        return cd
+
+
     def calcWinkel(self, sortedData):
         messabstand = int(len(sortedData)/self.anzahlWindows)
         degreeDiffList = []
