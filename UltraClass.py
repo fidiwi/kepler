@@ -368,16 +368,16 @@ class UltraClass:
             for read in range(len(window)-1):
                 abstandListe.append(window[read+1] - window[read])
                 abstandSumme += window[read+1] - window[read] #Aktuell nur die "inneren Abstände" -> nur die Abstände zwischen den Reads, also nicht zu den Windowbounds
-            avg = abstandSumme/len(abstandListe)
 
             varianz = 0
-            for abstand in abstandListe:
-                varianz += (avg-abstand)**2
-            varianz = varianz/len(abstandListe)
-            standartabweichung = math.sqrt(varianz)
-            if standartabweichung==0:
-                #print(window)
-                pass
+            if len(abstandListe) == 0:
+                standartabweichung = 0
+            else:
+                avg = abstandSumme/len(abstandListe)
+                for abstand in abstandListe:
+                    varianz += (avg-abstand)**2
+                varianz = varianz/len(abstandListe)
+                standartabweichung = math.sqrt(varianz)
             readAbweichungProWindow.append(standartabweichung*100000) #Um eine bessere Darstellung zu ermöglichen, werden die Werte hochskaliert
 
         
