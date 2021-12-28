@@ -105,6 +105,9 @@ class UltraClass:
                 resetValue = round(resetValue, 5)
             print(maxPos)
             print(minPos)
+            if abs(maxPos-minPos) > 0.45 and abs(maxPos-minPos) < 0.55:
+                print("Verschiebung wahrscheinlich erfolgreich ausgeführt")
+
 
         nameFile = self.filename.rsplit('/', 1)[-1]
         cd = 'Output/BackMovedDataset/backMovedDataset_' + str(resetValue) + "_"+ nameFile
