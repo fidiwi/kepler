@@ -153,7 +153,7 @@ class UltraClass:
         for degreeDiff in degreeDiffList:
             relEaList.append((degreeDiff-avg) / avg)
 
-        print(xList)
+        #print(xList)
 
         return [degreeDiffList, xList, avg, standardAbw, relEaList]
 
@@ -163,14 +163,16 @@ class UltraClass:
         for relEaIndex in range(len(relEaList)):
             if relEaList[relEaIndex] >= self.thresholdLuecke: # wenn die Abweichung zu stark ist -> Lücke
                 gap = relEaIndex
-                print(gap)
+                #print(gap)
+                print(xList)
                 anfang = xList[gap]
                 if anfang < 0.005:
                     anfang = 0
-                #if gap*self.readsPerWindow >= len(datasetList)-self.readsPerWindow:
-                #    ende = datasetList[-1]
-                #else:
-                ende = xList[gap+1]
+                if gap/self.anzahlWindows >= xList[-1]:
+                    ende = 1
+                    print("lel")
+                else:
+                    ende = xList[gap+1]
                 gapBereiche.append([anfang, ende])
             elif relEaList[relEaIndex] <= self.thresholdUeberschuss:
                 gap = relEaIndex
@@ -180,8 +182,8 @@ class UltraClass:
                 #if gap*self.readsPerWindow >= len(datasetList)-self.readsPerWindow:
                 #    ende = datasetList[-1]
                 #else:
-                print("G:",gap)
-                print("X:",len(xList))
+                """print("G:",gap)
+                print("X:",len(xList))"""
                 ende = xList[gap+1]
                 gapBereiche.append([anfang, ende])
         return gapBereiche
@@ -258,9 +260,8 @@ class UltraClass:
             #readsPerSectionDict[fw] = [fw]*int(fv) #Setze fv mal (prognostizierte Häufigkeit) den Wert des Windows ein
             #Alternative:
             newWindowData = []
-            halfWindowSize = (1/self.anzahlWindows)/2
-            lowerBound = fw#-halfWindowSize if fw-halfWindowSize >= 0 else 0
-            upperBound = fw+(self.anzahlWindows/self.datasetLength)#halfWindowSize if fw+halfWindowSize <= 1 else 1
+            lowerBound = fw 
+            upperBound = fw + (self.anzahlWindows/self.datasetLength)
             stepSize = (upperBound-lowerBound) / int(fv)
 
             for v in np.arange(lowerBound, upperBound, stepSize):
