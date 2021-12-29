@@ -3,9 +3,9 @@ import matplotlib.pyplot as pyplot
 import os
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename= 'Output/BetterDataset/NewData_100_10002_0.7_-1_$$_10000_2.0_20_.20000,.40000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv
+filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv
 readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
-thresholdLuecke = 0.7
+thresholdLuecke = 1
 thresholdUeberschuss = -1
 wachstumsdiagramme = False # True-> Wachstumsdiagramme werden angezeigt
 createFiles = True
@@ -39,6 +39,7 @@ ultraClass = UltraClass(filename, thresholdLuecke, thresholdUeberschuss, readsPe
 
 # für die originale Datei werden die Daten für die Diagramme bestimmt
 datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
+
 degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
 gapBereiche = ultraClass.determineGaps(relEaList, xList)
 linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
@@ -105,8 +106,8 @@ if wachstumsdiagramme:
         pyplot.plot(xValuesList[i], yValuesList[i])
 
 pyplot.plot(xVectors, yVectors, '.', color='blue')
-pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='orange')
-pyplot.plot([0], [0], 's', color='r')
+pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='red')
+pyplot.plot([0], [0], 's', color='black')
 #pyplot.plot([m[0]], [m[1]], 'v', color='green')
 pyplot.gca().set_aspect('equal', adjustable='box')
 pyplot.grid(color='blue', linestyle='-', linewidth=1)

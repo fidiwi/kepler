@@ -166,13 +166,13 @@ class UltraClass:
             if relEaList[relEaIndex] >= self.thresholdLuecke: # wenn die Abweichung zu stark ist -> Lücke
                 gap = relEaIndex
                 #print(gap)
-                print(xList)
+                
                 anfang = xList[gap]
                 if anfang < 0.005:
                     anfang = 0
                 if gap/self.anzahlWindows >= xList[-1]:
                     ende = 1
-                    print("lel")
+                    
                 else:
                     ende = xList[gap+1]
                 gapBereiche.append([anfang, ende])
