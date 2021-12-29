@@ -254,8 +254,8 @@ class UltraClass:
             #Alternative:
             newWindowData = []
             halfWindowSize = (1/self.anzahlWindows)/2
-            lowerBound = fw-halfWindowSize if fw-halfWindowSize >= 0 else 0
-            upperBound = fw+halfWindowSize if fw+halfWindowSize <= 1 else 1
+            lowerBound = fw#-halfWindowSize if fw-halfWindowSize >= 0 else 0
+            upperBound = fw+(self.anzahlWindows/self.datasetLength)#halfWindowSize if fw+halfWindowSize <= 1 else 1
             stepSize = (upperBound-lowerBound) / int(fv)
 
             for v in np.arange(lowerBound, upperBound, stepSize):
@@ -367,7 +367,7 @@ class UltraClass:
             abstandListe = []
             for read in range(len(window)-1):
                 abstandListe.append(window[read+1] - window[read])
-                abstandSumme += window[read+1] - window[read] #Aktuell nur die "inneren Abstände" -> nur die Abstände zwischen den Reads, also nicht zu den Windowbounds
+                abstandSumme += (window[read+1] - window[read]) #Aktuell nur die "inneren Abstände" -> nur die Abstände zwischen den Reads, also nicht zu den Windowbounds
 
             varianz = 0
             if len(abstandListe) == 0:
@@ -375,7 +375,7 @@ class UltraClass:
             else:
                 avg = abstandSumme/len(abstandListe)
                 for abstand in abstandListe:
-                    varianz += (avg-abstand)**2
+                    varianz += (abstand-avg)**2
                 varianz = varianz/len(abstandListe)
                 standartabweichung = math.sqrt(varianz)
             readAbweichungProWindow.append(standartabweichung*100000) #Um eine bessere Darstellung zu ermöglichen, werden die Werte hochskaliert

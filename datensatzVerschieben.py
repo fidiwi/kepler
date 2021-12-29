@@ -1,5 +1,4 @@
 from UltraClass import UltraClass
-import os
 import csv
 filenameVerschoben = "Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_4.0_0.0,0.0_pos.csv"
 
