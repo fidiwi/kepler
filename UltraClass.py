@@ -16,6 +16,7 @@ class UltraClass:
         csvreaderlist = list(csvreader)
         datasetLength = len(csvreaderlist)
         self.anzahlWindows = datasetLength//readsPerWindow
+        self.readsPerWindow = readsPerWindow
 
 
     def readFile(self):
@@ -125,18 +126,18 @@ class UltraClass:
 
 
     def calcWinkel(self, sortedData):
-        messabstand = int(len(sortedData)/self.anzahlWindows)
+        self.readsPerWindow = int(len(sortedData)/self.anzahlWindows)
         degreeDiffList = []
         xList = []
         totalSum = 0
         # ??? Könnten hier nicht theoretisch Daten ausgelassen werden wenn sich sortedData nicht durch messabsand teilen lässt?
         # der Winkel wird berechnet und die Differenz angegeben
-        for i in range(0, len(sortedData)-messabstand, messabstand):
+        for i in range(0, len(sortedData)-self.readsPerWindow, self.readsPerWindow):
             degree1 = sortedData[i]*360
-            degree2 = sortedData[i+messabstand]*360
+            degree2 = sortedData[i+self.readsPerWindow]*360
             degreeDiff = degree2 - degree1
             degreeDiffList.append(degreeDiff)
-            xList.append(i)
+            xList.append(sortedData[i])
             totalSum += degreeDiff
         
         # die Standartabweichung wird bestimmt
@@ -152,33 +153,36 @@ class UltraClass:
         for degreeDiff in degreeDiffList:
             relEaList.append((degreeDiff-avg) / avg)
 
+        print(xList)
+
         return [degreeDiffList, xList, avg, standardAbw, relEaList]
 
 
-    def determineGaps(self, relEaList, datasetList): # thresholdLuecke von 1 = 100% Abweichung (Bezogen auf die Abweichung vom Durchschnittabstand[avg])
+    def determineGaps(self, relEaList, xList): # thresholdLuecke von 1 = 100% Abweichung (Bezogen auf die Abweichung vom Durchschnittabstand[avg])
         gapBereiche = []
         for relEaIndex in range(len(relEaList)):
             if relEaList[relEaIndex] >= self.thresholdLuecke: # wenn die Abweichung zu stark ist -> Lücke
                 gap = relEaIndex
-                x = len(datasetList)/len(relEaList) #len relEaList ist wahrscheinlich = anzahlWindows
-                anfang = datasetList[int((gap)*x)]
+                print(gap)
+                anfang = xList[gap]
                 if anfang < 0.005:
                     anfang = 0
-                if gap*x >= len(datasetList)-x:
-                    ende = datasetList[-1]
-                else:
-                    ende = datasetList[int((gap+1)*x)]
+                #if gap*self.readsPerWindow >= len(datasetList)-self.readsPerWindow:
+                #    ende = datasetList[-1]
+                #else:
+                ende = xList[gap+1]
                 gapBereiche.append([anfang, ende])
             elif relEaList[relEaIndex] <= self.thresholdUeberschuss:
                 gap = relEaIndex
-                x = len(datasetList)/len(relEaList) 
-                anfang = datasetList[int(gap*x)]
+                anfang = xList[gap]
                 if anfang < 0.005:
                     anfang = 0
-                if gap*x >= len(datasetList)-x:
-                    ende = datasetList[-1]
-                else:
-                    ende = datasetList[int((gap+1)*x)]
+                #if gap*self.readsPerWindow >= len(datasetList)-self.readsPerWindow:
+                #    ende = datasetList[-1]
+                #else:
+                print("G:",gap)
+                print("X:",len(xList))
+                ende = xList[gap+1]
                 gapBereiche.append([anfang, ende])
         return gapBereiche
 
@@ -191,10 +195,11 @@ class UltraClass:
         xAxis2 = xAxisDiagram[len(xAxisDiagram)//2:]
 
         foundWindows = []
+        halfWindow = (1/self.anzahlWindows)/2
         for gap in gapBereiche:
             deletedWindows = [] # bis 0.5 werden alle falschen Windows gesucht
             for i in range(len(xAxis1)):
-                if gap[0] <= xAxis1[i] and gap[1] >= xAxis1[i]:
+                if (gap[0] <= xAxis1[i] <= gap[1]) or (xAxis1[i]-halfWindow)<=gap[0]<=(xAxis1[i]+halfWindow) or (xAxis1[i]-halfWindow)<=gap[1]<=(xAxis1[i]+halfWindow):
                     deletedWindows.append(i)
             deletedWindows = sorted(deletedWindows, reverse=True)
             for delWindow in deletedWindows:
@@ -202,7 +207,7 @@ class UltraClass:
                 foundWindows.append(xAxis1.pop(delWindow))
             deletedWindows = [] # ab 0.5 werden alle falschen Windows gesucht
             for i in range(len(xAxis2)):
-                if gap[0] <= xAxis2[i] and gap[1] >= xAxis2[i]:
+                if (gap[0] <= xAxis2[i] <= gap[1]) or (xAxis2[i]-halfWindow)<=gap[0]<=(xAxis2[i]+halfWindow) or (xAxis2[i]-halfWindow)<=gap[1]<=(xAxis2[i]+halfWindow):
                     deletedWindows.append(i)
             deletedWindows = sorted(deletedWindows, reverse=True)
             for delWindow in deletedWindows:

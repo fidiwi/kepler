@@ -4,7 +4,8 @@
 
 -Streuung in einem Window  (evtl. Standartabweichung) WICHTIG: niedrige Streuung != gutes Window => auch in einer Lücke kann die Streuung niedrig sein!
 
-- Verschiebte Datensätze fixen lel
+- Verschiebte Datensätze fixen lel CHECK
+- Komische Spikes nach Füllen im BetterDataset
 
 nice to have:
 -bessere Benennung von Variablen etc., matplotlib usus verwenden
