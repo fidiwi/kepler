@@ -3,9 +3,9 @@ import matplotlib.pyplot as pyplot
 import os
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv
-readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
-thresholdLuecke = 1
+filename= 'Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv
+readsPerWindow = 50 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
+thresholdLuecke = 2
 thresholdUeberschuss = -1
 wachstumsdiagramme = False # True-> Wachstumsdiagramme werden angezeigt
 createFiles = True
@@ -46,7 +46,7 @@ linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, r
 readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
 #--------------------Wachstumsrate Enno--------------------
-ultraClass.calcGrowthVector(xVectors, yVectors)
+#ultraClass.calcGrowthVector(xVectors, yVectors)
 #readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 
 
@@ -90,12 +90,12 @@ pyplot.ylabel("Prozent an Reads")
 #Winkeldifferenzgraph
 pyplot.figure(num='Winkeldifferenzengraph')
 pyplot.plot(xList, degreeDiffList, label='Winkeldifferenz in Grad')
-pyplot.plot(xList, relEaList, label='Relative Einzelabweichung der Ausschnitte vom Durchschnittswert')
+pyplot.plot(xList, relEaList, label='Relativer Abstand einer Differenz vom\nDurchschnitt (Relative Einzelabweichung)')
 pyplot.plot(xList, [avg] * len(xList), label='Durschnittswert')
 pyplot.plot(xList, [thresholdLuecke] * len(xList), label='Lücke')
 pyplot.plot(xList, [thresholdUeberschuss] * len(xList), label='Überschuss')
-pyplot.title(f"Abstand = {degreeDiffList[1] - degreeDiffList[0]}; Standardabw: {standardAbw} Durchschn: {avg};")
-pyplot.xlabel(f"Reads (sortiert)")
+pyplot.title(f"Messabstand: {ultraClass.getReadsPerWindow()}; Standardabw: {standardAbw} Durchschn: {avg};")
+pyplot.xlabel(f"Position")
 pyplot.ylabel("Differenz der Winkel")
 pyplot.legend()
 
@@ -110,6 +110,9 @@ pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='red')
 pyplot.plot([0], [0], 's', color='black')
 #pyplot.plot([m[0]], [m[1]], 'v', color='green')
 pyplot.gca().set_aspect('equal', adjustable='box')
-pyplot.grid(color='blue', linestyle='-', linewidth=1)
+pyplot.grid(True, which='both')
+pyplot.axhline(y=0, color='k')
+pyplot.axvline(x=0, color='k')
+#pyplot.grid(color='blue', linestyle='-', linewidth=1)
 
 pyplot.show()

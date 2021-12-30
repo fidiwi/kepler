@@ -16,7 +16,8 @@ class UltraClass:
         csvreaderlist = list(csvreader)
         datasetLength = len(csvreaderlist)
         self.anzahlWindows = datasetLength//readsPerWindow
-        self.readsPerWindow = readsPerWindow
+        #self.readsPerWindow = readsPerWindow Wird später erst in calcWinkel definiert, da
+        #der Wert wegen unterschiedlicher Datensatzlängen abweichen kann
 
 
     def readFile(self):
@@ -471,7 +472,9 @@ class UltraClass:
     def getAnzahlWindows(self):
         return self.anzahlWindows
 
-
+    
+    def getReadsPerWindow(self):
+        return self.readsPerWindow
 
 
 
