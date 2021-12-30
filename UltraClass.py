@@ -89,19 +89,24 @@ class UltraClass:
         return [datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage]
 
 
-    def datensatzVerschieben(self, datasetList, readAmountPerSection, resetValue=0):
+    def datensatzVerschieben(self, datasetList, readAmountPerSection, gapBereiche, resetValue = 0):
         max = 0
         maxPos = 0
         min = 1000
         minPos = 0
         if resetValue == 0:
             for windowIndex in range(len(readAmountPerSection)):
-                if max < readAmountPerSection[windowIndex]:
-                    max = readAmountPerSection[windowIndex]
-                    maxPos = windowIndex/self.anzahlWindows
-                if min > readAmountPerSection[windowIndex]:
-                    min = readAmountPerSection[windowIndex]
-                    minPos = windowIndex/self.anzahlWindows
+                flag = True
+                for gap in gapBereiche:
+                    if gap[1] >= windowIndex/self.anzahlWindows >= gap[0]:
+                        flag = False
+                if flag:
+                    if max < readAmountPerSection[windowIndex]:
+                        max = readAmountPerSection[windowIndex]
+                        maxPos = windowIndex/self.anzahlWindows
+                    if min > readAmountPerSection[windowIndex]:
+                        min = readAmountPerSection[windowIndex]
+                        minPos = windowIndex/self.anzahlWindows
             
             if minPos < 0.45 or minPos > 0.55:
                 resetValue = minPos - 0.5

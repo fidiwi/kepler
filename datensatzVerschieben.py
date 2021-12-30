@@ -1,6 +1,6 @@
 from UltraClass import UltraClass
 import csv
-filenameVerschoben = "Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_4.0_0.0,0.0_pos.csv"
+filenameVerschoben = "Output/BackMovedDataset/backMovedDataset_0.19_verschoben_0.2_10000_4.0_20_.20000,.40000_pos.csv"
 
 file = open(filenameVerschoben)
 csvreader = csv.reader(file)
@@ -19,7 +19,7 @@ with open(cd, 'w', newline='') as csvfile:
         writer.writerow([value])
     csvfile.close()
 
-filename = 'Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
+filename = 'Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_10000_4.0_20_.20000,.40000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
 readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv
 thresholdLuecke = 1
 thresholdUeberschuss = -1
@@ -28,5 +28,7 @@ ultraClass = UltraClass(filename, thresholdLuecke, thresholdUeberschuss, readsPe
 # für die originale Datei werden die Daten für die Diagramme bestimmt
 
 datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
-newFileName = ultraClass.datensatzVerschieben(datasetList, readAmountPerSection)
+degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
+gapBereiche = ultraClass.determineGaps(relEaList, xList)
+newFileName = ultraClass.datensatzVerschieben(datasetList, readAmountPerSection, gapBereiche)
 print(newFileName)
