@@ -39,6 +39,7 @@ ultraClass = UltraClass(filename, thresholdLuecke, thresholdUeberschuss, readsPe
 
 # für die originale Datei werden die Daten für die Diagramme bestimmt
 datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
+
 degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
 gapBereiche = ultraClass.determineGaps(relEaList, xList)
 linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
@@ -105,8 +106,8 @@ if wachstumsdiagramme:
         pyplot.plot(xValuesList[i], yValuesList[i])
 
 pyplot.plot(xVectors, yVectors, '.', color='blue')
-pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='orange')
-pyplot.plot([0], [0], 's', color='r')
+pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='red')
+pyplot.plot([0], [0], 's', color='black')
 #pyplot.plot([m[0]], [m[1]], 'v', color='green')
 pyplot.gca().set_aspect('equal', adjustable='box')
 pyplot.grid(True, which='both')

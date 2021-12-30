@@ -42,9 +42,11 @@ class UltraClass:
             if value == 1:
                 index = 0
             readsPerSection[index].append(value) # dem jeweiligen Window zugeordnet
-            degree = value * 360
-            x = math.sin(math.radians(degree)) # x- und y-Position werden bestimmt
-            y = math.cos(math.radians(degree)) 
+            degree = value * 360 + 90
+            if degree > 0:
+                degree -= 360
+            x = math.cos(math.radians(degree)) # x- und y-Position werden bestimmt
+            y = math.sin(math.radians(degree)) 
 
             xPosSection[index].append(x)
             yPosSection[index].append(y)
@@ -154,7 +156,7 @@ class UltraClass:
         for degreeDiff in degreeDiffList:
             relEaList.append((degreeDiff-avg) / avg)
 
-        print(xList)
+        #print(xList)
 
         return [degreeDiffList, xList, avg, standardAbw, relEaList]
 
@@ -164,14 +166,16 @@ class UltraClass:
         for relEaIndex in range(len(relEaList)):
             if relEaList[relEaIndex] >= self.thresholdLuecke: # wenn die Abweichung zu stark ist -> Lücke
                 gap = relEaIndex
-                print(gap)
+                #print(gap)
+                
                 anfang = xList[gap]
                 if anfang < 0.005:
                     anfang = 0
-                #if gap*self.readsPerWindow >= len(datasetList)-self.readsPerWindow:
-                #    ende = datasetList[-1]
-                #else:
-                ende = xList[gap+1]
+                if gap/self.anzahlWindows >= xList[-1]:
+                    ende = 1
+                    
+                else:
+                    ende = xList[gap+1]
                 gapBereiche.append([anfang, ende])
             elif relEaList[relEaIndex] <= self.thresholdUeberschuss:
                 gap = relEaIndex
@@ -181,8 +185,8 @@ class UltraClass:
                 #if gap*self.readsPerWindow >= len(datasetList)-self.readsPerWindow:
                 #    ende = datasetList[-1]
                 #else:
-                print("G:",gap)
-                print("X:",len(xList))
+                """print("G:",gap)
+                print("X:",len(xList))"""
                 ende = xList[gap+1]
                 gapBereiche.append([anfang, ende])
         return gapBereiche
@@ -235,9 +239,11 @@ class UltraClass:
                 filledValue = model1.predict(np.array([w]).reshape((-1, 1)))
 
             filledValues.append(filledValue)
-
-            x = math.sin(math.radians(w*360))
-            y = math.cos(math.radians(w*360))
+            winkel = w*360 + 90
+            if winkel > 360:
+                winkel -= 360
+            x = math.cos(math.radians(winkel))
+            y = math.sin(math.radians(winkel))
 
             xValuesEllipse.append(x*filledValue/(self.datasetLength/self.anzahlWindows))
             yValuesEllipse.append(y*filledValue/(self.datasetLength/self.anzahlWindows))
@@ -259,9 +265,8 @@ class UltraClass:
             #readsPerSectionDict[fw] = [fw]*int(fv) #Setze fv mal (prognostizierte Häufigkeit) den Wert des Windows ein
             #Alternative:
             newWindowData = []
-            halfWindowSize = (1/self.anzahlWindows)/2
-            lowerBound = fw#-halfWindowSize if fw-halfWindowSize >= 0 else 0
-            upperBound = fw+(self.anzahlWindows/self.datasetLength)#halfWindowSize if fw+halfWindowSize <= 1 else 1
+            lowerBound = fw 
+            upperBound = fw + (self.anzahlWindows/self.datasetLength)
             stepSize = (upperBound-lowerBound) / int(fv)
 
             for v in np.arange(lowerBound, upperBound, stepSize):
@@ -302,12 +307,18 @@ class UltraClass:
         linReg1List = np.array(linReg1)
         linReg1List = linReg1List.flatten().tolist()
         for i in range(len(linReg1List)):
-            xValuesList.append(math.sin(math.radians((i/self.anzahlWindows)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
-            yValuesList.append(math.cos(math.radians((i/self.anzahlWindows)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
+            winkel = (i/self.anzahlWindows)*360 + 90
+            if winkel > 360:
+                winkel -= 360
+            xValuesList.append(math.cos(math.radians(winkel))*(linReg1List[i]/self.anzahlWindows)/calcValue)
+            yValuesList.append(math.sin(math.radians(winkel))*(linReg1List[i]/self.anzahlWindows)/calcValue)
         linReg1List.reverse()
         for i in range(len(linReg1List)):
-            xValuesList.append(math.sin(math.radians(((i/self.anzahlWindows)+0.5)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
-            yValuesList.append(math.cos(math.radians(((i/self.anzahlWindows)+0.5)*360))*(linReg1List[i]/self.anzahlWindows)/calcValue)
+            winkel = ((i/self.anzahlWindows)+0.5)*360 + 90
+            if winkel > 360:
+                winkel -= 360
+            xValuesList.append(math.cos(math.radians(winkel))*(linReg1List[i]/self.anzahlWindows)/calcValue)
+            yValuesList.append(math.sin(math.radians(winkel))*(linReg1List[i]/self.anzahlWindows)/calcValue)
         return [xValuesList, yValuesList]
 
 
