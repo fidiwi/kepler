@@ -225,13 +225,36 @@ class UltraClass:
                 foundWindows.append(xAxis2.pop(delWindow))
 
         # zeigt den allgemeinen Durchschnitt in einem Graph an 
-        model1 = LinearRegression() 
-        model1.fit(np.array(xAxis1).reshape((-1, 1)), readAmount1)
-        linReg1 = model1.predict(np.array(xAxis1).reshape((-1, 1)))
-
-        model2 = LinearRegression()
-        model2.fit(np.array(xAxis2).reshape((-1, 1)), readAmount2)
-        linReg2 = model2.predict(np.array(xAxis2).reshape((-1, 1)))
+        """readAmount1 = sorted(readAmount1)
+        readAmount2 = sorted(readAmount2)
+        xAxis1 = sorted(xAxis1)
+        xAxis2 = sorted(xAxis2)"""
+        if len(readAmount1) > 0:
+            model1 = LinearRegression() 
+            model1.fit(np.array(xAxis1).reshape((-1, 1)), readAmount1)
+            linReg1 = model1.predict(np.array(xAxis1).reshape((-1, 1)))
+        if len(readAmount2) > 0:
+            model2 = LinearRegression()
+            model2.fit(np.array(xAxis2).reshape((-1, 1)), readAmount2)
+            linReg2 = model2.predict(np.array(xAxis2).reshape((-1, 1)))
+        
+        if len(readAmount1) == 0 and len(readAmount2) == 0:
+            print("Regression konnte nicht gebildet werden. Datensatz oder die Parameter sind fehlerhaft!")
+        elif len(readAmount1) == 0 and len(readAmount2) > 0:
+            for xPos in xAxis2:
+                xAxis1.append(xPos - ((xPos-0.5)*2))
+            readAmount1 = readAmount2
+            model1 = LinearRegression() 
+            model1.fit(np.array(xAxis1).reshape((-1, 1)), readAmount1)
+            linReg1 = model1.predict(np.array(xAxis1).reshape((-1, 1)))
+        elif len(readAmount1) > 0 and len(readAmount2) == 0:
+            for xPos in xAxis1:
+                xAxis2.append(xPos + ((0.5-xPos)*2))
+            readAmount2 = readAmount1
+            model2 = LinearRegression()
+            model2.fit(np.array(xAxis2).reshape((-1, 1)), readAmount2)
+            linReg2 = model2.predict(np.array(xAxis2).reshape((-1, 1)))
+        
 
         filledValues = []
         xValuesEllipse = []
