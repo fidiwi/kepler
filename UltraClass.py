@@ -347,6 +347,8 @@ class UltraClass:
                 winkel -= 360
             xValuesList.append(math.cos(math.radians(winkel))*(linReg1List[i]/self.anzahlWindows)/calcValue)
             yValuesList.append(math.sin(math.radians(winkel))*(linReg1List[i]/self.anzahlWindows)/calcValue)
+        xValuesList.append(math.cos(math.radians(90))*(linReg1List[-1]/self.anzahlWindows)/calcValue)
+        yValuesList.append(math.sin(math.radians(90))*(linReg1List[-1]/self.anzahlWindows)/calcValue)
         return [xValuesList, yValuesList]
 
 
