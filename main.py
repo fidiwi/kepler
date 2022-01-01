@@ -3,12 +3,13 @@ import matplotlib.pyplot as pyplot
 import os
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename= 'Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv
-readsPerWindow = 50 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
-thresholdLuecke = 2
-thresholdUeberschuss = -1
-wachstumsdiagramme = False # True-> Wachstumsdiagramme werden angezeigt
+filename= 'Probedaten/Hirnet_subsample/Hirnet4_S4.subsample.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv
+readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
+thresholdLuecke = 0.5
+thresholdUeberschuss = -0.3
+wachstumsdiagramme = True # True-> Wachstumsdiagramme werden angezeigt
 createFiles = True
+windowQualität = False
 
 # Wachstumsdiagramme!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 if wachstumsdiagramme:
@@ -23,7 +24,7 @@ if wachstumsdiagramme:
         ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken/"+str(file), 1, -1, readsPerWindow)
         datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
         degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
-        gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
+        gapBereiche = ultraClass.determineGaps(relEaList, xList)
         linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
         windowAbwDict = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict)
         liste.append([linReg1, linReg2])
@@ -75,8 +76,8 @@ pyplot.plot(xAxisDiagram, readAmountPerSection, color='blue', label='gemessener 
 pyplot.plot(filledGaps[0], filledGaps[1], ".", color='red', label='vermuteter ReadAmountPerSection')
 pyplot.plot(linReg1[0], linReg1[1], color='green', label='linReg 1')
 pyplot.plot(linReg2[0], linReg2[1], color='green', label='linReg 2')
-
-pyplot.plot(xAxisDiagram, readAbweichungProWindow, color='purple', label='Windowqualität')
+if windowQualität:
+    pyplot.plot(xAxisDiagram, readAbweichungProWindow, color='purple', label='Windowqualität')
 pyplot.legend()
 pyplot.xlabel("Position")
 pyplot.ylabel("Anzahl pro Ausschnitt")
