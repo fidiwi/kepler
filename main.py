@@ -3,10 +3,10 @@ import matplotlib.pyplot as pyplot
 import os
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv
-readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
-thresholdLuecke = 1
-thresholdUeberschuss = -1
+filename= 'Probedaten/position_files/19_003c_S2_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_AE005672_3_Streptococcus_pneumoniae_TIGR4__complete_genome_BAC_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv
+readsPerWindow = 40 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
+thresholdLuecke = 2
+thresholdUeberschuss = 0.5
 wachstumsdiagramme = True # True-> Wachstumsdiagramme werden angezeigt
 createFiles = True
 windowQualität = False
@@ -18,14 +18,15 @@ if wachstumsdiagramme:
     liste2 = []
     filledGapsListe = []
     filledEllipseListe = []
+    steigungList = []
     xValuesList = []
     yValuesList = []
     for file in folderPosFiles:
-        ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken/"+str(file), 1, -1, readsPerWindow)
+        ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken/"+str(file), 10, -10, readsPerWindow)
         datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
         degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
         gapBereiche = ultraClass.determineGaps(relEaList, xList)
-        linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
+        linReg1, linReg2, filledGaps, filledEllipse, steigung = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
         windowAbwDict = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict)
         liste.append([linReg1, linReg2])
         filledGapsListe.append(filledGaps)
@@ -33,17 +34,18 @@ if wachstumsdiagramme:
         xValuesL, yValuesL = ultraClass.idealeEllipse(linReg1[1])
         xValuesList.append(xValuesL)
         yValuesList.append(yValuesL)
+        steigungList.append(steigung)
         #filledEllipseListe.append(filledEllipse)
 
 "Main!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-ultraClass = UltraClass(filename, thresholdLuecke, thresholdUeberschuss, readsPerWindow)
+ultraClass = UltraClass(filename, thresholdLuecke, -thresholdUeberschuss, readsPerWindow)
 
 # für die originale Datei werden die Daten für die Diagramme bestimmt
 datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
 
 degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
 gapBereiche = ultraClass.determineGaps(relEaList, xList)
-linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
+linReg1, linReg2, filledGaps, filledEllipse, steigung = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
 readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
 #--------------------Wachstumsrate Enno--------------------
@@ -53,7 +55,7 @@ windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0]
 
 # die Standardabweichung wird von der neue erstellte Datei bestimmt 
 if createFiles:
-    reAnalyse = UltraClass(betterDataFileName, thresholdLuecke, thresholdUeberschuss, readsPerWindow)
+    reAnalyse = UltraClass(betterDataFileName, thresholdLuecke, -thresholdUeberschuss, readsPerWindow)
     reDatasetList = reAnalyse.readFile()
     reDegreeDiffList, reXList, reAvg, reStandardAbw, reRelEaList = reAnalyse.calcWinkel(reDatasetList[0])
     print(f"Zweite Standardardabweichung: {reStandardAbw}")
@@ -74,8 +76,8 @@ if wachstumsdiagramme:
 
 pyplot.plot(xAxisDiagram, readAmountPerSection, color='blue', label='gemessener readAmountPerSection')
 pyplot.plot(filledGaps[0], filledGaps[1], ".", color='red', label='vermuteter ReadAmountPerSection')
-pyplot.plot(linReg1[0], linReg1[1], color='green', label='linReg 1')
-pyplot.plot(linReg2[0], linReg2[1], color='green', label='linReg 2')
+pyplot.plot(linReg1[0], linReg1[1], color='green', label=('linReg 1 ' + str(int(steigung[0]))))
+pyplot.plot(linReg2[0], linReg2[1], color='green', label=('linReg 2 ' + str(int(steigung[1]))))
 if windowQualität:
     pyplot.plot(xAxisDiagram, readAbweichungProWindow, color='purple', label='Windowqualität')
 pyplot.legend()

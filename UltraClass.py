@@ -276,7 +276,7 @@ class UltraClass:
             xValuesEllipse.append(x*filledValue/(self.datasetLength/self.anzahlWindows))
             yValuesEllipse.append(y*filledValue/(self.datasetLength/self.anzahlWindows))
 
-        return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [xValuesEllipse, yValuesEllipse]]
+        return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [xValuesEllipse, yValuesEllipse], [model1.coef_, model2.coef_]]
 
 
     def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, createFiles = True):
