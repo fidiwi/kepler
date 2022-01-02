@@ -3,7 +3,7 @@ import matplotlib.pyplot as pyplot
 import os
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv
+filename= 'Probedaten/Hirnet_subsample/Hirnet4_S4.subsample.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
 readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
 thresholdLuecke = 1
 thresholdUeberschuss = -1
@@ -14,14 +14,17 @@ windowQualität = False
 # Wachstumsdiagramme!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 if wachstumsdiagramme:
     folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken") # ./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken || ./Probedaten/Beispiesamples/Mail_lutz_3/5000 Achtung: int(anzahlWindows/2)
+    folderPosFiles.sort()
     liste = []
     liste2 = []
     filledGapsListe = []
     filledEllipseListe = []
     xValuesList = []
     yValuesList = []
+    wachstumsratenList = []
     for file in folderPosFiles:
-        ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken/"+str(file), 1, -1, readsPerWindow)
+        ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken/"+str(file), 10, -10, readsPerWindow)
+        wachstumsratenList.append(str(file[6]))
         datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
         degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
         gapBereiche = ultraClass.determineGaps(relEaList, xList)
@@ -31,7 +34,7 @@ if wachstumsdiagramme:
         filledGapsListe.append(filledGaps)
         #liste2.append([xVectors, yVectors])
         xValuesL, yValuesL = ultraClass.idealeEllipse(linReg1[1])
-        xValuesList.append(xValuesL)
+        xValuesList.append(xValuesL) #gute Bezeichner!
         yValuesList.append(yValuesL)
         #filledEllipseListe.append(filledEllipse)
 
@@ -82,9 +85,8 @@ pyplot.legend()
 pyplot.xlabel("Position")
 pyplot.ylabel("Anzahl pro Ausschnitt")
 
-pyplot.figure()
+pyplot.figure(num='Relative Reads pro Abschnitt')
 pyplot.plot(xAxisDiagram, readAmountPerSectionPercentage, color='blue', label='gemessener readAmountPerSection')
-pyplot.title("Relative Reads pro Abschnitt")
 pyplot.xlabel("Position")
 pyplot.ylabel("Prozent an Reads")
 
@@ -104,7 +106,8 @@ pyplot.legend()
 pyplot.figure(num='Vektorengraph')
 if wachstumsdiagramme:
     for i in range(len(xValuesList)):
-        pyplot.plot(xValuesList[i], yValuesList[i])
+        pyplot.plot(xValuesList[i], yValuesList[i], label='Wachstumsrate: '+str(wachstumsratenList[i]))
+    pyplot.legend()
 
 pyplot.plot(xVectors, yVectors, '.', color='blue')
 pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='red')
