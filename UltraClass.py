@@ -39,7 +39,7 @@ class UltraClass:
             value = float(row[0])
             datasetList.append(value)
             index = int(value*self.anzahlWindows)
-            if value == 1:
+            if value >= 1:
                 index = 0
             readsPerSection[index].append(value) # dem jeweiligen Window zugeordnet
             degree = value * 360 + 90
