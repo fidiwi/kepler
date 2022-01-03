@@ -1,3 +1,4 @@
+import os
 import csv
 import math
 import numpy as np
@@ -25,7 +26,9 @@ class UltraClass:
         csvreader = csv.reader(file)
         csvreaderlist = list(csvreader)
         datasetLength = len(csvreaderlist)
-        xAxisDiagram = np.arange(0, 1, 1/self.anzahlWindows)
+        xAxisDiagram = list(np.arange(0, 1, 1/self.anzahlWindows))
+        if(len(xAxisDiagram) > self.anzahlWindows):
+            del xAxisDiagram[-1]
         readsPerSection = [[] for _ in range(self.anzahlWindows)] 
 
         #Daten für den Vektorenplot
@@ -79,7 +82,7 @@ class UltraClass:
 
         readAmountPerSectionDict = {}
         readsPerSectionDict = {}
-        for i in range(len(list(xAxisDiagram))):
+        for i in range(len(xAxisDiagram)):
             readAmountPerSectionDict[xAxisDiagram[i]] = readAmountPerSection[i]
             readsPerSectionDict[xAxisDiagram[i]] = readsPerSection[i]
 
@@ -112,8 +115,6 @@ class UltraClass:
             if minPos < 0.45 or minPos > 0.55:
                 resetValue = minPos - 0.5
                 resetValue = round(resetValue, 5)
-            print(maxPos)
-            print(minPos)
             if abs(maxPos-minPos) > 0.45 and abs(maxPos-minPos) < 0.55:
                 print("Verschiebung wahrscheinlich erfolgreich ausgeführt")
 
@@ -168,7 +169,6 @@ class UltraClass:
 
     def determineGaps(self, relEaList, xList): # thresholdLuecke von 1 = 100% Abweichung (Bezogen auf die Abweichung vom Durchschnittabstand[avg])
         gapBereiche = []
-        print(len(xList))
         for relEaIndex in range(len(relEaList)):
             if relEaList[relEaIndex] >= self.thresholdLuecke: # wenn die Abweichung zu stark ist -> Lücke
                 gap = relEaIndex
@@ -191,8 +191,6 @@ class UltraClass:
                 if gap/self.anzahlWindows >= xList[-2]:
                     ende = 1  
                 else:
-                    print(gap)
-                    print(xList[-1])
                     ende = xList[gap+1]
                 """print("G:",gap)
                 print("X:",len(xList))"""
@@ -282,7 +280,7 @@ class UltraClass:
         return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [xValuesEllipse, yValuesEllipse], [model1.coef_, model2.coef_]]
 
 
-    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, createFiles = True):
+    def getWindowAbweichung(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, createFiles = True, iteration = 1, originalFile = None):
         windowAbwDict = {}
         betterDataFileName = ""
         for i in range(len(foundWindows)):
@@ -307,9 +305,14 @@ class UltraClass:
         
         if createFiles:
             #Daten in csv schreiben
-            nameFile = self.filename.rsplit('/', 1)[-1]
+            if not originalFile:
+                nameFile = self.filename.rsplit('/', 1)[-1]
+            else:
+                nameFile = originalFile.rsplit('/', 1)[-1]
             infoDataset = str(self.anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
-            betterDataFileName = 'Output/BetterDataset/NewData_' + infoDataset + nameFile
+            if not os.path.isdir(f'Output/BetterDataset/{iteration}'):
+                os.mkdir(f'Output/BetterDataset/{iteration}')
+            betterDataFileName = f'Output/BetterDataset/{iteration}/NewData_{infoDataset}{nameFile}'
             with open(betterDataFileName, 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile, delimiter=' ', quotechar='|')    
                 for key in readsPerSectionDict:
@@ -413,7 +416,6 @@ class UltraClass:
         
          #Standartabweichung der Readabstände in einem Window:
             window.sort()
-            print(len(window))
             abstandSumme = 0
             abstandListe = []
             for read in range(len(window)-1):
@@ -424,7 +426,6 @@ class UltraClass:
             if len(abstandListe) == 0:
                 standartabweichung = 0
             else:
-                print(len(abstandListe))
                 avg = abstandSumme/len(abstandListe)
                 for abstand in abstandListe:
                     varianz += (abstand-avg)**2
