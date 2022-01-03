@@ -168,17 +168,17 @@ class UltraClass:
 
     def determineGaps(self, relEaList, xList): # thresholdLuecke von 1 = 100% Abweichung (Bezogen auf die Abweichung vom Durchschnittabstand[avg])
         gapBereiche = []
+        print(len(xList))
         for relEaIndex in range(len(relEaList)):
             if relEaList[relEaIndex] >= self.thresholdLuecke: # wenn die Abweichung zu stark ist -> Lücke
                 gap = relEaIndex
-                #print(gap)
-                
+
                 anfang = xList[gap]
                 if anfang < 0.005:
                     anfang = 0
+
                 if gap/self.anzahlWindows >= xList[-1]:
                     ende = 1
-                    
                 else:
                     ende = xList[gap+1]
                 gapBereiche.append([anfang, ende])
@@ -187,12 +187,15 @@ class UltraClass:
                 anfang = xList[gap]
                 if anfang < 0.005:
                     anfang = 0
-                #if gap*self.readsPerWindow >= len(datasetList)-self.readsPerWindow:
-                #    ende = datasetList[-1]
-                #else:
+                
+                if gap/self.anzahlWindows >= xList[-2]:
+                    ende = 1  
+                else:
+                    print(gap)
+                    print(xList[-1])
+                    ende = xList[gap+1]
                 """print("G:",gap)
                 print("X:",len(xList))"""
-                ende = xList[gap+1]
                 gapBereiche.append([anfang, ende])
         return gapBereiche
 
@@ -410,6 +413,7 @@ class UltraClass:
         
          #Standartabweichung der Readabstände in einem Window:
             window.sort()
+            print(len(window))
             abstandSumme = 0
             abstandListe = []
             for read in range(len(window)-1):
@@ -420,6 +424,7 @@ class UltraClass:
             if len(abstandListe) == 0:
                 standartabweichung = 0
             else:
+                print(len(abstandListe))
                 avg = abstandSumme/len(abstandListe)
                 for abstand in abstandListe:
                     varianz += (abstand-avg)**2
