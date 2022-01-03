@@ -29,9 +29,12 @@ for file in folderPosFiles:
     #Werte Generieren
     ultraClass = UltraClass('Probedaten/Beispiesamples/Mail_lutz_3/5000/'+file, thresholdLuecke, -thresholdUeberschuss, readsPerWindow)
     datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
-    
+    gapBereiche = []
+    linReg1, linReg2, filledGaps, filledEllipse, steigung = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
+    xValuesL, yValuesL = ultraClass.idealeEllipse(linReg1[1])
+
     if row == 1:
-        for j in range(len(xVectors)):
+        for j in range(len(xValuesL)):
             worksheet.write(0, j+4, 'Vektor'+str(j))
 
     #Parameter eintragen
@@ -42,11 +45,13 @@ for file in folderPosFiles:
 
     #Vektorenbeträge berechnen und eintragen
     col=4
-    for vector in range(len(xVectors)):
-        worksheet.write(row, col, math.sqrt(xVectors[vector]**2 + yVectors[vector]**2))
+    for vector in range(len(xValuesL)):
+        worksheet.write(row, col, math.sqrt(xValuesL[vector]**2 + yValuesL[vector]**2))
         col+=1
 
-
     row+=1
+
+
+#Min/Max
 
 workbook.close()
