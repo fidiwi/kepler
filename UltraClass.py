@@ -471,12 +471,6 @@ class UltraClass:
         for vector in range(len(xVectors)):
             vectorBeträge.append(math.sqrt(xVectors[vector]**2 + yVectors[vector]**2))
 
-        #LinReg1 geht nur von 0 bis 0.5!!!!!!!!!!!!!
-        '''linReg1List = np.array(readProWindowList)
-        linReg1List = linReg1List.flatten().tolist()
-        betrag = linReg1List[vPos]
-        print("ENNO "+str(betrag))'''
-
         # X: Wachstumsrate, Y: Betrag vom Vektor
         #Vektor 2 linReg => Y1 = 26.776254501802 * X + 85.410780312125
         #==> X = (Y1-85.410780312125)/26.776254501802
@@ -506,49 +500,3 @@ class UltraClass:
     def getReadsPerWindow(self):
         return self.readsPerWindow
 
-
-
-    
-    #Daten umwandeln Graph
-"""
-    datasetList.sort()
-
-    degreeDiff = calcWinkel(datasetList, 100)
-    determineGaps(getEinzelAbweichung(degreeDiff[0], degreeDiff[2])[1], datasetList)
-    #Positionen addieren Vektorplot
-    vergleich1 = [1] * anzahlWindows
-
-    
-
-
-    linReg1, linReg2 = fillGaps(determineGaps(getEinzelAbweichung(degreeDiff[0], degreeDiff[2])[1], datasetList), readAmountPerSection, xAxisDiagram)
-
-    pyplot.plot(xAxisDiagram, readAmountPerSection)
-    pyplot.plot(linReg1[0], linReg1[1])
-    pyplot.plot(linReg2[0], linReg2[1])
-    #pyplot.plot(xAxisDiagram, vergleich1, color='red')
-    pyplot.xlabel("Position")
-    pyplot.ylabel("Anzahl pro Ausschnitt")
-
-    #Winkeldifferenzgraph
-    pyplot.figure()
-    pyplot.plot(degreeDiff[1], degreeDiff[0])
-    pyplot.plot(degreeDiff[1], getEinzelAbweichung(degreeDiff[0], degreeDiff[2])[0])
-    pyplot.plot(degreeDiff[1], getEinzelAbweichung(degreeDiff[0], degreeDiff[2])[1])
-    pyplot.plot(degreeDiff[1], [degreeDiff[2]] * len(degreeDiff[1]))
-    pyplot.plot(degreeDiff[1], [degreeDiff[3]] * len(degreeDiff[1]))
-    pyplot.title(f"Abstand = {degreeDiff[1][1] - degreeDiff[1][0]}; Standardabw: {degreeDiff[3]} Durchschn: {degreeDiff[2]};")
-    pyplot.xlabel(f"Abstand = {degreeDiff[1][1] - degreeDiff[1][0]}")
-    pyplot.ylabel("Differenz der Winkel")
-
-    #Vektorplot erstellen
-    pyplot.figure()
-    pyplot.plot(xVectors, yVectors, '.')
-    pyplot.plot([0], [0], 's', color='r')
-    #pyplot.plot([m[0]], [m[1]], 'v', color='green')
-    pyplot.gca().set_aspect('equal', adjustable='box')
-    pyplot.grid(color='blue', linestyle='-', linewidth=1)
-
-
-    pyplot.show()
-"""
