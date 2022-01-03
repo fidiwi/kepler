@@ -26,7 +26,9 @@ class UltraClass:
         csvreader = csv.reader(file)
         csvreaderlist = list(csvreader)
         datasetLength = len(csvreaderlist)
-        xAxisDiagram = np.arange(0, 1, 1/self.anzahlWindows)
+        xAxisDiagram = list(np.arange(0, 1, 1/self.anzahlWindows))
+        if(len(xAxisDiagram) > self.anzahlWindows):
+            del xAxisDiagram[-1]
         readsPerSection = [[] for _ in range(self.anzahlWindows)] 
 
         #Daten für den Vektorenplot
@@ -80,7 +82,7 @@ class UltraClass:
 
         readAmountPerSectionDict = {}
         readsPerSectionDict = {}
-        for i in range(len(list(xAxisDiagram))):
+        for i in range(len(xAxisDiagram)):
             readAmountPerSectionDict[xAxisDiagram[i]] = readAmountPerSection[i]
             readsPerSectionDict[xAxisDiagram[i]] = readsPerSection[i]
 
