@@ -3,17 +3,17 @@ import matplotlib.pyplot as pyplot
 import os
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename= 'Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
+filename= 'Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken/10000_4.0_20_.60000,.80000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
 readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
 thresholdLuecke = 1
 thresholdUeberschuss = 1
 wachstumsdiagramme = True # True-> Wachstumsdiagramme werden angezeigt
 createFiles = True
-windowQualität = False
+windowQualität = True
 
 # Wachstumsdiagramme!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 if wachstumsdiagramme:
-    folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/5000") # ./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken || ./Probedaten/Beispiesamples/Mail_lutz_3/5000
+    folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken") # ./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken || ./Probedaten/Beispiesamples/Mail_lutz_3/5000
     folderPosFiles.sort()
     liste = []
     liste2 = []
@@ -24,7 +24,7 @@ if wachstumsdiagramme:
     yValuesList = []
     wachstumsratenList = []
     for file in folderPosFiles:
-        ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/5000/"+str(file), 10, -10, readsPerWindow)
+        ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken/"+str(file), 1, -1, readsPerWindow)
         if len(folderPosFiles) == 3:
             wachstumsratenList.append(str(file[6]))
         elif len(folderPosFiles) == 6:
@@ -57,9 +57,9 @@ gapBereiche = ultraClass.determineGaps(relEaList, xList)
 linReg1, linReg2, filledGaps, filledEllipse, steigung = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
 readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
+ultraClass.calcGrowthVector(xVectors, yVectors,[0, 0.1])
 #--------------------Wachstumsrate Enno--------------------
 #ultraClass.calcGrowthVector(xVectors, yVectors)
-#readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 
 
 # die Standardabweichung wird von der neue erstellte Datei bestimmt 
