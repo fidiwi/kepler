@@ -474,8 +474,45 @@ class UltraClass:
         growth = (1.35/self.readsPerWindow)*steigungMedian
         return growth
 
-    def calcGrowthVector(self, xVectors, yVectors):
-        wachstumsrateV2 = 0
+    def calcGrowthVector(self, xVectors, yVectors, relVposList):
+        #MAN MUSS!!!!!! AnzahlWindows = 100 haben SONST FUNKTIONIERT ES NICHT
+        #bzw. muss es glatt durch 100 teilbar sein, oder multipliziert mit einer natürlichen Zahl 100 ergeben, z.B. 50, 200, etc.
+        #Vb: Vektorbetrag; Wr: Wachstumsrate; relVpos: relative Vektor Position
+
+        vektorBeträge = []
+        wRList = []
+        for relVPos in relVposList:
+            #relative Position in Vektor Index umrechnen
+            v = int(relVPos*self.anzahlWindows)
+            print('absoluter V: '+str(v))
+            
+            #Betrag berechnen
+            vektorBetrag = math.sqrt(xVectors[v]**2 + yVectors[v]**2)
+            print('BETRAG: '+str(vektorBetrag))
+            vektorBeträge.append(vektorBetrag)
+
+            #Wachstumsrate berechnen
+            #Ich habe nicht für jeden Vektor eine Regression
+            if relVPos == 0:
+                #HyperbolicReg: Vb = 2.1618163138193 - (1.1637523144608/Wr)
+                #=> Wr = 1.1637523144608/(-Vb + 2.1618163138193)
+                wRList.append(1.1637523144608/(-vektorBetrag + 2.1618163138193))
+            elif relVPos == 0.1:
+                #HyperbolicReg: Vb = 1.8101018100695 - (0.8022883449255/Wr)
+                #=> Wr = 0.8022883449255/(-Vb + 1.8101018100695)
+                wRList.append(0.8022883449255/(-vektorBetrag + 1.8101018100695))
+            elif relVPos == 0.2:
+                #
+                #
+                wRList
+        print('wRList: '+str(wRList))
+
+        
+
+        
+        
+        
+        '''wachstumsrateV2 = 0
         wachstumsrateV49 = 0
         avg = 0
 
@@ -499,7 +536,7 @@ class UltraClass:
 
         print('wachstumsrateV2: ' + str(wachstumsrateV2))
         print('wachstumsrateV49: ' + str(wachstumsrateV49))
-        print('avg: ' + str(avg))
+        print('avg: ' + str(avg))'''
 
         
 

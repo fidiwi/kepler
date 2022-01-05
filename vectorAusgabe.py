@@ -15,7 +15,7 @@ thresholdUeberschuss = 1
 workbook = xlsxwriter.Workbook('./Output/VektorAusgabe/5000_VektorAusgabe.xlsx')
 worksheet = workbook.add_worksheet()
 
-folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/5000") # z.B. Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
+folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken") # z.B. Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_3.0_0.0,0.0_pos.csv
 folderPosFiles.sort()
 
 #Preperation
@@ -27,7 +27,7 @@ worksheet.write(0, 3, 'ReadsPerWindow')
 row=1
 for file in folderPosFiles:
     #Werte Generieren
-    ultraClass = UltraClass('Probedaten/Beispiesamples/Mail_lutz_3/5000/'+file, thresholdLuecke, -thresholdUeberschuss, readsPerWindow)
+    ultraClass = UltraClass('Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken/'+file, thresholdLuecke, -thresholdUeberschuss, readsPerWindow)
     datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
     gapBereiche = []
     linReg1, linReg2, filledGaps, filledEllipse, steigung = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
@@ -39,7 +39,12 @@ for file in folderPosFiles:
 
     #Parameter eintragen
     worksheet.write(row, 0, file)
-    worksheet.write(row, 1, file[5])
+    if len(folderPosFiles) == 3:
+        worksheet.write(row, 1, file[6])
+    elif len(folderPosFiles) == 6:
+        worksheet.write(row, 1, file[5])
+    else:
+        print('[WARNING] anderen Ordner für die Vektor Ausgabe verwenden!')
     worksheet.write(row, 2, ultraClass.getAnzahlWindows())
     worksheet.write(row, 3, readsPerWindow)
 
