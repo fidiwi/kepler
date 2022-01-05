@@ -58,6 +58,8 @@ linReg1, linReg2, filledGaps, filledEllipse, steigung = ultraClass.fillGaps(gapB
 readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
 ultraClass.calcGrowthVector(xVectors, yVectors,[0, 0.1])
+fehlerVariabelSteigung = (abs(steigung[0])-abs(steigung[1]))
+print("FehlerVariabelSteigung: " + str(fehlerVariabelSteigung))
 #--------------------Wachstumsrate Enno--------------------
 #ultraClass.calcGrowthVector(xVectors, yVectors)
 

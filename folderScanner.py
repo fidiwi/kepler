@@ -8,8 +8,8 @@ folderRelPath = 'Probedaten/position_files'
 startWithIndex = 0
 
 readsPerWindow = 100
-thresholdLuecke = 1
-thresholdUeberschuss = 1
+thresholdLuecke = 0.8
+thresholdUeberschuss = 0.5
 printLenDataset = True
 searchMax = False
 wachstumsdiagramme = True
@@ -62,7 +62,28 @@ for filename in folderPosFiles:
         linReg1, linReg2, filledGaps, filledEllipse, steigung = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
         readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
         windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
+        fehlerVariabelSteigung = (abs(steigung[0])-abs(steigung[1]))
+        print("FehlerVariabelSteigung: " + str(fehlerVariabelSteigung))
         #ultraClass.calcGrowthVector(xVectors, yVectors,[0, 0.1])
+        pyplot.figure(num='Readamount pro Window')
+        pyplot.plot(xAxisDiagram, readAmountPerSection, color='blue', label='gemessener readAmountPerSection')
+        pyplot.plot(filledGaps[0], filledGaps[1], ".", color='red', label='vermuteter ReadAmountPerSection')
+        pyplot.plot(linReg1[0], linReg1[1], color='green', label=('linReg 1 ' + str(int(steigung[0]))))
+        pyplot.plot(linReg2[0], linReg2[1], color='green', label=('linReg 2 ' + str(int(steigung[1]))))
+        pyplot.legend()
+        pyplot.xlabel("Position")
+        pyplot.ylabel("Anzahl pro Ausschnitt")
+        #Winkeldifferenzgraph
+        pyplot.figure(num='Winkeldifferenzengraph')
+        pyplot.plot(xList, degreeDiffList, label='Winkeldifferenz in Grad')
+        pyplot.plot(xList, relEaList, label='Relativer Abstand einer Differenz vom\nDurchschnitt (Relative Einzelabweichung)')
+        pyplot.plot(xList, [avg] * len(xList), label='Durschnittswert')
+        pyplot.plot(xList, [thresholdLuecke] * len(xList), label='Lücke')
+        pyplot.plot(xList, [thresholdUeberschuss] * len(xList), label='Überschuss')
+        pyplot.title(f"Messabstand: {ultraClass.getReadsPerWindow()}; Standardabw: {standardAbw} Durchschn: {avg};")
+        pyplot.xlabel(f"Position")
+        pyplot.ylabel("Differenz der Winkel")
+        pyplot.legend()
 
         #Vektorenplot
         pyplot.figure(num=str(i)+": "+filename)
