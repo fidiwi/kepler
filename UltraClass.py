@@ -457,10 +457,22 @@ class UltraClass:
         """
     
 
-    def calcGrowth(self, datasetList, standardAbw):
+    def calcGrowthStabw(self, datasetList, standardAbw):
         growth = 0.8*((1+len(datasetList)/(len(datasetList)*100))**self.anzahlWindows)**standardAbw
         return growth
 
+    def calcGrowthSteigung(self, steigungList):
+        steigungMedian = 0
+        steigung = [abs(steigungList[0]), abs(steigungList[1])]
+        diff = abs(steigung[0] - steigung[1])
+        if diff == 0:
+            steigungMedian = steigung[0]
+        elif steigung[0] > steigung[1]:
+            steigungMedian = steigung[1] + diff
+        else:
+            steigungMedian = steigung[0] + diff
+        growth = (1.35/self.readsPerWindow)*steigungMedian
+        return growth
 
     def calcGrowthVector(self, xVectors, yVectors):
         wachstumsrateV2 = 0
