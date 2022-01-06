@@ -4,8 +4,8 @@ import os
 
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.40000,.60000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
-readsPerWindow = 50 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
+filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_4.0_20_0,.10000_.90000,1_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
+readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
 thresholdLuecke = 1
 thresholdUeberschuss = 1
 wachstumsdiagramme = True # True-> Wachstumsdiagramme werden angezeigt
@@ -64,10 +64,7 @@ print("FehlerVariabelSteigung: " + str(fehlerVariabelSteigung))
 
 if wachstumsdiagramme: 
     for i in range(len(xValuesList)):
-        if wachstumsratenList[i] == "2":
-            xValuesList[i], yValuesList[i]= ultraClass.kalibrieren(xValuesList[i], yValuesList[i], xVectors, yVectors, True)
-        else:
-            xValuesList[i], yValuesList[i]= ultraClass.kalibrieren(xValuesList[i], yValuesList[i], xVectors, yVectors)
+        xValuesList[i], yValuesList[i]= ultraClass.kalibrieren(xValuesList[i], yValuesList[i], xVectors, yVectors)
 
 #--------------------Wachstumsrate Enno--------------------
 #ultraClass.calcGrowthVector(xVectors, yVectors)

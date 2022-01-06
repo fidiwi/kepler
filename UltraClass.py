@@ -169,18 +169,19 @@ class UltraClass:
 
     def determineGaps(self, relEaList, xList): # thresholdLuecke von 1 = 100% Abweichung (Bezogen auf die Abweichung vom Durchschnittabstand[avg])
         gapBereiche = []
+    
         for relEaIndex in range(len(relEaList)):
             if relEaList[relEaIndex] >= self.thresholdLuecke: # wenn die Abweichung zu stark ist -> Lücke
                 gap = relEaIndex
-
+                print(len(xList))
                 anfang = xList[gap]
                 if anfang < 0.005:
                     anfang = 0
-
-                if gap >= xList[-1]:
+                if gap >= len(xList) - 1:
                     ende = 1
                 else:
                     ende = xList[gap+1]
+    
                 gapBereiche.append([anfang, ende])
             elif relEaList[relEaIndex] <= self.thresholdUeberschuss:
                 gap = relEaIndex
@@ -188,12 +189,10 @@ class UltraClass:
                 if anfang < 0.005:
                     anfang = 0
                 
-                if gap >= xList[-1]:
+                if gap >= len(xList) - 1:
                     ende = 1  
                 else:
                     ende = xList[gap+1]
-                """print("G:",gap)
-                print("X:",len(xList))"""
                 gapBereiche.append([anfang, ende])
         return gapBereiche
 
@@ -285,8 +284,8 @@ class UltraClass:
         betterDataFileName = ""
         for i in range(len(foundWindows)):
             fw = foundWindows[i]
+            fv = filledValues[i]
             originalValue = readAmountPerSectionDict[fw]
-            fv = originalValue*0.437 #filledValues[i]
             diff = float(originalValue - fv) # wie viele Reads zu viel bzw. zu wenig sind 
             relDiff = str(int((originalValue / fv)*10000)/100) +"%" # realtiv zum erwartetem Wert
 
@@ -296,7 +295,7 @@ class UltraClass:
             newWindowData = []
             lowerBound = fw 
             upperBound = fw + (self.anzahlWindows/self.datasetLength)
-            stepSize = (upperBound-lowerBound) / int(round(fv))
+            stepSize = (upperBound-lowerBound) / int(fv)
 
             for v in np.arange(lowerBound, upperBound, stepSize):
                 newWindowData.append(v.item()) #.item macht aus v ein float anstelle von numpy float
@@ -467,14 +466,12 @@ class UltraClass:
         """
     
 
-    def kalibrieren(self, xVectorsEllipse, yVectorsEllipse, xVectors, yVectors, wachstumZwei=False):
+    def kalibrieren(self, xVectorsEllipse, yVectorsEllipse, xVectors, yVectors):
         #print("Wurzel: " + str(math.sqrt(((xVectors[23]+xVectors[24])/2)**2+((yVectors[23]+yVectors[24])/2)**2)))
         idealisierung = 0.9591384589301084 
         punkt1 = math.sqrt((xVectors[round(self.anzahlWindows* 0.24)])**2+(yVectors[round(self.anzahlWindows* 0.24)])**2)
         punkt2 = math.sqrt((xVectors[round(self.anzahlWindows* 0.74)])**2+(yVectors[round(self.anzahlWindows* 0.74)])**2)
-        if wachstumZwei:
-            idealisierung = math.sqrt((xVectorsEllipse[round(self.anzahlWindows* 0.24)])**2+(yVectorsEllipse[round(self.anzahlWindows* 0.24)])**2)
-        
+          
         streckfaktor = (punkt1/idealisierung + abs(punkt2)/idealisierung)/2
         for i in range(len(xVectorsEllipse)):
             xVectorsEllipse[i] = xVectorsEllipse[i] * streckfaktor
