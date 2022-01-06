@@ -335,7 +335,7 @@ class UltraClass:
 
 
     def idealeEllipse(self, linReg1):
-        calcValue = ((self.datasetLength/self.anzahlWindows)/100)**2
+        calcValue = (((self.datasetLength/self.anzahlWindows)/100)**2)*2
         xValuesList = []
         yValuesList = []
         linReg1List = np.array(linReg1)
@@ -344,18 +344,32 @@ class UltraClass:
             winkel = (i/self.anzahlWindows)*360 + 90
             if winkel > 360:
                 winkel -= 360
-            xValuesList.append(math.cos(math.radians(winkel))*(linReg1List[i]/self.anzahlWindows)/calcValue)
-            yValuesList.append(math.sin(math.radians(winkel))*(linReg1List[i]/self.anzahlWindows)/calcValue)
+            
+            x = math.cos(math.radians(winkel))*(linReg1List[i]/self.anzahlWindows/calcValue)
+            y = math.sin(math.radians(winkel))*(linReg1List[i]/self.anzahlWindows/calcValue)
+            xValuesList.append(x)
+            yValuesList.append(y)
         linReg1List.reverse()
-        for i in range(len(linReg1List)):
-            winkel = ((i/self.anzahlWindows)+0.5)*360 + 90
-            if winkel > 360:
-                winkel -= 360
-            xValuesList.append(math.cos(math.radians(winkel))*(linReg1List[i]/self.anzahlWindows)/calcValue)
-            yValuesList.append(math.sin(math.radians(winkel))*(linReg1List[i]/self.anzahlWindows)/calcValue)
-        xValuesList.append(math.cos(math.radians(90))*(linReg1List[-1]/self.anzahlWindows)/calcValue)
-        yValuesList.append(math.sin(math.radians(90))*(linReg1List[-1]/self.anzahlWindows)/calcValue)
-        return [xValuesList, yValuesList]
+        yValuesListNP = np.array(yValuesList)
+        xValuesListNP = np.array(xValuesList)
+        yValuesList = yValuesListNP.tolist()
+        xValuesList = xValuesListNP.tolist()
+
+        for i in range(len(list(yValuesList))-1):
+            if yValuesList[i+1] >= yValuesList[i]:
+                yValuesList[i+1] = yValuesList[i]
+                
+        yValuesListNew = list(yValuesList)
+        for i in range(len(yValuesList)):
+            yValuesListNew.append(yValuesList[-(i+1)])
+
+
+        xValuesListNew = list(xValuesList)
+        for i in range(len(xValuesList)):
+            xValuesListNew.append((xValuesList[-(i+1)])*-1)
+
+
+        return [xValuesListNew, yValuesListNew]
 
 
     def windowsSucheOpenFile(self):
