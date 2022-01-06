@@ -177,7 +177,7 @@ class UltraClass:
                 if anfang < 0.005:
                     anfang = 0
 
-                if gap/self.anzahlWindows >= xList[-1]:
+                if gap >= xList[-1]:
                     ende = 1
                 else:
                     ende = xList[gap+1]
@@ -188,7 +188,7 @@ class UltraClass:
                 if anfang < 0.005:
                     anfang = 0
                 
-                if gap/self.anzahlWindows >= xList[-2]:
+                if gap >= xList[-1]:
                     ende = 1  
                 else:
                     ende = xList[gap+1]
@@ -285,8 +285,8 @@ class UltraClass:
         betterDataFileName = ""
         for i in range(len(foundWindows)):
             fw = foundWindows[i]
-            fv = filledValues[i]
             originalValue = readAmountPerSectionDict[fw]
+            fv = originalValue*0.437 #filledValues[i]
             diff = float(originalValue - fv) # wie viele Reads zu viel bzw. zu wenig sind 
             relDiff = str(int((originalValue / fv)*10000)/100) +"%" # realtiv zum erwartetem Wert
 
@@ -296,7 +296,7 @@ class UltraClass:
             newWindowData = []
             lowerBound = fw 
             upperBound = fw + (self.anzahlWindows/self.datasetLength)
-            stepSize = (upperBound-lowerBound) / int(fv)
+            stepSize = (upperBound-lowerBound) / int(round(fv))
 
             for v in np.arange(lowerBound, upperBound, stepSize):
                 newWindowData.append(v.item()) #.item macht aus v ein float anstelle von numpy float
