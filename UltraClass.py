@@ -467,6 +467,19 @@ class UltraClass:
         """
     
 
+    def kalibrieren(self, xVectorsEllipse, yVectorsEllipse, xVectors, yVectors):
+        #print("Wurzel: " + str(math.sqrt(((xVectors[23]+xVectors[24])/2)**2+((yVectors[23]+yVectors[24])/2)**2)))
+        idealisierung = 0.9591384589301084 
+        punkt1 = math.sqrt((xVectors[round(self.anzahlWindows* 0.24)])**2+(yVectors[round(self.anzahlWindows* 0.24)])**2)
+        punkt2 = math.sqrt((xVectors[round(self.anzahlWindows* 0.74)])**2+(yVectors[round(self.anzahlWindows* 0.74)])**2)
+        streckfaktor = (punkt1/idealisierung + abs(punkt2)/idealisierung)/2
+        print("Streckfaktor: "+str(streckfaktor))
+        for i in range(len(xVectorsEllipse)):
+            xVectorsEllipse[i] = xVectorsEllipse[i] * streckfaktor
+            yVectorsEllipse[i] = yVectorsEllipse[i] * streckfaktor
+        
+        return [xVectorsEllipse, yVectorsEllipse]
+
     def calcGrowthStabw(self, datasetList, standardAbw):
         growth = 0.8*((1+len(datasetList)/(len(datasetList)*100))**self.anzahlWindows)**standardAbw
         return growth
@@ -548,7 +561,6 @@ class UltraClass:
         print('wachstumsrateV49: ' + str(wachstumsrateV49))
         print('avg: ' + str(avg))'''
 
-        
 
 
     
