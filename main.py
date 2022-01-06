@@ -82,6 +82,7 @@ if createFiles:
 
 #print (windowAbwDict)
 print (gapBereiche)
+print (f"Wachstumsrate Steigung: {ultraClass.calcGrowthSteigung(steigung)}")
 
 #--------------------Plotting--------------------
 #Readamount pro Window, mit LinRegs
