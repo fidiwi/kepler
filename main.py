@@ -3,7 +3,7 @@ import matplotlib.pyplot as pyplot
 import os
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename= 'Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken/10000_4.0_20_.60000,.80000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
+filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
 readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
 thresholdLuecke = 1
 thresholdUeberschuss = 1
@@ -70,12 +70,13 @@ if createFiles:
     reDatasetList = reAnalyse.readFile()
     reDegreeDiffList, reXList, reAvg, reStandardAbw, reRelEaList = reAnalyse.calcWinkel(reDatasetList[0])
     print(f"Zweite Standardardabweichung: {reStandardAbw}")
-    growth = reAnalyse.calcGrowth(datasetList, reStandardAbw)
+    growth = reAnalyse.calcGrowthStabw(datasetList, reStandardAbw)
     print(f"Wachstumsrate: {growth}")
 
 
 #print (windowAbwDict)
 print (gapBereiche)
+print (f"Wachstumsrate Steigung: {ultraClass.calcGrowthSteigung(steigung)}")
 
 #--------------------Plotting--------------------
 #Readamount pro Window, mit LinRegs
