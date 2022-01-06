@@ -46,7 +46,7 @@ class UltraClass:
                 index = 0
             readsPerSection[index].append(value) # dem jeweiligen Window zugeordnet
             degree = value * 360 + 90
-            if degree > 0:
+            if degree > 360:
                 degree -= 360
             x = math.cos(math.radians(degree)) # x- und y-Position werden bestimmt
             y = math.sin(math.radians(degree)) 
@@ -355,10 +355,6 @@ class UltraClass:
         yValuesList = yValuesListNP.tolist()
         xValuesList = xValuesListNP.tolist()
 
-        for i in range(len(list(yValuesList))-1):
-            if yValuesList[i+1] >= yValuesList[i]:
-                yValuesList[i+1] = yValuesList[i]
-                
         yValuesListNew = list(yValuesList)
         for i in range(len(yValuesList)):
             yValuesListNew.append(yValuesList[-(i+1)])
