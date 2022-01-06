@@ -1,7 +1,7 @@
 from UltraClass import UltraClass
 import matplotlib.pyplot as pyplot
 import os
-import math
+
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
 filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.40000,.60000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
@@ -62,8 +62,12 @@ ultraClass.calcGrowthVector(xVectors, yVectors,[0, 0.1])
 fehlerVariabelSteigung = (abs(steigung[0])-abs(steigung[1]))
 print("FehlerVariabelSteigung: " + str(fehlerVariabelSteigung))
 
-for i in range(len(xValuesList)):
-    xValuesList[i], yValuesList[i]= ultraClass.kalibrieren(xValuesList[i], yValuesList[i], xVectors, yVectors)
+if wachstumsdiagramme: 
+    for i in range(len(xValuesList)):
+        if wachstumsratenList[i] == "2":
+            xValuesList[i], yValuesList[i]= ultraClass.kalibrieren(xValuesList[i], yValuesList[i], xVectors, yVectors, True)
+        else:
+            xValuesList[i], yValuesList[i]= ultraClass.kalibrieren(xValuesList[i], yValuesList[i], xVectors, yVectors)
 
 #--------------------Wachstumsrate Enno--------------------
 #ultraClass.calcGrowthVector(xVectors, yVectors)
