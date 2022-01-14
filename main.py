@@ -8,8 +8,8 @@ filename= 'Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_8.0_0.0,0.0_pos.csv' 
 readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
 thresholdLuecke = 1
 thresholdUeberschuss = 1
-wachstumsdiagramme = True # True-> Wachstumsdiagramme werden angezeigt
-createFiles = True
+wachstumsdiagramme = False # True-> Wachstumsdiagramme werden angezeigt
+createFiles = False
 windowQualität = False
 
 # Wachstumsdiagramme!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -88,9 +88,11 @@ print(f"Wachstumsrate V0: {wrV0}")
 #Readamount pro Window, mit LinRegs
 pyplot.figure(num='Readamount pro Window')
 if wachstumsdiagramme:
+    i=0
     for item in liste:
-        pyplot.plot(item[0][0], item[0][1], color='black')
-        pyplot.plot(item[1][0], item[1][1], color='black')
+        pyplot.plot(item[0][0], item[0][1], color='black', label=steigungList[i][0])
+        pyplot.plot(item[1][0], item[1][1], color='black', label=steigungList[i][1])
+        i+=1
 
 pyplot.plot(xAxisDiagram, readAmountPerSection, color='blue', label='gemessener readAmountPerSection')
 pyplot.plot(filledGaps[0], filledGaps[1], ".", color='red', label='vermuteter ReadAmountPerSection')

@@ -494,7 +494,7 @@ class UltraClass:
             steigungMedian = steigung[1] + diff
         else:
             steigungMedian = steigung[0] + diff
-        growth = (1.35/self.readsPerWindow)*steigungMedian
+        growth = ((0.585+(7650/self.datasetLength))/self.readsPerWindow)*steigungMedian#(1.35/self.readsPerWindow)*steigungMedian
         return growth
 
 
