@@ -4,7 +4,7 @@ import os
 
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_4.0_20_0,.10000_.90000,1_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
+filename= 'Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_8.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
 readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
 thresholdLuecke = 1
 thresholdUeberschuss = 1
@@ -58,16 +58,14 @@ gapBereiche = ultraClass.determineGaps(relEaList, xList)
 linReg1, linReg2, filledGaps, filledEllipse, steigung = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
 readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
-ultraClass.calcGrowthVector(xVectors, yVectors,[0, 0.1])
-fehlerVariabelSteigung = (abs(steigung[0])-abs(steigung[1]))
-print("FehlerVariabelSteigung: " + str(fehlerVariabelSteigung))
+wrV0 = ultraClass.calcGrowthVector(xVectors, yVectors,[0, 0.1])
+rNormalisiert, theta = ultraClass.calcPectioidplot(readAmountPerSection, steigung)
+fehlerVariableSteigung = (abs(steigung[0])-abs(steigung[1]))
+print("FehlerVariableSteigung: " + str(fehlerVariableSteigung))
 
 if wachstumsdiagramme: 
     for i in range(len(xValuesList)):
         xValuesList[i], yValuesList[i]= ultraClass.kalibrieren(xValuesList[i], yValuesList[i], xVectors, yVectors)
-
-#--------------------Wachstumsrate Enno--------------------
-#ultraClass.calcGrowthVector(xVectors, yVectors)
 
 
 
@@ -76,14 +74,15 @@ if createFiles:
     reAnalyse = UltraClass(betterDataFileName, thresholdLuecke, -thresholdUeberschuss, readsPerWindow)
     reDatasetList = reAnalyse.readFile()
     reDegreeDiffList, reXList, reAvg, reStandardAbw, reRelEaList = reAnalyse.calcWinkel(reDatasetList[0])
-    print(f"Zweite Standardardabweichung: {reStandardAbw}")
+    #print(f"Zweite Standardardabweichung: {reStandardAbw}")
     growth = reAnalyse.calcGrowthStabw(datasetList, reStandardAbw)
-    print(f"Wachstumsrate: {growth}")
+    print(f"Wachstumsrate Stabw: {growth}")
 
 
 #print (windowAbwDict)
-print (gapBereiche)
+#print (gapBereiche)
 print (f"Wachstumsrate Steigung: {ultraClass.calcGrowthSteigung(steigung)}")
+print(f"Wachstumsrate V0: {wrV0}")
 
 #--------------------Plotting--------------------
 #Readamount pro Window, mit LinRegs
@@ -136,5 +135,10 @@ pyplot.grid(True, which='both')
 pyplot.axhline(y=0, color='k')
 pyplot.axvline(x=0, color='k')
 #pyplot.grid(color='blue', linestyle='-', linewidth=1)
+
+
+#Pectioidplot
+pyplot.figure(num='Pectioidplot')
+pyplot.polar(theta, rNormalisiert)
 
 pyplot.show()
