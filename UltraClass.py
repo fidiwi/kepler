@@ -173,7 +173,6 @@ class UltraClass:
         for relEaIndex in range(len(relEaList)):
             if relEaList[relEaIndex] >= self.thresholdLuecke: # wenn die Abweichung zu stark ist -> Lücke
                 gap = relEaIndex
-                print(len(xList))
                 anfang = xList[gap]
                 if anfang < 0.005:
                     anfang = 0
@@ -503,9 +502,11 @@ class UltraClass:
         
         return [xVectorsEllipse, yVectorsEllipse, linEins, linZwei]
 
+
     def calcGrowthStabw(self, datasetList, standardAbw):
         growth = 0.8*((1+len(datasetList)/(len(datasetList)*100))**self.anzahlWindows)**standardAbw
         return growth
+
 
     def calcGrowthSteigung(self, steigungList):
         steigungMedian = 0
@@ -517,8 +518,9 @@ class UltraClass:
             steigungMedian = steigung[1] + diff
         else:
             steigungMedian = steigung[0] + diff
-        growth = (1.35/self.readsPerWindow)*steigungMedian
+        growth = ((0.585+(7650/self.datasetLength))/self.readsPerWindow)*steigungMedian#(1.35/self.readsPerWindow)*steigungMedian
         return growth
+
 
     def calcGrowthVector(self, xVectors, yVectors, relVposList):
         #MAN MUSS!!!!!! AnzahlWindows = 100 haben SONST FUNKTIONIERT ES NICHT
@@ -530,11 +532,11 @@ class UltraClass:
         for relVPos in relVposList:
             #relative Position in Vektor Index umrechnen
             v = int(relVPos*self.anzahlWindows)
-            print('absoluter V: '+str(v))
+            #print('absoluter V: '+str(v))
             
             #Betrag berechnen
             vektorBetrag = math.sqrt(xVectors[v]**2 + yVectors[v]**2)
-            print('BETRAG: '+str(vektorBetrag))
+            #print('BETRAG: '+str(vektorBetrag))
             vektorBeträge.append(vektorBetrag)
 
             #Wachstumsrate berechnen
@@ -542,7 +544,8 @@ class UltraClass:
             if relVPos == 0:
                 #HyperbolicReg: Vb = 2.1618163138193 - (1.1637523144608/Wr)
                 #=> Wr = 1.1637523144608/(-Vb + 2.1618163138193)
-                wRList.append(1.1637523144608/(-vektorBetrag + 2.1618163138193))
+                wrV0 = 1.1637523144608/(-vektorBetrag + 2.1618163138193)
+                wRList.append(wrV0)
             elif relVPos == 0.1:
                 #HyperbolicReg: Vb = 1.8101018100695 - (0.8022883449255/Wr)
                 #=> Wr = 0.8022883449255/(-Vb + 1.8101018100695)
@@ -551,8 +554,9 @@ class UltraClass:
                 #
                 #
                 wRList
-        print('wRList: '+str(wRList))
-
+        #print('wRList: '+str(wRList))
+    
+        return[wrV0]
         
 
         
@@ -585,6 +589,21 @@ class UltraClass:
         print('avg: ' + str(avg))'''
 
 
+    def calcPectioidplot(self, readAmountPerSection, steigung):
+        #0 bis 0.5, bzw. 0 bis pi
+        theta1 = np.linspace(0, np.pi, int(0.5*(self.anzahlWindows)))
+        r1 = steigung[0] * (theta1/(2*math.pi)) + readAmountPerSection[0]
+
+        #0.5 bis 1, bzw. pi bis 2pi
+        theta2 = np.linspace(np.pi, 2*np.pi, int(0.5*(self.anzahlWindows)))
+        yAchsenAbschnitt = -0.5*steigung[1] + readAmountPerSection[int(self.anzahlWindows/2)]
+        r2 = steigung[1] * (theta2/(2*math.pi)) + yAchsenAbschnitt
+        
+        r = np.concatenate([r1, r2])
+        theta = np.concatenate([theta1, theta2])
+        rNormalisiert = r/(self.datasetLength/self.anzahlWindows)
+        
+        return [rNormalisiert, theta]
 
     
     # Get-Methoden

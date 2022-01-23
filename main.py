@@ -59,9 +59,10 @@ gapBereiche = ultraClass.determineGaps(relEaList, xList)
 linReg1, linReg2, filledGaps, filledEllipse, steigung = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
 readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
-ultraClass.calcGrowthVector(xVectors, yVectors,[0, 0.1])
-fehlerVariabelSteigung = (abs(steigung[0])-abs(steigung[1]))
-print("FehlerVariabelSteigung: " + str(fehlerVariabelSteigung))
+wrV0 = ultraClass.calcGrowthVector(xVectors, yVectors,[0, 0.1])
+rNormalisiert, theta = ultraClass.calcPectioidplot(readAmountPerSection, steigung)
+fehlerVariableSteigung = (abs(steigung[0])-abs(steigung[1]))
+print("FehlerVariableSteigung: " + str(fehlerVariableSteigung))
 
 
 if wachstumsdiagramme: 
@@ -70,9 +71,6 @@ if wachstumsdiagramme:
     wachstumsrateDiv, gaußList = ultraClass.calcGrowthStreuungGraphen(xVectors, yVectors, xValuesList, yValuesList)
     print("Gauß: " + str(wachstumsrateDiv))
 
-#--------------------Wachstumsrate Enno--------------------
-#ultraClass.calcGrowthVector(xVectors, yVectors)
-
 
 
 # die Standardabweichung wird von der neue erstellte Datei bestimmt 
@@ -80,22 +78,25 @@ if createFiles:
     reAnalyse = UltraClass(betterDataFileName, thresholdLuecke, -thresholdUeberschuss, readsPerWindow)
     reDatasetList = reAnalyse.readFile()
     reDegreeDiffList, reXList, reAvg, reStandardAbw, reRelEaList = reAnalyse.calcWinkel(reDatasetList[0])
-    print(f"Zweite Standardardabweichung: {reStandardAbw}")
+    #print(f"Zweite Standardardabweichung: {reStandardAbw}")
     growth = reAnalyse.calcGrowthStabw(datasetList, reStandardAbw)
-    print(f"Wachstumsrate: {growth}")
+    print(f"Wachstumsrate Stabw: {growth}")
 
 
 #print (windowAbwDict)
-print (gapBereiche)
+#print (gapBereiche)
 print (f"Wachstumsrate Steigung: {ultraClass.calcGrowthSteigung(steigung)}")
+print(f"Wachstumsrate V0: {wrV0}")
 
 #--------------------Plotting--------------------
 #Readamount pro Window, mit LinRegs
 pyplot.figure(num='Readamount pro Window')
 if wachstumsdiagramme:
+    i=0
     for item in liste:
-        pyplot.plot(item[0][0], item[0][1], color='black')
-        pyplot.plot(item[1][0], item[1][1], color='black')
+        pyplot.plot(item[0][0], item[0][1], color='black', label=steigungList[i][0])
+        pyplot.plot(item[1][0], item[1][1], color='black', label=steigungList[i][1])
+        i+=1
 
 pyplot.plot(xAxisDiagram, readAmountPerSection, color='blue', label='gemessener readAmountPerSection')
 pyplot.plot(filledGaps[0], filledGaps[1], ".", color='red', label='vermuteter ReadAmountPerSection')
@@ -141,10 +142,17 @@ pyplot.axhline(y=0, color='k')
 pyplot.axvline(x=0, color='k')
 #pyplot.grid(color='blue', linestyle='-', linewidth=1)
 
+<<<<<<< HEAD
 if wachstumsdiagramme:
     pyplot.figure(num='Gaußkurve')
     pyplot.hist(gaußList[wachstumsrateDiv-2], bins=10)
     
 
+=======
+
+#Pectioidplot
+pyplot.figure(num='Pectioidplot')
+pyplot.polar(theta, rNormalisiert)
+>>>>>>> 965896a207e2fdcbe61289c14a478586794f9ea3
 
 pyplot.show()
