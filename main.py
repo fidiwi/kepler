@@ -4,12 +4,12 @@ import os
 
 
 # Eingaben: Dateiname, Abzahl Windows, Treshold
-filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_4.0_20_0,.10000_.90000,1_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
+filename= 'Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_2.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
 readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
-thresholdLuecke = 1
+thresholdLuecke = 10
 thresholdUeberschuss = 1
 wachstumsdiagramme = True # True-> Wachstumsdiagramme werden angezeigt
-createFiles = True
+createFiles = False
 windowQualität = False
 
 # Wachstumsdiagramme!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -47,6 +47,7 @@ if wachstumsdiagramme:
         steigungList.append(steigung)
         #filledEllipseListe.append(filledEllipse)
 
+
 "Main!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 ultraClass = UltraClass(filename, thresholdLuecke, -thresholdUeberschuss, readsPerWindow)
 
@@ -62,9 +63,12 @@ ultraClass.calcGrowthVector(xVectors, yVectors,[0, 0.1])
 fehlerVariabelSteigung = (abs(steigung[0])-abs(steigung[1]))
 print("FehlerVariabelSteigung: " + str(fehlerVariabelSteigung))
 
+
 if wachstumsdiagramme: 
     for i in range(len(xValuesList)):
-        xValuesList[i], yValuesList[i]= ultraClass.kalibrieren(xValuesList[i], yValuesList[i], xVectors, yVectors)
+        xValuesList[i], yValuesList[i], liste[i][0], liste[i][1]= ultraClass.kalibrieren(xValuesList[i], yValuesList[i], list(liste[i][0]), list(liste[i][1]), xVectors, yVectors)
+    wachstumsrateDiv, gaußList = ultraClass.calcGrowthStreuungGraphen(xVectors, yVectors, xValuesList, yValuesList)
+    print("Gauß: " + str(wachstumsrateDiv))
 
 #--------------------Wachstumsrate Enno--------------------
 #ultraClass.calcGrowthVector(xVectors, yVectors)
@@ -136,5 +140,11 @@ pyplot.grid(True, which='both')
 pyplot.axhline(y=0, color='k')
 pyplot.axvline(x=0, color='k')
 #pyplot.grid(color='blue', linestyle='-', linewidth=1)
+
+if wachstumsdiagramme:
+    pyplot.figure(num='Gaußkurve')
+    pyplot.hist(gaußList[wachstumsrateDiv-2], bins=10)
+    
+
 
 pyplot.show()

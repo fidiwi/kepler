@@ -3,6 +3,7 @@ import csv
 import math
 import numpy as np
 import matplotlib.pyplot as pyplot
+from scipy.fftpack import diff
 from sklearn.linear_model import LinearRegression
 
 
@@ -63,7 +64,6 @@ class UltraClass:
         # Windows werden erstellt 
         for window in range(self.anzahlWindows):
             readAmountPerSection[window] = len(readsPerSection[window])
-
             vectorX = 0
             for x in xPosSection[window]:
                 vectorX+=x
@@ -380,6 +380,28 @@ class UltraClass:
         return(searchReads)
 
 
+    def calcGrowthStreuungGraphen(self, xValues, yValues, xValueGraphList, yValueGraphList):
+        divList = []
+        gaußList = [[] for _ in range(len(xValueGraphList))]
+        for i in range(len(xValueGraphList)):
+            div = 0
+            for j in range(len(xValueGraphList[i])):
+                value = math.sqrt(xValues[j]**2 + yValues[j]**2) / math.sqrt(xValueGraphList[i][j]**2 + yValueGraphList[i][j]**2)
+                div += value
+                gaußList[i].append(value)
+            divList.append(abs(div/len(xValues) - 1))
+        min = divList[0]
+        print(divList)
+        minPos = 0
+        for i in range(len(divList)):
+            if divList[i] < min:
+                min = divList[i]
+                minPos = i
+        wachstumsrate = minPos + 2
+
+        return [wachstumsrate, gaußList]
+
+
     def calcMatchingReads(self, ultraReadsList, folderAnalyseReads, filename):
         # Datei mit den gefundenen Reads wird erstellt
         cd = 'Output/WindowsSuche/' + filename
@@ -466,18 +488,20 @@ class UltraClass:
         """
     
 
-    def kalibrieren(self, xVectorsEllipse, yVectorsEllipse, xVectors, yVectors):
+    def kalibrieren(self, xVectorsEllipse, yVectorsEllipse, linEins, linZwei, xVectors, yVectors):
         #print("Wurzel: " + str(math.sqrt(((xVectors[23]+xVectors[24])/2)**2+((yVectors[23]+yVectors[24])/2)**2)))
         idealisierung = 0.9591384589301084 
-        punkt1 = math.sqrt((xVectors[round(self.anzahlWindows* 0.24)])**2+(yVectors[round(self.anzahlWindows* 0.24)])**2)
-        punkt2 = math.sqrt((xVectors[round(self.anzahlWindows* 0.74)])**2+(yVectors[round(self.anzahlWindows* 0.74)])**2)
+        punkt1 = math.sqrt((xVectors[round(self.anzahlWindows* 0.23)])**2+(yVectors[round(self.anzahlWindows* 0.23)])**2)
+        punkt2 = math.sqrt((xVectors[round(self.anzahlWindows* 0.77)])**2+(yVectors[round(self.anzahlWindows* 0.77)])**2)
           
         streckfaktor = (punkt1/idealisierung + abs(punkt2)/idealisierung)/2
         for i in range(len(xVectorsEllipse)):
             xVectorsEllipse[i] = xVectorsEllipse[i] * streckfaktor
             yVectorsEllipse[i] = yVectorsEllipse[i] * streckfaktor
+            #linEins[i] = linEins[i] * streckfaktor
+            #linZwei[i] = linZwei[i] * streckfaktor
         
-        return [xVectorsEllipse, yVectorsEllipse]
+        return [xVectorsEllipse, yVectorsEllipse, linEins, linZwei]
 
     def calcGrowthStabw(self, datasetList, standardAbw):
         growth = 0.8*((1+len(datasetList)/(len(datasetList)*100))**self.anzahlWindows)**standardAbw
