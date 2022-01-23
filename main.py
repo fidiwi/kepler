@@ -142,17 +142,10 @@ pyplot.axhline(y=0, color='k')
 pyplot.axvline(x=0, color='k')
 #pyplot.grid(color='blue', linestyle='-', linewidth=1)
 
-<<<<<<< HEAD
 if wachstumsdiagramme:
     pyplot.figure(num='Gaußkurve')
     pyplot.hist(gaußList[wachstumsrateDiv-2], bins=10)
     
 
-=======
-
-#Pectioidplot
-pyplot.figure(num='Pectioidplot')
-pyplot.polar(theta, rNormalisiert)
->>>>>>> 965896a207e2fdcbe61289c14a478586794f9ea3
 
 pyplot.show()

@@ -388,7 +388,7 @@ class UltraClass:
                 value = math.sqrt(xValues[j]**2 + yValues[j]**2) / math.sqrt(xValueGraphList[i][j]**2 + yValueGraphList[i][j]**2)
                 div += value
                 gaußList[i].append(value)
-            divList.append(abs(div/len(xValues) - 1))
+            divList.append(abs(div/(len(xValues)-1) - 1))
         min = divList[0]
         print(divList)
         minPos = 0
