@@ -383,18 +383,41 @@ class UltraClass:
         divList = []
         gaußList = [[] for _ in range(len(xValueGraphList))]
         for i in range(len(xValueGraphList)):
+            print(f"W-D {i+2}:")
             div = 0
             for j in range(len(xValueGraphList[i])):
                 value = math.sqrt(xValues[j]**2 + yValues[j]**2) / math.sqrt(xValueGraphList[i][j]**2 + yValueGraphList[i][j]**2)
                 div += value
                 gaußList[i].append(value)
-            divList.append(abs(div/(len(xValues)-1) - 1))
+                print(value)
+            divList.append(abs(div/(len(xValues))-1))
         min = divList[0]
         print(divList)
         minPos = 0
         for i in range(len(divList)):
             if divList[i] < min:
                 min = divList[i]
+                minPos = i
+        wachstumsrate = minPos + 2
+
+        return [wachstumsrate, gaußList]
+
+    def calcGrowthStreuungGraphen2(self, xValues, yValues, xValueGraphList, yValueGraphList):
+        diffAvgList = []
+        gaußList = [[] for _ in range(len(xValueGraphList))]
+        for i in range(len(xValueGraphList)):
+            diff = 0
+            for j in range(len(xValueGraphList[i])):
+                value = math.sqrt(xValues[j]**2 + yValues[j]**2) - math.sqrt(xValueGraphList[i][j]**2 + yValueGraphList[i][j]**2)
+                diff += abs(value)
+                gaußList[i].append(value)
+            diffAvgList.append(abs(diff/(len(xValues))))
+        min = diffAvgList[0]
+        print(diffAvgList)
+        minPos = 0
+        for i in range(len(diffAvgList)):
+            if diffAvgList[i] < min:
+                min = diffAvgList[i]
                 minPos = i
         wachstumsrate = minPos + 2
 
