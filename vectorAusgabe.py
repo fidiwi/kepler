@@ -31,7 +31,7 @@ for file in folderPosFiles:
     datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
     gapBereiche = []
     linReg1, linReg2, filledGaps, filledEllipse, steigung = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
-    xValuesL, yValuesL = ultraClass.idealeEllipse(linReg1[1])
+    xValuesL, yValuesL = ultraClass.calcDataFromRegression(linReg1[1])
 
     if row == 1:
         for j in range(len(xValuesL)):

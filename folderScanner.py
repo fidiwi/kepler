@@ -57,11 +57,11 @@ for filename in folderPosFiles:
         datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
         if printLenDataset == True:
             print(str(len(datasetList)))
-        degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
+        degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcDegreeDifferences(datasetList)
         gapBereiche = ultraClass.determineGaps(relEaList, xList)
         linReg1, linReg2, filledGaps, filledEllipse, steigung = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
         readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
-        windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
+        windowAbwDict, betterDataFileName = ultraClass.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
         fehlerVariabelSteigung = (abs(steigung[0])-abs(steigung[1]))
         print("FehlerVariabelSteigung: " + str(fehlerVariabelSteigung))
         #ultraClass.calcGrowthVector(xVectors, yVectors,[0, 0.1])

@@ -21,10 +21,10 @@ folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_
 for file in folderPosFiles:
     ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/"+str(file), thresholdLuecke, thresholdUeberschuss, readsPerWindow)
     datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram = ultraClass.readFile()
-    degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
+    degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcDegreeDifferences(datasetList)
     gapBereiche = ultraClass.determineGaps(relEaList, datasetList)
     linReg1, linReg2, filledGaps, filledEllipse = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
-    windowAbwDict = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict)
+    windowAbwDict = ultraClass.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict)
 
 # die Daten mit den Überschuss werden untersucht und werden in den AnalyseReads gespeichert
 thresholdLuecke = 100
@@ -33,10 +33,10 @@ folderNegFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/neg_samples
 for file in folderNegFiles:
     ultraClassUeberschuss = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/neg_samples/20_percent/"+str(file), thresholdLuecke, thresholdUeberschuss, readsPerWindow)
     datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram = ultraClassUeberschuss.readFile()
-    degreeDiffList, xList, avg, standardAbw, relEaList = ultraClassUeberschuss.calcWinkel(datasetList)
+    degreeDiffList, xList, avg, standardAbw, relEaList = ultraClassUeberschuss.calcDegreeDifferences(datasetList)
     gapBereiche = ultraClassUeberschuss.determineGaps(relEaList, datasetList)
     linReg1, linReg2, filledGaps, filledEllipse = ultraClassUeberschuss.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
-    windowAbwDict = ultraClassUeberschuss.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict)
+    windowAbwDict = ultraClassUeberschuss.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict)
 
 # eine Liste mit den AnalyseReads wird erstellt
 folderAnalyseReads = os.listdir("./Output/AnalyseReads")

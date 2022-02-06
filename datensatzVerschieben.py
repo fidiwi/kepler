@@ -28,7 +28,7 @@ ultraClass = UltraClass(filename, thresholdLuecke, thresholdUeberschuss, readsPe
 # für die originale Datei werden die Daten für die Diagramme bestimmt
 
 datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
-degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
+degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcDegreeDifferences(datasetList)
 gapBereiche = ultraClass.determineGaps(relEaList, xList)
 newFileName = ultraClass.datensatzVerschieben(datasetList, readAmountPerSection, gapBereiche)
 print(newFileName)

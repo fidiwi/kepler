@@ -3,23 +3,23 @@ import matplotlib.pyplot as pyplot
 import os
 
 
-# Eingaben: Dateiname, Abzahl Windows, Treshold
-filename= 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_4.0_20_.40000,.60000_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
-readsPerWindow = 100 # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an. 
-thresholdLuecke = 10
+# Eingaben: Dateiname, Anzahl Windows, Treshold
+filename = 'Probedaten/position_files/Dundee106_S18_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_AE004091_2_Pseudomonas_aeruginosa_PAO1__complete_genome_BAC_pos.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
+readsPerWindow = 3000  # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
+thresholdLuecke = 1
 thresholdUeberschuss = 1
-wachstumsdiagramme = True # True-> Wachstumsdiagramme werden angezeigt
-createFiles = False
-windowQualität = False
+wachstumsdiagramme = True  # True-> Wachstumsdiagramme werden angezeigt
+createFiles = False  # Ob BetterDataset/AnalyseReads -Dateien erstellt werden sollen
+windowQuality = False  # Ob die Windowqualität ermittelt werden soll
 
-# Wachstumsdiagramme!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# Erstellung der Wachstumsdiagramme
 if wachstumsdiagramme:
-    folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/5000") # ./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken || ./Probedaten/Beispiesamples/Mail_lutz_3/5000
+    folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/5000")  # ./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken || ./Probedaten/Beispiesamples/Mail_lutz_3/5000
     folderPosFiles.sort()
-    liste = []
-    liste2 = []
-    filledGapsListe = []
-    filledEllipseListe = []
+    regressionList = []
+    vectorsList = []
+    filledGapsList = []
+    filledEllipseList = []
     steigungList = []
     xValuesList = []
     yValuesList = []
@@ -34,118 +34,146 @@ if wachstumsdiagramme:
             print('[WARNING] anderen Ordner für die Wachstumsdiagramme verwenden!')
 
         datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
-        degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
+        degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcDegreeDifferences(datasetList)
         gapBereiche = ultraClass.determineGaps(relEaList, xList)
-        linReg1, linReg2, filledGaps, filledEllipse, steigung = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
-        windowAbwDict = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict)
-        liste.append([linReg1, linReg2])
-        filledGapsListe.append(filledGaps)
-        #liste2.append([xVectors, yVectors])
-        xValuesL, yValuesL = ultraClass.idealeEllipse(linReg1[1])
-        xValuesList.append(xValuesL) #gute Bezeichner!
-        yValuesList.append(yValuesL)
+        linReg1, linReg2, filledGaps, predictedValues, steigung = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
+        windowAbwDict = ultraClass.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict)
+        regressionList.append([linReg1, linReg2])
+        filledGapsList.append(filledGaps)
+        # liste2.append([xVectors, yVectors])
+        xValuesRegression, yValuesRegression = ultraClass.calcDataFromRegression(linReg1[1])
+        xValuesList.append(xValuesRegression)  # gute Bezeichner!
+        yValuesList.append(yValuesRegression)
         steigungList.append(steigung)
-        #filledEllipseListe.append(filledEllipse)
+        # filledEllipseListe.append(filledEllipse)
 
 
-"Main!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+# Beginn der eigentlichen Datenbehandlung
+# Erstellung des Haupt-UltraClass-Objekts
 ultraClass = UltraClass(filename, thresholdLuecke, -thresholdUeberschuss, readsPerWindow)
 
-# für die originale Datei werden die Daten für die Diagramme bestimmt
+# Erste Ermittlung aller wichtigen Daten nach Auslesen des Datensatzes
 datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
 
-degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcWinkel(datasetList)
+degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcDegreeDifferences(datasetList)
 gapBereiche = ultraClass.determineGaps(relEaList, xList)
-linReg1, linReg2, filledGaps, filledEllipse, steigung = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
+linReg1, linReg2, filledGaps, predictedValues, steigung = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
 readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
-windowAbwDict, betterDataFileName = ultraClass.getWindowAbweichung(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
-wrV0 = ultraClass.calcGrowthVector(xVectors, yVectors,[0, 0.1])
+windowAbwDict, betterDataFileName = ultraClass.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
+growthVector0 = ultraClass.calcGrowthVector(xVectors, yVectors, [0, 0.1])
 rNormalisiert, theta = ultraClass.calcPectioidplot(readAmountPerSection, steigung)
 fehlerVariableSteigung = (abs(steigung[0])-abs(steigung[1]))
 print("FehlerVariableSteigung: " + str(fehlerVariableSteigung))
 
 
-if wachstumsdiagramme: 
+if wachstumsdiagramme:
     for i in range(len(xValuesList)):
-        xValuesList[i], yValuesList[i], liste[i][0], liste[i][1]= ultraClass.kalibrieren(xValuesList[i], yValuesList[i], list(liste[i][0]), list(liste[i][1]), xVectors, yVectors)
-    wachstumsrateDiv, gaußList = ultraClass.calcGrowthStreuungGraphen2(xVectors, yVectors, xValuesList, yValuesList)
-    print("Gauß: " + str(wachstumsrateDiv))
+        # WAHRSCHEINLICH ÜBERFALLIG
+        # Wachstumsdiagramme an Größe der entstandenen Form anpassen
+        xValuesList[i], yValuesList[i], regressionList[i][0], regressionList[i][1] = ultraClass.kalibrieren(xValuesList[i], yValuesList[i], list(regressionList[i][0]), list(regressionList[i][1]), xVectors, yVectors)
+    wachstumsrateDiff = ultraClass.calcGrowthStreuungGraphen(xVectors, yVectors, xValuesList, yValuesList)
+    print("Wachstumrate Differenz: " + str(wachstumsrateDiff))
 
 
-
-# die Standardabweichung wird von der neue erstellte Datei bestimmt 
+# Wachstumsrate wird über Standardabweichung bestimmt, zur Verfeinerung des Ergebnisses
+# wird der ausgebesserte Datensatz ein zweites mal analysiert.
 if createFiles:
     reAnalyse = UltraClass(betterDataFileName, thresholdLuecke, -thresholdUeberschuss, readsPerWindow)
     reDatasetList = reAnalyse.readFile()
-    reDegreeDiffList, reXList, reAvg, reStandardAbw, reRelEaList = reAnalyse.calcWinkel(reDatasetList[0])
-    #print(f"Zweite Standardardabweichung: {reStandardAbw}")
+    reDegreeDiffList, reXList, reAvg, reStandardAbw, reRelEaList = reAnalyse.calcDegreeDifferences(reDatasetList[0])
+    # print(f"Zweite Standardardabweichung: {reStandardAbw}")
     growth = reAnalyse.calcGrowthStabw(datasetList, reStandardAbw)
     print(f"Wachstumsrate Stabw: {growth}")
 
 
-#print (windowAbwDict)
-#print (gapBereiche)
-print (f"Wachstumsrate Steigung: {ultraClass.calcGrowthSteigung(steigung)}")
-print(f"Wachstumsrate V0: {wrV0}")
+print(f"Wachstumsrate Steigung: {ultraClass.calcGrowthSteigung(steigung)}")
+print(f"Wachstumsrate V0: {growthVector0}")
 
-#--------------------Plotting--------------------
-#Readamount pro Window, mit LinRegs
+# --------------------Plotting--------------------
+
+# #####################################################################
+# # Readamount per Section, mit eingezeichneten linearen Regressionen #
+# #####################################################################
 pyplot.figure(num='Readamount pro Window')
 if wachstumsdiagramme:
-    i=0
-    for item in liste:
+    i = 0
+    # Lineare Regressionen der jeweiligen Wachstumsraten
+    for item in regressionList:
         pyplot.plot(item[0][0], item[0][1], color='black', label=steigungList[i][0])
         pyplot.plot(item[1][0], item[1][1], color='black', label=steigungList[i][1])
-        i+=1
+        i += 1
 
+# Daten der Readamount per Section
 pyplot.plot(xAxisDiagram, readAmountPerSection, color='blue', label='gemessener readAmountPerSection')
+# Gefüllte Lücken
 pyplot.plot(filledGaps[0], filledGaps[1], ".", color='red', label='vermuteter ReadAmountPerSection')
+# Lineare Regressionen
 pyplot.plot(linReg1[0], linReg1[1], color='green', label=('linReg 1 ' + str(int(steigung[0]))))
 pyplot.plot(linReg2[0], linReg2[1], color='green', label=('linReg 2 ' + str(int(steigung[1]))))
-if windowQualität:
+# ggf. Windowqualität
+if windowQuality:
     pyplot.plot(xAxisDiagram, readAbweichungProWindow, color='purple', label='Windowqualität')
+
 pyplot.legend()
 pyplot.xlabel("Position")
 pyplot.ylabel("Anzahl pro Ausschnitt")
+
+# #################################################
+# # Readamount per Section, mit Relativer Y-Skala #
+# #################################################
 
 pyplot.figure(num='Relative Reads pro Abschnitt')
 pyplot.plot(xAxisDiagram, readAmountPerSectionPercentage, color='blue', label='gemessener readAmountPerSection')
 pyplot.xlabel("Position")
 pyplot.ylabel("Prozent an Reads")
 
-#Winkeldifferenzgraph
+# ##########################
+# # Winkeldifferenzengraph #
+# ##########################
 pyplot.figure(num='Winkeldifferenzengraph')
+# Winkeldifferenzen
 pyplot.plot(xList, degreeDiffList, label='Winkeldifferenz in Grad')
+# Relative Einzelabweichung
 pyplot.plot(xList, relEaList, label='Relativer Abstand einer Differenz vom\nDurchschnitt (Relative Einzelabweichung)')
+# Durchschnitt
 pyplot.plot(xList, [avg] * len(xList), label='Durschnittswert')
+# Schwellenwert Lücke (Threshold)
 pyplot.plot(xList, [thresholdLuecke] * len(xList), label='Lücke')
+# Schwellenwert Überschuss (Threshold)
 pyplot.plot(xList, [thresholdUeberschuss] * len(xList), label='Überschuss')
+
 pyplot.title(f"Messabstand: {ultraClass.getReadsPerWindow()}; Standardabw: {standardAbw} Durchschn: {avg};")
-pyplot.xlabel(f"Position")
+pyplot.xlabel("Position")
 pyplot.ylabel("Differenz der Winkel")
 pyplot.legend()
 
-#Vektorengraph
+# #########################################
+# # Vektorengraph inkl. Wachstumsdigramme #
+# #########################################
 pyplot.figure(num='Vektorengraph')
+# ggf. Wachstumsdigramme
 if wachstumsdiagramme:
     for i in range(len(xValuesList)):
         pyplot.plot(xValuesList[i], yValuesList[i], label='Wachstumsrate: '+str(wachstumsratenList[i]))
     pyplot.legend()
 
+# Vektorenpunkte
 pyplot.plot(xVectors, yVectors, '.', color='blue')
-pyplot.plot(filledEllipse[0], filledEllipse[1], '.', color='red')
+# Verbesserte Vektorenpunkte
+pyplot.plot(predictedValues[0], predictedValues[1], '.', color='red')
+
 pyplot.plot([0], [0], 's', color='black')
-#pyplot.plot([m[0]], [m[1]], 'v', color='green')
 pyplot.gca().set_aspect('equal', adjustable='box')
 pyplot.grid(True, which='both')
 pyplot.axhline(y=0, color='k')
 pyplot.axvline(x=0, color='k')
-#pyplot.grid(color='blue', linestyle='-', linewidth=1)
 
-if wachstumsdiagramme:
+
+# #############
+# # Gaußkurve #
+# #############
+"""if wachstumsdiagramme:
     pyplot.figure(num='Gaußkurve')
-    pyplot.hist(gaußList[wachstumsrateDiv-2], bins=10)
-    
-
-
+    pyplot.hist(gaußList[wachstumsrateDiff-2], bins=10)
+"""
 pyplot.show()
