@@ -1,0 +1,39 @@
+-Abstand zur ersten linReg benutzen, um Lücken zu erkennen (über ein noch zu bestimmendes) Threshhold
+
+-Selber Werte generieren, um Vektorenplot-Templates zu erzeugen, die über den Vektorenplot gelegt werden. Dann kann man die ungefähre Wachstumsrate schon vom Vektorenplot ablesen
+
+-Streuung in einem Window  (evtl. Standartabweichung) WICHTIG: niedrige Streuung != gutes Window => auch in einer Lücke kann die Streuung niedrig sein!
+
+- Verschiebte Datensätze fixen lel CHECK
+- Komische Spikes nach Füllen im BetterDataset
+
+nice to have:
+-bessere Benennung von Variablen etc., matplotlib usus verwenden
+-> Einheitliche Bennenung verwenden (Fachsprache), z.B. Window/Section/Abschnitt genauer definieren oder für eins entscheiden und dann nur das verwenden
+
+--------------------Echt Datensätze (position_files):--------------------
+mittel:
+2: 19_003b_S1_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_AP006716_1_Staphylococcus_haemolyticus_JCSC1435_DNA__complete_genome_BAC_pos.csv
+18: 19_003c_S2_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_AP011540_1_Rothia_mucilaginosa_DY_18_DNA__complete_genome_BAC_pos.csv
+21: 19_003c_S2_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_CP002005_1_Moraxella_catarrhalis_BBH18__complete_genome_BAC_pos.csv
+23: 19_003c_S2_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_CP002843_1_Streptococcus_parasanguinis_ATCC_15912__complete_genome_BAC_pos.csv
+24: 19_003c_S2_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_CP002925_1_Streptococcus_pseudopneumoniae_IS7493__complete_genome_BAC_pos.csv
+
+
+
+interessant:
+10: 19_003b_S1_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_CP020618_1_Staphylococcus_hominis_subsp__hominis_strain_K1_chromosome__complete_genome_BAC_pos.csv
+25: 19_003c_S2_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_CP013336_1_Fusobacterium_hwasookii_ChDC_F206__complete_genome_BAC_pos.csv
+43: 19_003d_S3_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_AE005672_3_Streptococcus_pneumoniae_TIGR4__complete_genome_BAC_pos.csv
+75: 19_004b_S4_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_CP000725_1_Streptococcus_gordonii_str__Challis_substr__CH1__complete_genome_BAC_pos.csv
+79: 19_004b_S4_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_CP007601_1_Staphylococcus_capitis_subsp__capitis_strain_AYP1020__complete_genome_BAC_pos.csv
+
+
+
+verschiedene Windows ausprobieren:
+9: 19_003b_S1_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_CP020438_2_Streptococcus_equinus_strain_FDAARGOS_251_chromosome__complete_genome_BAC_pos.csv
+19: 19_003c_S2_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_CP000057_2_Haemophilus_influenzae_86_028NP__complete_genome_BAC_pos.csv
+43: 19_003d_S3_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_AE005672_3_Streptococcus_pneumoniae_TIGR4__complete_genome_BAC_pos.csv
+
+mehr ReadsPerWindow
+81: 19_004b_S4_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_CP020618_1_Staphylococcus_hominis_subsp__hominis_strain_K1_chromosome__complete_genome_BAC_pos.csv
