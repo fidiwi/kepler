@@ -4,8 +4,8 @@ import os
 
 
 # Eingaben: Dateiname, Anzahl Windows, Treshold
-filename = 'Probedaten/position_files/Dundee106_S18_R1.ndp.trm.s.mm.dup.mq30.calmd.filt_1_AE004091_2_Pseudomonas_aeruginosa_PAO1__complete_genome_BAC_pos.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
-readsPerWindow = 3000  # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
+filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.10000,.30000_pos.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
+readsPerWindow = 100  # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
 thresholdLuecke = 1
 thresholdUeberschuss = 1
 wachstumsdiagramme = True  # True-> Wachstumsdiagramme werden angezeigt
@@ -70,7 +70,7 @@ if wachstumsdiagramme:
     for i in range(len(xValuesList)):
         # WAHRSCHEINLICH ÜBERFALLIG
         # Wachstumsdiagramme an Größe der entstandenen Form anpassen
-        xValuesList[i], yValuesList[i], regressionList[i][0], regressionList[i][1] = ultraClass.kalibrieren(xValuesList[i], yValuesList[i], list(regressionList[i][0]), list(regressionList[i][1]), xVectors, yVectors)
+        # xValuesList[i], yValuesList[i], regressionList[i][0], regressionList[i][1] = ultraClass.kalibrieren(xValuesList[i], yValuesList[i], list(regressionList[i][0]), list(regressionList[i][1]), xVectors, yVectors)
     wachstumsrateDiff = ultraClass.calcGrowthStreuungGraphen(xVectors, yVectors, xValuesList, yValuesList)
     print("Wachstumrate Differenz: " + str(wachstumsrateDiff))
 
