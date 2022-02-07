@@ -61,7 +61,7 @@ linReg1, linReg2, filledGaps, predictedValues, steigung = ultraClass.fillGaps(ga
 readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 windowAbwDict, betterDataFileName = ultraClass.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
 growthVector0 = ultraClass.calcGrowthVector(xVectors, yVectors, [0, 0.1])
-rNormalisiert, theta = ultraClass.calcPectioidplot(readAmountPerSection, steigung)
+rNormalisiert, theta = ultraClass.calcVectorplotPolar(readAmountPerSection, steigung)
 fehlerVariableSteigung = (abs(steigung[0])-abs(steigung[1]))
 print("FehlerVariableSteigung: " + str(fehlerVariableSteigung))
 

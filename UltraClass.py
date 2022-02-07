@@ -541,39 +541,9 @@ class UltraClass:
                 wRList.append(0.8022883449255/(-vektorBetrag + 1.8101018100695))
     
         return[wrV0]
-        
 
-        
-        
-        
-        '''wachstumsrateV2 = 0
-        wachstumsrateV49 = 0
-        avg = 0
-
-        #Vectorbeträge ausrechnen:
-        vectorBeträge = []
-        for vector in range(len(xVectors)):
-            vectorBeträge.append(math.sqrt(xVectors[vector]**2 + yVectors[vector]**2))
-
-        # X: Wachstumsrate, Y: Betrag vom Vektor
-        #Vektor 2 linReg => Y1 = 26.776254501802 * X + 85.410780312125
-        #==> X = (Y1-85.410780312125)/26.776254501802
-        #Vektor 49 linReg => Y2 = -17.834588235294 * X + 120.08470588235
-        #==> X = (Y2-120.08470588235)/-17.834588235294
-
-        #Wachstumsrate über Vektor 2 bestimmen:
-        wachstumsrateV2 = (vectorBeträge[2]-85.410780312125)/26.776254501802
-        #Wachstumsrate über Vektor 49 bestimmen:
-        wachstumsrateV49 = (vectorBeträge[49]-120.08470588235)/-17.834588235294
-        #avg bestimmen
-        avg = (wachstumsrateV2+wachstumsrateV49)/2
-
-        print('wachstumsrateV2: ' + str(wachstumsrateV2))
-        print('wachstumsrateV49: ' + str(wachstumsrateV49))
-        print('avg: ' + str(avg))'''
-
-
-    def calcPectioidplot(self, readAmountPerSection, steigung):
+    # Berechnet Vektorenplot für polares Koordinatensystem
+    def calcVectorplotPolar(self, readAmountPerSection, steigung):
         # 0 bis 0.5, bzw. 0 bis pi
         theta1 = np.linspace(0, np.pi, int(0.5*(self.anzahlWindows)))
         r1 = steigung[0] * (theta1/(2*math.pi)) + readAmountPerSection[0]

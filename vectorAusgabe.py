@@ -1,4 +1,3 @@
-from matplotlib.pyplot import legend
 from UltraClass import UltraClass
 import xlsxwriter
 import os
