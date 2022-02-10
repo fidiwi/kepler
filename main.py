@@ -4,7 +4,7 @@ import os
 
 
 # Eingaben: Dateiname, Anzahl Windows, Treshold
-filename = 'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.10000,.30000_pos.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
+filename = r'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.10000,.30000_pos.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
 readsPerWindow = 100  # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
 thresholdLuecke = 1
 thresholdUeberschuss = 1
@@ -67,7 +67,7 @@ print("FehlerVariableSteigung: " + str(fehlerVariableSteigung))
 
 
 if wachstumsdiagramme:
-    for i in range(len(xValuesList)):
+    # for i in range(len(xValuesList)):
         # WAHRSCHEINLICH ÜBERFALLIG
         # Wachstumsdiagramme an Größe der entstandenen Form anpassen
         # xValuesList[i], yValuesList[i], regressionList[i][0], regressionList[i][1] = ultraClass.kalibrieren(xValuesList[i], yValuesList[i], list(regressionList[i][0]), list(regressionList[i][1]), xVectors, yVectors)
