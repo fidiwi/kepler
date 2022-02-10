@@ -8,7 +8,7 @@ filename = r'Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_
 readsPerWindow = 100  # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
 thresholdLuecke = 1
 thresholdUeberschuss = 1
-wachstumsdiagramme = True  # True-> Wachstumsdiagramme werden angezeigt
+wachstumsdiagramme = False  # True-> Wachstumsdiagramme werden angezeigt
 createFiles = False  # Ob BetterDataset/AnalyseReads -Dateien erstellt werden sollen
 windowQuality = False  # Ob die Windowqualität ermittelt werden soll
 
