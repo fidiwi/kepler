@@ -485,7 +485,6 @@ class UltraClass:
         idealisierung = 0.9591384589301084 
         punkt1 = math.sqrt((xVectors[round(self.anzahlWindows* 0.23)])**2+(yVectors[round(self.anzahlWindows* 0.23)])**2)
         punkt2 = math.sqrt((xVectors[round(self.anzahlWindows* 0.77)])**2+(yVectors[round(self.anzahlWindows* 0.77)])**2)
-          
         streckfaktor = (punkt1/idealisierung + abs(punkt2)/idealisierung)/2
         for i in range(len(xVectorsEllipse)):
             xVectorsEllipse[i] = xVectorsEllipse[i] * streckfaktor
@@ -499,13 +498,12 @@ class UltraClass:
 
 
     def kalibrieren(self, xVectors, yVectors, linEins, linZwei, modelLinReg):
-        punkt1 = modelLinReg[0].predict(np.array([0.23]).reshape((-1, 1)))
-        punkt2 = modelLinReg[1].predict(np.array([0.77]).reshape((-1, 1)))
-        print(punkt1)
+        punkt1 = modelLinReg[0].predict(np.array([0.23]).reshape((-1, 1))).tolist()[0]
+        punkt2 = modelLinReg[1].predict(np.array([0.77]).reshape((-1, 1))).tolist()[0]
         streckfaktor = (self.anzahlWindows/punkt1 + self.anzahlWindows/punkt2)/2
         for i in range(len(xVectors)):
-            xVectors[i] = xVectors * streckfaktor
-            yVectors[i] = yVectors * streckfaktor
+            xVectors[i] = xVectors[i] * streckfaktor
+            yVectors[i] = yVectors[i] * streckfaktor
         return [xVectors, yVectors, linEins, linZwei]
 
     # Berechnet die Wachstumsrate anhand der Standardabweichung der Winkeldifferenzen
