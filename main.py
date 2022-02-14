@@ -4,7 +4,7 @@ import os
 
 
 # Eingaben: Dateiname, Anzahl Windows, Treshold
-filename = r'Probedaten\Beispiesamples\Mail_lutz_3\5000\5000_5.0_0.0,0.0_pos.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
+filename = r'Probedaten\Beispiesamples\Mail_lutz_3\Luecken\20_percent\10000_2.0_20_.60000,.80000_pos.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
 readsPerWindow = 50  # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
 thresholdLuecke = 1
 thresholdUeberschuss = 1
@@ -70,8 +70,7 @@ if wachstumsdiagramme:
     #for i in range(len(xValuesList)):
         # WAHRSCHEINLICH ÜBERFALLIG
         # Wachstumsdiagramme an Größe der entstandenen Form anpassen
-    xVectors, yVectors, linReg1, linReg2 = ultraClass.kalibrieren(xVectors, yVectors, list(linReg1[1]), list(linReg2[1]), modelLinReg)
-    print(linReg1)   
+    xVectors, yVectors, linReg1, linReg2, predictedValues = ultraClass.kalibrieren(xVectors, yVectors, list(linReg1), list(linReg2), modelLinReg, predictedValues) 
     wachstumsrateDiff = ultraClass.calcGrowthStreuungGraphen(xVectors, yVectors, xValuesList, yValuesList)
     print("Wachstumrate Differenz: " + str(wachstumsrateDiff))
 
@@ -122,11 +121,12 @@ pyplot.ylabel("Anzahl pro Ausschnitt")
 # #################################################
 # # Readamount per Section, mit Relativer Y-Skala #
 # #################################################
-
+"""
 pyplot.figure(num='Relative Reads pro Abschnitt')
 pyplot.plot(xAxisDiagram, readAmountPerSectionPercentage, color='blue', label='gemessener readAmountPerSection')
 pyplot.xlabel("Position")
 pyplot.ylabel("Prozent an Reads")
+"""
 
 # ##########################
 # # Winkeldifferenzengraph #

@@ -1,6 +1,7 @@
 import os
 import csv
 import math
+from cv2 import line
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
@@ -497,14 +498,23 @@ class UltraClass:
         return [xVectorsEllipse, yVectorsEllipse, linEins, linZwei]
 
 
-    def kalibrieren(self, xVectors, yVectors, linEins, linZwei, modelLinReg):
+    def kalibrieren(self, xVectors, yVectors, linEins, linZwei, modelLinReg, predictedValues):
         punkt1 = modelLinReg[0].predict(np.array([0.23]).reshape((-1, 1))).tolist()[0]
         punkt2 = modelLinReg[1].predict(np.array([0.77]).reshape((-1, 1))).tolist()[0]
-        streckfaktor = (self.anzahlWindows/punkt1 + self.anzahlWindows/punkt2)/2
+        streckfaktor = (self.readsPerWindow/punkt1 + self.readsPerWindow/punkt2)/2
         for i in range(len(xVectors)):
             xVectors[i] = xVectors[i] * streckfaktor
             yVectors[i] = yVectors[i] * streckfaktor
-        return [xVectors, yVectors, linEins, linZwei]
+        for i in range(len(predictedValues[0])):
+            predictedValues[0][i] = predictedValues[0][i] * streckfaktor
+            predictedValues[1][i] = predictedValues[1][i] * streckfaktor
+        
+        for i in range(len(linEins[1])):
+            linEins[1][i] = linEins[1][i] * streckfaktor
+        for i in range(len(linZwei[1])):
+            linZwei[1][i] = linZwei[1][i] * streckfaktor
+        print(linEins[1])
+        return [xVectors, yVectors, linEins, linZwei, predictedValues]
 
     # Berechnet die Wachstumsrate anhand der Standardabweichung der Winkeldifferenzen
     def calcGrowthStabw(self, datasetList, standardAbw):
