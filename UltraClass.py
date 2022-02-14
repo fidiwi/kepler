@@ -482,6 +482,7 @@ class UltraClass:
     # Sorgt dafür, dass Wachstumsdiagramme und der entstandene Vektorenplot
     # auf dieselbe Größe skaliert werden
     def kalibrieren(self, xVectorsEllipse, yVectorsEllipse, linEins, linZwei, xVectors, yVectors):
+        print(linEins)
         idealisierung = 0.9591384589301084 
         punkt1 = math.sqrt((xVectors[round(self.anzahlWindows* 0.23)])**2+(yVectors[round(self.anzahlWindows* 0.23)])**2)
         punkt2 = math.sqrt((xVectors[round(self.anzahlWindows* 0.77)])**2+(yVectors[round(self.anzahlWindows* 0.77)])**2)
@@ -490,8 +491,10 @@ class UltraClass:
         for i in range(len(xVectorsEllipse)):
             xVectorsEllipse[i] = xVectorsEllipse[i] * streckfaktor
             yVectorsEllipse[i] = yVectorsEllipse[i] * streckfaktor
-            #linEins[i] = linEins[i] * streckfaktor
-            #linZwei[i] = linZwei[i] * streckfaktor
+        
+        for i in range(len(linEins[1])):
+            linEins[1][i] = linEins[1][i] * streckfaktor
+            linZwei[1][i] = linZwei[1][i] * streckfaktor
         
         return [xVectorsEllipse, yVectorsEllipse, linEins, linZwei]
 
