@@ -67,9 +67,7 @@ print("FehlerVariableSteigung: " + str(fehlerVariableSteigung))
 
 
 if wachstumsdiagramme:
-    #for i in range(len(xValuesList)):
-        # WAHRSCHEINLICH ÜBERFALLIG
-        # Wachstumsdiagramme an Größe der entstandenen Form anpassen
+    # Die entstandene Form wird an den Wachstumsdiagrammen angepasst
     xVectors, yVectors, linReg1, linReg2, predictedValues = ultraClass.kalibrieren(xVectors, yVectors, list(linReg1), list(linReg2), modelLinReg, predictedValues) 
     wachstumsrateDiff = ultraClass.calcGrowthStreuungGraphen(xVectors, yVectors, xValuesList, yValuesList)
     print("Wachstumrate Differenz: " + str(wachstumsrateDiff))
