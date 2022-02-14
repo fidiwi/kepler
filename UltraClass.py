@@ -513,7 +513,7 @@ class UltraClass:
             linEins[1][i] = linEins[1][i] * streckfaktor
         for i in range(len(linZwei[1])):
             linZwei[1][i] = linZwei[1][i] * streckfaktor
-        print(linEins[1])
+            
         return [xVectors, yVectors, linEins, linZwei, predictedValues]
 
     # Berechnet die Wachstumsrate anhand der Standardabweichung der Winkeldifferenzen
