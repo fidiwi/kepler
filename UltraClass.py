@@ -267,7 +267,7 @@ class UltraClass:
             predictedXValues.append(x*filledValue/(self.datasetLength/self.anzahlWindows))
             predictedYValues.append(y*filledValue/(self.datasetLength/self.anzahlWindows))
 
-        return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [predictedXValues, predictedYValues], [model1.coef_, model2.coef_]]
+        return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [predictedXValues, predictedYValues], [model1.coef_, model2.coef_], [model1, model2]]
 
     # Funktion zum Erstellen der Ausgabedateien
     def createOutputFiles(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, createFiles = True, iteration = 1, originalFile = None):
@@ -481,8 +481,7 @@ class UltraClass:
 
     # Sorgt dafür, dass Wachstumsdiagramme und der entstandene Vektorenplot
     # auf dieselbe Größe skaliert werden
-    def kalibrieren(self, xVectorsEllipse, yVectorsEllipse, linEins, linZwei, xVectors, yVectors):
-        print(linEins)
+    def kalibrieren2(self, xVectorsEllipse, yVectorsEllipse, linEins, linZwei, xVectors, yVectors):
         idealisierung = 0.9591384589301084 
         punkt1 = math.sqrt((xVectors[round(self.anzahlWindows* 0.23)])**2+(yVectors[round(self.anzahlWindows* 0.23)])**2)
         punkt2 = math.sqrt((xVectors[round(self.anzahlWindows* 0.77)])**2+(yVectors[round(self.anzahlWindows* 0.77)])**2)
@@ -497,6 +496,17 @@ class UltraClass:
             linZwei[1][i] = linZwei[1][i] * streckfaktor
         
         return [xVectorsEllipse, yVectorsEllipse, linEins, linZwei]
+
+
+    def kalibrieren(self, xVectors, yVectors, linEins, linZwei, modelLinReg):
+        punkt1 = modelLinReg[0].predict(np.array([0.23]).reshape((-1, 1)))
+        punkt2 = modelLinReg[1].predict(np.array([0.77]).reshape((-1, 1)))
+        print(punkt1)
+        streckfaktor = (self.anzahlWindows/punkt1 + self.anzahlWindows/punkt2)/2
+        for i in range(len(xVectors)):
+            xVectors[i] = xVectors * streckfaktor
+            yVectors[i] = yVectors * streckfaktor
+        return [xVectors, yVectors, linEins, linZwei]
 
     # Berechnet die Wachstumsrate anhand der Standardabweichung der Winkeldifferenzen
     def calcGrowthStabw(self, datasetList, standardAbw):

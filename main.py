@@ -5,7 +5,7 @@ import os
 
 # Eingaben: Dateiname, Anzahl Windows, Treshold
 filename = r'Probedaten\Beispiesamples\Mail_lutz_3\5000\5000_5.0_0.0,0.0_pos.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
-readsPerWindow = 100  # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
+readsPerWindow = 50  # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
 thresholdLuecke = 1
 thresholdUeberschuss = 1
 wachstumsdiagramme = True  # True-> Wachstumsdiagramme werden angezeigt
@@ -36,7 +36,7 @@ if wachstumsdiagramme:
         datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
         degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcDegreeDifferences(datasetList)
         gapBereiche = ultraClass.determineGaps(relEaList, xList)
-        linReg1, linReg2, filledGaps, predictedValues, steigung = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
+        linReg1, linReg2, filledGaps, predictedValues, steigung, modelLinReg = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
         windowAbwDict = ultraClass.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict)
         regressionList.append([linReg1, linReg2])
         filledGapsList.append(filledGaps)
@@ -57,7 +57,7 @@ datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict
 
 degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcDegreeDifferences(datasetList)
 gapBereiche = ultraClass.determineGaps(relEaList, xList)
-linReg1, linReg2, filledGaps, predictedValues, steigung = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
+linReg1, linReg2, filledGaps, predictedValues, steigung, modelLinReg = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
 readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 windowAbwDict, betterDataFileName = ultraClass.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
 growthVector0 = ultraClass.calcGrowthVector(xVectors, yVectors, [0, 0.1])
@@ -67,11 +67,11 @@ print("FehlerVariableSteigung: " + str(fehlerVariableSteigung))
 
 
 if wachstumsdiagramme:
-    for i in range(len(xValuesList)):
+    #for i in range(len(xValuesList)):
         # WAHRSCHEINLICH ÜBERFALLIG
         # Wachstumsdiagramme an Größe der entstandenen Form anpassen
-        xValuesList[i], yValuesList[i], regressionList[i][0], regressionList[i][1] = ultraClass.kalibrieren(xValuesList[i], yValuesList[i], list(regressionList[i][0]), list(regressionList[i][1]), xVectors, yVectors)
-        
+    xVectors, yVectors, linReg1, linReg2 = ultraClass.kalibrieren(xVectors, yVectors, list(linReg1[1]), list(linReg2[1]), modelLinReg)
+    print(linReg1)   
     wachstumsrateDiff = ultraClass.calcGrowthStreuungGraphen(xVectors, yVectors, xValuesList, yValuesList)
     print("Wachstumrate Differenz: " + str(wachstumsrateDiff))
 
