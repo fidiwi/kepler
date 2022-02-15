@@ -1,7 +1,6 @@
 import os
 import csv
 import math
-from cv2 import line
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
