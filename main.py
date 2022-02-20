@@ -6,6 +6,8 @@ import os
 # Eingaben: Dateiname, Anzahl Windows, Treshold
 filename = r'Probedaten\Beispiesamples\Mail_lutz_3\Luecken\20_percent\10000_2.0_20_.60000,.80000_pos.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
 readsPerWindow = 50  # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
+start = 0
+end = 1
 thresholdLuecke = 1
 thresholdUeberschuss = 1
 wachstumsdiagramme = True  # True-> Wachstumsdiagramme werden angezeigt
@@ -57,7 +59,7 @@ datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict
 
 degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcDegreeDifferences(datasetList)
 gapBereiche = ultraClass.determineGaps(relEaList, xList)
-linReg1, linReg2, filledGaps, predictedValues, steigung, modelLinReg = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
+linReg1, linReg2, filledGaps, predictedValues, steigung, modelLinReg = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram, 0.6, 0.8)
 readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 windowAbwDict, betterDataFileName = ultraClass.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
 growthVector0 = ultraClass.calcGrowthVector(xVectors, yVectors, [0, 0.1])

@@ -1,6 +1,7 @@
 import os
 import csv
 import math
+from re import S
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
@@ -39,10 +40,13 @@ class UltraClass:
         # Daten auslesen und einordnen
         for row in csvreaderlist:
             value = float(row[0])
+            if value >= 1:
+                value -= 1
+
             datasetList.append(value)
             index = int(value*self.anzahlWindows)
-            if value >= 1:
-                index = 0
+            """if value >= 1:
+                index = 0"""
             # Werte werden dem jeweiligen Window zugeordnet
             readsPerSection[index].append(value)
             degree = value * 360 + 90
@@ -190,12 +194,14 @@ class UltraClass:
 
     # Funktion zur Ermittlung neuer Werte für Lücken/Überschüsse anhand 
     # Linearer Regressionen, die hier erstellt werden
-    def fillGaps(self, gapBereiche, readAmountPerSection, xAxisDiagram):
+    def fillGaps(self, gapBereiche, readAmountPerSection, xAxisDiagram, start=0, end=1):
         readAmount1 = readAmountPerSection[:len(readAmountPerSection)//2]  # Listen aufteilen: 0-0.5; 0.5-1
         readAmount2 = readAmountPerSection[len(readAmountPerSection)//2:]
         xAxis1 = xAxisDiagram[:len(xAxisDiagram)//2]
         xAxis2 = xAxisDiagram[len(xAxisDiagram)//2:]
 
+        if start!=0 or end!=1:
+            gapBereiche = [[0, start], [end, 1]]
         foundWindows = []
         halfWindow = (1/self.anzahlWindows)/2
         for gap in gapBereiche:
@@ -216,6 +222,22 @@ class UltraClass:
                 del readAmount2[delWindow]
                 foundWindows.append(xAxis2.pop(delWindow))
 
+        """copyAmount1 = readAmount1
+        copyAmount2 = readAmount2
+        copyXAxis1 = xAxis1
+        copyXAxis2 = xAxis2
+        readAmount1 = []
+        readAmount2 = []
+        xAxis1 = []
+        xAxis2 = []
+        for i in range(len(copyXAxis1)):
+            if start < copyXAxis1[i] < end:
+                xAxis1.append(copyXAxis1[i])
+                readAmount1.append(copyAmount1[i])
+        for i in range(len(copyXAxis2)):
+            if start < copyXAxis1[i] < end:
+                xAxis2.append(copyXAxis2[i])
+                readAmount2.append(copyAmount2[i])"""
         # Ermittlung der linearen Regressionen
         if len(readAmount1) > 0:
             model1 = LinearRegression()
