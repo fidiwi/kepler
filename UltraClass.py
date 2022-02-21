@@ -222,31 +222,41 @@ class UltraClass:
                 del readAmount2[delWindow]
                 foundWindows.append(xAxis2.pop(delWindow))
 
-        """copyAmount1 = readAmount1
-        copyAmount2 = readAmount2
-        copyXAxis1 = xAxis1
-        copyXAxis2 = xAxis2
-        readAmount1 = []
-        readAmount2 = []
-        xAxis1 = []
-        xAxis2 = []
-        for i in range(len(copyXAxis1)):
-            if start < copyXAxis1[i] < end:
-                xAxis1.append(copyXAxis1[i])
-                readAmount1.append(copyAmount1[i])
-        for i in range(len(copyXAxis2)):
-            if start < copyXAxis1[i] < end:
-                xAxis2.append(copyXAxis2[i])
-                readAmount2.append(copyAmount2[i])"""
+        
         # Ermittlung der linearen Regressionen
-        if len(readAmount1) > 0:
+        if len(readAmount1) > 0: # >1?
             model1 = LinearRegression()
             model1.fit(np.array(xAxis1).reshape((-1, 1)), readAmount1)
             linReg1 = model1.predict(np.array(xAxis1).reshape((-1, 1)))
+            # Die Randwert 0 und 0.5 werden ggf. zusätzlich berechnet, 
+            # damit eine schöne lineare Regression entsteht
+            
+            if xAxis1[0] != 0:
+                value = model1.predict(np.array([0]).reshape((-1, 1))).tolist()[0]
+                xAxis1.insert(0, 0)
+                linReg1 = np.insert(linReg1, 0, value)
+                readAmount1.insert(0, value)
+            if xAxis1[-1] != 0.5:
+                value = model1.predict(np.array([0.5]).reshape((-1, 1))).tolist()[0]
+                xAxis1.append(0.5)
+                linReg1 = np.append(linReg1, value)
+                readAmount1.append(value)
+
         if len(readAmount2) > 0:
             model2 = LinearRegression()
             model2.fit(np.array(xAxis2).reshape((-1, 1)), readAmount2)
             linReg2 = model2.predict(np.array(xAxis2).reshape((-1, 1)))
+
+            if xAxis2[0] != 0.:
+                value = model2.predict(np.array([0.5]).reshape((-1, 1))).tolist()[0]
+                xAxis2.insert(0, 0.5)
+                linReg2= np.insert(linReg2, 0, value)
+                readAmount2.insert(0, value)
+            if xAxis2[-1] != 1:
+                value = model2.predict(np.array([1]).reshape((-1, 1))).tolist()[0]
+                xAxis2.append(1)
+                linReg2 = np.append(linReg2, value)
+                readAmount2.append(value)
 
         if len(readAmount1) == 0 and len(readAmount2) == 0:
             print("Regression konnte nicht gebildet werden. Datensatz oder Parameter sind fehlerhaft!")

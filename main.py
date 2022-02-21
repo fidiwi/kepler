@@ -5,14 +5,15 @@ import os
 
 # Eingaben: Dateiname, Anzahl Windows, Treshold
 filename = r'Probedaten\Beispiesamples\Mail_lutz_3\Luecken\20_percent\10000_2.0_20_.60000,.80000_pos.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
-readsPerWindow = 50  # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
+readsPerWindow = 100  # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
 start = 0
 end = 1
 thresholdLuecke = 1
-thresholdUeberschuss = 1
+thresholdUeberschuss = 100
 wachstumsdiagramme = True  # True-> Wachstumsdiagramme werden angezeigt
 createFiles = False  # Ob BetterDataset/AnalyseReads -Dateien erstellt werden sollen
 windowQuality = False  # Ob die Windowqualität ermittelt werden soll
+legende = False # Ob die Legende bei jedem Graphen angezeigt werden soll
 
 # Erstellung der Wachstumsdiagramme
 if wachstumsdiagramme:
@@ -59,7 +60,7 @@ datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict
 
 degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcDegreeDifferences(datasetList)
 gapBereiche = ultraClass.determineGaps(relEaList, xList)
-linReg1, linReg2, filledGaps, predictedValues, steigung, modelLinReg = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram, 0.6, 0.8)
+linReg1, linReg2, filledGaps, predictedValues, steigung, modelLinReg = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram, start, end)
 readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 windowAbwDict, betterDataFileName = ultraClass.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
 growthVector0 = ultraClass.calcGrowthVector(xVectors, yVectors, [0, 0.1])
@@ -113,8 +114,8 @@ pyplot.plot(linReg2[0], linReg2[1], color='green', label=('linReg 2 ' + str(int(
 # ggf. Windowqualität
 if windowQuality:
     pyplot.plot(xAxisDiagram, readAbweichungProWindow, color='purple', label='Windowqualität')
-
-pyplot.legend()
+if legende:
+    pyplot.legend()
 pyplot.xlabel("Position")
 pyplot.ylabel("Anzahl pro Ausschnitt")
 
@@ -146,7 +147,8 @@ pyplot.plot(xList, [thresholdUeberschuss] * len(xList), label='Überschuss')
 pyplot.title(f"Messabstand: {ultraClass.getReadsPerWindow()}; Standardabw: {standardAbw} Durchschn: {avg};")
 pyplot.xlabel("Position")
 pyplot.ylabel("Differenz der Winkel")
-pyplot.legend()
+if legende:
+    pyplot.legend()
 
 # #########################################
 # # Vektorengraph inkl. Wachstumsdigramme #
@@ -156,6 +158,7 @@ pyplot.figure(num='Vektorengraph')
 if wachstumsdiagramme:
     for i in range(len(xValuesList)):
         pyplot.plot(xValuesList[i], yValuesList[i], label='Wachstumsrate: '+str(wachstumsratenList[i]))
+if legende:
     pyplot.legend()
 
 # Vektorenpunkte
