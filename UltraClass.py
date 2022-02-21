@@ -236,18 +236,20 @@ class UltraClass:
                 xAxis1.insert(0, 0)
                 linReg1 = np.insert(linReg1, 0, value)
                 readAmount1.insert(0, value)
+
             if xAxis1[-1] != 0.5:
                 value = model1.predict(np.array([0.5]).reshape((-1, 1))).tolist()[0]
                 xAxis1.append(0.5)
                 linReg1 = np.append(linReg1, value)
                 readAmount1.append(value)
+            model1.fit(np.array(xAxis1).reshape((-1, 1)), readAmount1)
 
         if len(readAmount2) > 0:
             model2 = LinearRegression()
             model2.fit(np.array(xAxis2).reshape((-1, 1)), readAmount2)
             linReg2 = model2.predict(np.array(xAxis2).reshape((-1, 1)))
 
-            if xAxis2[0] != 0.:
+            if xAxis2[0] != 0.5:
                 value = model2.predict(np.array([0.5]).reshape((-1, 1))).tolist()[0]
                 xAxis2.insert(0, 0.5)
                 linReg2= np.insert(linReg2, 0, value)
@@ -257,6 +259,7 @@ class UltraClass:
                 xAxis2.append(1)
                 linReg2 = np.append(linReg2, value)
                 readAmount2.append(value)
+            model2.fit(np.array(xAxis2).reshape((-1, 1)), readAmount2)
 
         if len(readAmount1) == 0 and len(readAmount2) == 0:
             print("Regression konnte nicht gebildet werden. Datensatz oder Parameter sind fehlerhaft!")
@@ -544,8 +547,10 @@ class UltraClass:
             linEins[1][i] = linEins[1][i] * streckfaktor
         for i in range(len(linZwei[1])):
             linZwei[1][i] = linZwei[1][i] * streckfaktor
-            
-        return [xVectors, yVectors, linEins, linZwei, predictedValues]
+        steigung1 = modelLinReg[0].coef_ * streckfaktor
+        steigung2 = modelLinReg[1].coef_ * streckfaktor
+        steigung = [steigung1, steigung2]    
+        return [xVectors, yVectors, linEins, linZwei, predictedValues, steigung]
 
     # Berechnet die Wachstumsrate anhand der Standardabweichung der Winkeldifferenzen
     def calcGrowthStabw(self, datasetList, standardAbw):

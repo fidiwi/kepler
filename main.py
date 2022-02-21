@@ -9,11 +9,11 @@ readsPerWindow = 100  # Wieviele Reads in einem Window erwartet werden sollen, W
 start = 0
 end = 1
 thresholdLuecke = 1
-thresholdUeberschuss = 100
+thresholdUeberschuss = 1
 wachstumsdiagramme = True  # True-> Wachstumsdiagramme werden angezeigt
 createFiles = False  # Ob BetterDataset/AnalyseReads -Dateien erstellt werden sollen
 windowQuality = False  # Ob die Windowqualität ermittelt werden soll
-legende = False # Ob die Legende bei jedem Graphen angezeigt werden soll
+legende = True # Ob die Legende bei jedem Graphen angezeigt werden soll
 
 # Erstellung der Wachstumsdiagramme
 if wachstumsdiagramme:
@@ -71,7 +71,7 @@ print("FehlerVariableSteigung: " + str(fehlerVariableSteigung))
 
 if wachstumsdiagramme:
     # Die entstandene Form wird an den Wachstumsdiagrammen angepasst
-    xVectors, yVectors, linReg1, linReg2, predictedValues = ultraClass.kalibrieren(xVectors, yVectors, list(linReg1), list(linReg2), modelLinReg, predictedValues) 
+    xVectors, yVectors, linReg1, linReg2, predictedValues, steigung = ultraClass.kalibrieren(xVectors, yVectors, list(linReg1), list(linReg2), modelLinReg, predictedValues) 
     wachstumsrateDiff = ultraClass.calcGrowthStreuungGraphen(xVectors, yVectors, xValuesList, yValuesList)
     print("Wachstumrate Differenz: " + str(wachstumsrateDiff))
 
