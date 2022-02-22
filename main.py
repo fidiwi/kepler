@@ -4,7 +4,7 @@ import os
 
 
 # Eingaben: Dateiname, Anzahl Windows, Treshold
-filename = r'Probedaten\Beispiesamples\Mail_lutz_3\Luecken\20_percent\10000_2.0_20_.60000,.80000_pos.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
+filename = r'Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_2.0_0.0,0.0_pos.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
 readsPerWindow = 100  # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
 start = 0
 end = 1
@@ -72,8 +72,8 @@ print("FehlerVariableSteigung: " + str(fehlerVariableSteigung))
 if wachstumsdiagramme:
     # Die entstandene Form wird an den Wachstumsdiagrammen angepasst
     xVectors, yVectors, linReg1, linReg2, predictedValues, steigung = ultraClass.kalibrieren(xVectors, yVectors, list(linReg1), list(linReg2), modelLinReg, predictedValues) 
-    wachstumsrateDiff = ultraClass.calcGrowthStreuungGraphen(xVectors, yVectors, xValuesList, yValuesList)
-    print("Wachstumrate Differenz: " + str(wachstumsrateDiff))
+    #wachstumsrateDiff = ultraClass.calcGrowthStreuungGraphen(xVectors, yVectors, xValuesList, yValuesList)
+    #print("Wachstumrate Differenz: " + str(wachstumsrateDiff))
 
 
 # Wachstumsrate wird über Standardabweichung bestimmt, zur Verfeinerung des Ergebnisses
@@ -150,6 +150,10 @@ pyplot.ylabel("Differenz der Winkel")
 if legende:
     pyplot.legend()
 
+print(' '.join(str(i)+" " for i in relEaList))
+
+print(' '.join(str(i)+" " for i in xList))
+
 # #########################################
 # # Vektorengraph inkl. Wachstumsdigramme #
 # #########################################
@@ -171,7 +175,6 @@ pyplot.gca().set_aspect('equal', adjustable='box')
 pyplot.grid(True, which='both')
 pyplot.axhline(y=0, color='k')
 pyplot.axvline(x=0, color='k')
-
 
 # #############
 # # Gaußkurve #
