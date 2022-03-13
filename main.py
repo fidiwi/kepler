@@ -4,7 +4,7 @@ import os
 
 
 # Eingaben: Dateiname, Anzahl Windows, Treshold
-filename = r'Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_2.0_0.0,0.0_pos.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
+filename = r'Probedaten/Beispiesamples/Mail_lutz_3/5000/5000_8.0_0.0,0.0_pos.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
 readsPerWindow = 100  # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
 start = 0
 end = 1
@@ -67,7 +67,6 @@ growthVector0 = ultraClass.calcGrowthVector(xVectors, yVectors, [0, 0.1])
 rNormalisiert, theta = ultraClass.calcVectorplotPolar(readAmountPerSection, steigung)
 fehlerVariableSteigung = (abs(steigung[0])-abs(steigung[1]))
 print("FehlerVariableSteigung: " + str(fehlerVariableSteigung))
-
 
 if wachstumsdiagramme:
     # Die entstandene Form wird an den Wachstumsdiagrammen angepasst
@@ -150,9 +149,9 @@ pyplot.ylabel("Differenz der Winkel")
 if legende:
     pyplot.legend()
 
-print(' '.join(str(i)+" " for i in relEaList))
+print(' '.join(str(i)+" " for i in relEaList[:len(relEaList)//2]))
 
-print(' '.join(str(i)+" " for i in xList))
+print(' '.join(str(i)+" " for i in xList[:len(xList)//2]))
 
 # #########################################
 # # Vektorengraph inkl. Wachstumsdigramme #
