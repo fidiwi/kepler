@@ -552,6 +552,54 @@ class UltraClass:
         steigung = [steigung1, steigung2]    
         return [xVectors, yVectors, linEins, linZwei, predictedValues, steigung]
 
+
+    def determineGapsThresholdFunktion(self, relEaList, xList, relEaListWachstum=0):
+        if relEaListWachstum == 0:
+            relEaListWachstum = [0 for _ in range(len(relEaList))]
+            model1 = 0
+            model2 = 0
+        
+        else:
+            model1 = np.poly1d(np.polyfit(xList[:len(xList)//2], relEaListWachstum[:len(relEaListWachstum)//2], 2))
+            npRelEaListWachstum = []
+            for item in xList[:len(xList)//2]:
+                npRelEaListWachstum.append(np.polyval(model1, [item]))
+
+            model2 = np.poly1d(np.polyfit(xList[len(xList)//2:], relEaListWachstum[len(relEaListWachstum)//2:], 2))
+            for item in xList[len(xList)//2:]:
+                npRelEaListWachstum.append(np.polyval(model2, [item]))
+            
+            relEaListWachstum = []
+            for i in npRelEaListWachstum:
+                relEaListWachstum.append(i)      
+        
+        gapBereiche = []
+    
+        for relEaIndex in range(len(relEaList)):
+            if relEaList[relEaIndex] - relEaListWachstum[relEaIndex] >= self.thresholdLuecke:  # wenn die Abweichung zu stark ist -> Lücke
+                gap = relEaIndex
+                anfang = xList[gap]
+                if anfang < 0.005:
+                    anfang = 0
+                if gap >= len(xList) - 1:
+                    ende = 1
+                else:
+                    ende = xList[gap+1]
+                gapBereiche.append([anfang, ende])
+            elif relEaList[relEaIndex] - relEaListWachstum[relEaIndex] <= self.thresholdUeberschuss:  # -> Überschuss
+                gap = relEaIndex
+                anfang = xList[gap]
+                if anfang < 0.005:
+                    anfang = 0
+
+                if gap >= len(xList) - 1:
+                    ende = 1
+                else:
+                    ende = xList[gap+1]
+                gapBereiche.append([anfang, ende])
+        return [gapBereiche, [model1, model2]]
+
+
     # Berechnet die Wachstumsrate anhand der Standardabweichung der Winkeldifferenzen
     def calcGrowthStabw(self, datasetList, standardAbw):
         growth = 0.8*((1+len(datasetList)/(len(datasetList)*100))**self.anzahlWindows)**standardAbw
