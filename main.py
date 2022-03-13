@@ -149,10 +149,11 @@ pyplot.ylabel("Differenz der Winkel")
 if legende:
     pyplot.legend()
 
-print(' '.join(str(i)+" " for i in relEaList[:len(relEaList)//2]))
+#print(' '.join(str(i)+" " for i in relEaList[:len(relEaList)//2]))
 
-print(' '.join(str(i)+" " for i in xList[:len(xList)//2]))
-
+#print(' '.join(str(i)+" " for i in xList[:len(xList)//2]))
+print(degreeDiffList[:len(degreeDiffList)//2])
+print(xList[:len(xList)//2])
 # #########################################
 # # Vektorengraph inkl. Wachstumsdigramme #
 # #########################################
