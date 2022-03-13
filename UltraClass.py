@@ -305,7 +305,7 @@ class UltraClass:
         return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [predictedXValues, predictedYValues], [model1.coef_, model2.coef_], [model1, model2]]
 
     # Funktion zum Erstellen der Ausgabedateien
-    def createOutputFiles(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, createFiles = True, iteration = 1, originalFile = None):
+    def createOutputFiles(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, createFiles = True, iteration = 1, originalUltraClass=None):
         # Ermittlung der Abweichung verbesserter Werte zu den ursprünglichen
         # Werten für "AnalyseReads"
         windowAbwDict = {}
@@ -332,13 +332,15 @@ class UltraClass:
 
         if createFiles:
             # Daten in csv schreiben
-            if not originalFile:
+            if not originalUltraClass:
                 nameFile = self.filename.rsplit('/', 1)[-1]
+                datasetInfo = str(self.anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
             else:
-                nameFile = originalFile.rsplit('/', 1)[-1]
+                nameFile = originalUltraClass.getFilename().rsplit('/', 1)[-1]
+                datasetInfo = str(originalUltraClass.getAnzahlWindows())+"_"+str(originalUltraClass.getDatasetLength())+"_"+str(originalUltraClass.getThresholdLuecke())+"_"+str(originalUltraClass.getThresholdUeberschuss())+"_$$_"
 
             # Better Dataset
-            datasetInfo = str(self.anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
+            
             if not os.path.isdir(f'Output/BetterDataset/{iteration}'):
                 os.mkdir(f'Output/BetterDataset/{iteration}')
             betterDataFileName = f'Output/BetterDataset/{iteration}/NewData_{datasetInfo}{nameFile}'
@@ -553,19 +555,21 @@ class UltraClass:
         return [xVectors, yVectors, linEins, linZwei, predictedValues, steigung]
 
 
-    def determineGapsThresholdFunktion(self, relEaList, xList, relEaListWachstum=0):
+    def determineGapsThresholdFunktion(self, relEaList, xList, xListWachstum=None, relEaListWachstum=0):
         if relEaListWachstum == 0:
             relEaListWachstum = [0 for _ in range(len(relEaList))]
             model1 = 0
             model2 = 0
         
         else:
-            model1 = np.poly1d(np.polyfit(xList[:len(xList)//2], relEaListWachstum[:len(relEaListWachstum)//2], 2))
+            print(len(xList))
+            print(len(relEaListWachstum))
+            model1 = np.poly1d(np.polyfit(xListWachstum[:len(xListWachstum)//2], relEaListWachstum[:len(relEaListWachstum)//2], 2))
             npRelEaListWachstum = []
             for item in xList[:len(xList)//2]:
                 npRelEaListWachstum.append(np.polyval(model1, [item]))
 
-            model2 = np.poly1d(np.polyfit(xList[len(xList)//2:], relEaListWachstum[len(relEaListWachstum)//2:], 2))
+            model2 = np.poly1d(np.polyfit(xListWachstum[len(xListWachstum)//2:], relEaListWachstum[len(relEaListWachstum)//2:], 2))
             for item in xList[len(xList)//2:]:
                 npRelEaListWachstum.append(np.polyval(model2, [item]))
             
@@ -664,9 +668,48 @@ class UltraClass:
 
         return [rNormalisiert, theta]
 
+    def iterativGapFilling(self, filename, relEaListWachstum, xListWachstum, thresholdLuecke, thresholdUeberschuss, iteration, originalUltraClass, assumedGrowth):
+        file = open(filename)
+        csvreader = csv.reader(file)
+        csvreaderlist = list(csvreader)
+        datasetLength = len(csvreaderlist)
+        readsPerWindow = int(datasetLength/self.anzahlWindows)
+        if 1 <= assumedGrowth < 9:
+            if assumedGrowth < 3: assumedGrowth=3
+            relEaListGrowth = relEaListWachstum[assumedGrowth-2]
+            xListGrowth = xListWachstum[assumedGrowth-2]
+            subUltraClass = UltraClass(filename, thresholdLuecke, -thresholdUeberschuss, readsPerWindow)
+            # Erste Ermittlung aller wichtigen Daten nach Auslesen des Datensatzes
+            datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = subUltraClass.readFile()
+
+            degreeDiffList, xList, avg, standardAbw, relEaList = subUltraClass.calcDegreeDifferences(datasetList)
+            gapBereiche, thresholdFunktion = subUltraClass.determineGapsThresholdFunktion(relEaList, xList, xListGrowth, relEaListGrowth)
+            linReg1, linReg2, filledGaps, predictedValues, steigung, modelLinReg = subUltraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram, 0, 1)
+            readAbweichungProWindow = subUltraClass.windowQualität(readsPerSectionDict)
+            windowAbwDict, betterDataFileName = subUltraClass.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles=True, iteration=iteration, originalUltraClass=originalUltraClass)
+            if len(gapBereiche) == 0:
+                return filename
+            else:
+                subUltraClass.iterativGapFilling(betterDataFileName, relEaListWachstum, xListWachstum, thresholdLuecke-0.05, thresholdUeberschuss-0.05, iteration+1, originalUltraClass, assumedGrowth)
+    
+        else:
+            print("Fehlerhafte Wachstumrate!")
+        
     # Get-Methoden
     def getAnzahlWindows(self):
         return self.anzahlWindows
 
     def getReadsPerWindow(self):
         return self.readsPerWindow
+
+    def getFilename(self):
+        return self.filename
+
+    def getThresholdUeberschuss(self):
+        return self.thresholdUeberschuss
+
+    def getThresholdLuecke(self):
+        return self.thresholdLuecke
+
+    def getDatasetLength(self):
+        return self.datasetLength

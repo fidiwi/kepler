@@ -3,9 +3,10 @@ from UltraClass import UltraClass
 import matplotlib.pyplot as pyplot
 import os
 import numpy as np
+import csv
 
 # Eingaben: Dateiname, Anzahl Windows, Treshold
-filename = r'Probedaten\Hirnet_subsample\Hirnet4_S4.subsample.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
+filename = r'Probedaten/Hirnet_subsample/Hirnet4_S4.subsample.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
 readsPerWindow = 100  # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
 start = 0
 end = 1
@@ -28,6 +29,7 @@ xValuesList = []
 yValuesList = []
 wachstumsratenList = []
 relEaListWachstum = []
+xListWachstum=[]
 for file in folderPosFiles:
     ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/5000/"+str(file), 10, -1, readsPerWindow)
     if len(folderPosFiles) == 3:
@@ -50,6 +52,7 @@ for file in folderPosFiles:
     yValuesList.append(yValuesRegression)
     steigungList.append(steigung)
     relEaListWachstum.append(relEaList)
+    xListWachstum.append(xList)
     # filledEllipseListe.append(filledEllipse)
 
 
@@ -76,26 +79,9 @@ if wachstumsdiagramme:
     #wachstumsrateDiff = ultraClass.calcGrowthStreuungGraphen(xVectors, yVectors, xValuesList, yValuesList)
     #print("Wachstumrate Differenz: " + str(wachstumsrateDiff))
 
+assumedGrowth = round(ultraClass.calcGrowthSteigung(steigung)[0])
 for i in range(1):
-    print(ultraClass.calcGrowthSteigung(steigung)[0])
-    assumedGrowth = round(ultraClass.calcGrowthSteigung(steigung)[0])
-    if 1 < assumedGrowth < 9:
-        relEaListGrowth = relEaListWachstum[assumedGrowth-2]
-        ultraClass = UltraClass(filename, thresholdLuecke, -thresholdUeberschuss, readsPerWindow)
-        # Erste Ermittlung aller wichtigen Daten nach Auslesen des Datensatzes
-        datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
-
-        degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcDegreeDifferences(datasetList)
-        gapBereiche, thresholdFunktion = ultraClass.determineGapsThresholdFunktion(relEaList, xList, relEaListGrowth)
-        linReg1, linReg2, filledGaps, predictedValues, steigung, modelLinReg = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram, start, end)
-        readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
-        windowAbwDict, betterDataFileName = ultraClass.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
-        growthVector0 = ultraClass.calcGrowthVector(xVectors, yVectors, [0, 0.1])
-        rNormalisiert, theta = ultraClass.calcVectorplotPolar(readAmountPerSection, steigung)
-        fehlerVariableSteigung = (abs(steigung[0])-abs(steigung[1]))
-    
-    else:
-        print("Fehlerhafte Wachstumrate!")
+    finalFileName = ultraClass.iterativGapFilling(filename, relEaListWachstum, xListWachstum, thresholdLuecke, thresholdUeberschuss, 1, ultraClass, assumedGrowth)
 
 
 # Wachstumsrate wird über Standardabweichung bestimmt, zur Verfeinerung des Ergebnisses
