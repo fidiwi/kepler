@@ -11,7 +11,7 @@ start = 0
 end = 1
 thresholdLuecke = 1
 thresholdUeberschuss = 1
-wachstumsdiagramme = True  # True-> Wachstumsdiagramme werden angezeigt
+wachstumsdiagramme = False  # True-> Wachstumsdiagramme werden angezeigt
 createFiles = False  # Ob BetterDataset/AnalyseReads -Dateien erstellt werden sollen
 windowQuality = False  # Ob die Windowqualität ermittelt werden soll
 legende = False # Ob die Legende bei jedem Graphen angezeigt werden soll
@@ -80,7 +80,7 @@ if wachstumsdiagramme:
 
 assumedGrowth = round(ultraClass.calcGrowthSteigung(steigung)[0])
 for i in range(1):
-    finalFileName = ultraClass.iterativGapFilling(filename, relEaListWachstum, xListWachstum, thresholdLuecke, thresholdUeberschuss, 1, ultraClass, assumedGrowth)
+    finalFileName, thresholdFunktion = ultraClass.iterativGapFilling(filename, relEaListWachstum, xListWachstum, thresholdLuecke, thresholdUeberschuss, 1, ultraClass, assumedGrowth)
 
 
 # Wachstumsrate wird über Standardabweichung bestimmt, zur Verfeinerung des Ergebnisses
@@ -150,10 +150,10 @@ pyplot.plot(xList, [avg] * len(xList), label='Durschnittswert')
 pyplot.plot(xList, [thresholdLuecke] * len(xList), label='Lücke')
 # Schwellenwert Überschuss (Threshold)
 pyplot.plot(xList, [thresholdUeberschuss] * len(xList), label='Überschuss')
-"""fn1 = thresholdFunktion[0](np.linspace(0, 0.5, 50))
+fn1 = thresholdFunktion[0](np.linspace(0, 0.5, 50))
 fn2 = thresholdFunktion[1](np.linspace(0.5, 1, 50))
 thresholdFunktion = np.concatenate((fn1, fn2), axis=0)
-pyplot.plot(np.linspace(0, 1, 100), thresholdFunktion)"""
+pyplot.plot(np.linspace(0, 1, 100), thresholdFunktion, color='red')
 
 pyplot.title(f"Messabstand: {ultraClass.getReadsPerWindow()}; Standardabw: {standardAbw} Durchschn: {avg};")
 pyplot.xlabel("Position")

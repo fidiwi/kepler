@@ -688,7 +688,7 @@ class UltraClass:
             readAbweichungProWindow = subUltraClass.windowQualität(readsPerSectionDict)
             windowAbwDict, betterDataFileName = subUltraClass.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles=True, iteration=iteration, originalUltraClass=originalUltraClass)
             if len(gapBereiche) == 0:
-                return filename
+                return [filename, thresholdFunktion]
             else:
                 subUltraClass.iterativGapFilling(betterDataFileName, relEaListWachstum, xListWachstum, thresholdLuecke-0.05, thresholdUeberschuss-0.05, iteration+1, originalUltraClass, assumedGrowth)
     

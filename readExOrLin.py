@@ -6,7 +6,8 @@ import math
 import random
 
 
-tries = 1000
+tries = 1000000
+newPoly = 0.15
 
 def calc(toXValue):
         if toXValue  > 0:
@@ -30,7 +31,6 @@ for i in range(tries):
 
     toXValue = (random.randint(1, 50)) / 100
     randomList.append(toXValue)
-    newPoly = 0.15
     calc(toXValue)
     for i in range(len(readList)):
         ultraReadList[i] += readList[i] / tries
@@ -42,8 +42,8 @@ coef3 = np.polyfit(xValues[:len(xValues)//2], np.log(readList[:len(readList)//2]
 coef4 = np.polyfit(xValues[len(xValues)//2:], np.log(readList[len(readList)//2:]), 1, w=np.sqrt(readList[len(readList)//2:]))
 model3 = lambda x : np.exp(coef3[1]) * np.exp(coef3[0]*x)
 model4 = lambda x : np.exp(coef4[1]) * np.exp(coef4[0]*x)
-polyline1 = np.linspace(0, 0.5, 25)
-polyline2 = np.linspace(0.5, 1, 25)
+polyline1 = np.linspace(0, 0.5, 50)
+polyline2 = np.linspace(0.5, 1, 50)
 
 xList1 = xValues[:lenDataset//2]
 xList2 = xValues[lenDataset//2:]
@@ -70,7 +70,7 @@ for i in range(len(xValues)):
 xVectorsExp = []
 yVectorsExp = []
 for i in range(len(polyline1)):
-    winkel = (i/(len(polyline1)*2))*360
+    winkel = (i/(len(polyline1)*2))*360 + 3.6
     y=math.cos(math.radians(winkel)) * model3(polyline1)[i]
     x=math.sin(math.radians(winkel)) * model3(polyline1)[i]
     xVectorsExp.append(x)
@@ -118,4 +118,5 @@ pyplot.plot(xVectorsExp, yVectorsExp, '.', color='blue')
 pyplot.plot(xVectorsLin, yVectorsLin, '.', color='green')
 pyplot.gca().set_aspect('equal', adjustable='box')
 pyplot.grid(True, which='both')
+
 pyplot.show()
