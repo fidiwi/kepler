@@ -1,6 +1,7 @@
 import os
 import csv
 import math
+from re import S
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
@@ -39,10 +40,13 @@ class UltraClass:
         # Daten auslesen und einordnen
         for row in csvreaderlist:
             value = float(row[0])
+            if value >= 1:
+                value -= 1
+
             datasetList.append(value)
             index = int(value*self.anzahlWindows)
-            if value >= 1:
-                index = 0
+            """if value >= 1:
+                index = 0"""
             # Werte werden dem jeweiligen Window zugeordnet
             readsPerSection[index].append(value)
             degree = value * 360 + 90
@@ -190,12 +194,14 @@ class UltraClass:
 
     # Funktion zur Ermittlung neuer Werte für Lücken/Überschüsse anhand 
     # Linearer Regressionen, die hier erstellt werden
-    def fillGaps(self, gapBereiche, readAmountPerSection, xAxisDiagram):
+    def fillGaps(self, gapBereiche, readAmountPerSection, xAxisDiagram, start=0, end=1):
         readAmount1 = readAmountPerSection[:len(readAmountPerSection)//2]  # Listen aufteilen: 0-0.5; 0.5-1
         readAmount2 = readAmountPerSection[len(readAmountPerSection)//2:]
         xAxis1 = xAxisDiagram[:len(xAxisDiagram)//2]
         xAxis2 = xAxisDiagram[len(xAxisDiagram)//2:]
 
+        if start!=0 or end!=1:
+            gapBereiche = [[0, start], [end, 1]]
         foundWindows = []
         halfWindow = (1/self.anzahlWindows)/2
         for gap in gapBereiche:
@@ -216,15 +222,44 @@ class UltraClass:
                 del readAmount2[delWindow]
                 foundWindows.append(xAxis2.pop(delWindow))
 
+        
         # Ermittlung der linearen Regressionen
-        if len(readAmount1) > 0:
+        if len(readAmount1) > 0: # >1?
             model1 = LinearRegression()
             model1.fit(np.array(xAxis1).reshape((-1, 1)), readAmount1)
             linReg1 = model1.predict(np.array(xAxis1).reshape((-1, 1)))
+            # Die Randwert 0 und 0.5 werden ggf. zusätzlich berechnet, 
+            # damit eine schöne lineare Regression entsteht
+            
+            if xAxis1[0] != 0:
+                value = model1.predict(np.array([0]).reshape((-1, 1))).tolist()[0]
+                xAxis1.insert(0, 0)
+                linReg1 = np.insert(linReg1, 0, value)
+                readAmount1.insert(0, value)
+
+            if xAxis1[-1] != 0.5:
+                value = model1.predict(np.array([0.5]).reshape((-1, 1))).tolist()[0]
+                xAxis1.append(0.5)
+                linReg1 = np.append(linReg1, value)
+                readAmount1.append(value)
+            model1.fit(np.array(xAxis1).reshape((-1, 1)), readAmount1)
+
         if len(readAmount2) > 0:
             model2 = LinearRegression()
             model2.fit(np.array(xAxis2).reshape((-1, 1)), readAmount2)
             linReg2 = model2.predict(np.array(xAxis2).reshape((-1, 1)))
+
+            if xAxis2[0] != 0.5:
+                value = model2.predict(np.array([0.5]).reshape((-1, 1))).tolist()[0]
+                xAxis2.insert(0, 0.5)
+                linReg2= np.insert(linReg2, 0, value)
+                readAmount2.insert(0, value)
+            if xAxis2[-1] != 1:
+                value = model2.predict(np.array([1]).reshape((-1, 1))).tolist()[0]
+                xAxis2.append(1)
+                linReg2 = np.append(linReg2, value)
+                readAmount2.append(value)
+            model2.fit(np.array(xAxis2).reshape((-1, 1)), readAmount2)
 
         if len(readAmount1) == 0 and len(readAmount2) == 0:
             print("Regression konnte nicht gebildet werden. Datensatz oder Parameter sind fehlerhaft!")
@@ -267,10 +302,10 @@ class UltraClass:
             predictedXValues.append(x*filledValue/(self.datasetLength/self.anzahlWindows))
             predictedYValues.append(y*filledValue/(self.datasetLength/self.anzahlWindows))
 
-        return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [predictedXValues, predictedYValues], [model1.coef_, model2.coef_]]
+        return[[xAxis1, linReg1], [xAxis2, linReg2], [foundWindows, filledValues], [predictedXValues, predictedYValues], [model1.coef_, model2.coef_], [model1, model2]]
 
     # Funktion zum Erstellen der Ausgabedateien
-    def createOutputFiles(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, createFiles = True, iteration = 1, originalFile = None):
+    def createOutputFiles(self, foundWindows, filledValues, readAmountPerSectionDict, readsPerSectionDict, createFiles = True, iteration = 1, originalUltraClass=None):
         # Ermittlung der Abweichung verbesserter Werte zu den ursprünglichen
         # Werten für "AnalyseReads"
         windowAbwDict = {}
@@ -297,13 +332,15 @@ class UltraClass:
 
         if createFiles:
             # Daten in csv schreiben
-            if not originalFile:
+            if not originalUltraClass:
                 nameFile = self.filename.rsplit('/', 1)[-1]
+                datasetInfo = str(self.anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
             else:
-                nameFile = originalFile.rsplit('/', 1)[-1]
+                nameFile = originalUltraClass.getFilename().rsplit('/', 1)[-1]
+                datasetInfo = str(originalUltraClass.getAnzahlWindows())+"_"+str(originalUltraClass.getDatasetLength())+"_"+str(originalUltraClass.getThresholdLuecke())+"_"+str(originalUltraClass.getThresholdUeberschuss())+"_$$_"
 
             # Better Dataset
-            datasetInfo = str(self.anzahlWindows)+"_"+str(self.datasetLength)+"_"+str(self.thresholdLuecke)+"_"+str(self.thresholdUeberschuss)+"_$$_"
+            
             if not os.path.isdir(f'Output/BetterDataset/{iteration}'):
                 os.mkdir(f'Output/BetterDataset/{iteration}')
             betterDataFileName = f'Output/BetterDataset/{iteration}/NewData_{datasetInfo}{nameFile}'
@@ -481,19 +518,91 @@ class UltraClass:
 
     # Sorgt dafür, dass Wachstumsdiagramme und der entstandene Vektorenplot
     # auf dieselbe Größe skaliert werden
-    def kalibrieren(self, xVectorsEllipse, yVectorsEllipse, linEins, linZwei, xVectors, yVectors):
+    def kalibrieren2(self, xVectorsEllipse, yVectorsEllipse, linEins, linZwei, xVectors, yVectors):
         idealisierung = 0.9591384589301084 
         punkt1 = math.sqrt((xVectors[round(self.anzahlWindows* 0.23)])**2+(yVectors[round(self.anzahlWindows* 0.23)])**2)
         punkt2 = math.sqrt((xVectors[round(self.anzahlWindows* 0.77)])**2+(yVectors[round(self.anzahlWindows* 0.77)])**2)
-          
         streckfaktor = (punkt1/idealisierung + abs(punkt2)/idealisierung)/2
         for i in range(len(xVectorsEllipse)):
             xVectorsEllipse[i] = xVectorsEllipse[i] * streckfaktor
             yVectorsEllipse[i] = yVectorsEllipse[i] * streckfaktor
-            #linEins[i] = linEins[i] * streckfaktor
-            #linZwei[i] = linZwei[i] * streckfaktor
+        
+        for i in range(len(linEins[1])):
+            linEins[1][i] = linEins[1][i] * streckfaktor
+            linZwei[1][i] = linZwei[1][i] * streckfaktor
         
         return [xVectorsEllipse, yVectorsEllipse, linEins, linZwei]
+
+
+    def kalibrieren(self, xVectors, yVectors, linEins, linZwei, modelLinReg, predictedValues):
+        punkt1 = modelLinReg[0].predict(np.array([0.23]).reshape((-1, 1))).tolist()[0]
+        punkt2 = modelLinReg[1].predict(np.array([0.77]).reshape((-1, 1))).tolist()[0]
+        streckfaktor = (self.readsPerWindow/punkt1 + self.readsPerWindow/punkt2)/2
+        for i in range(len(xVectors)):
+            xVectors[i] = xVectors[i] * streckfaktor
+            yVectors[i] = yVectors[i] * streckfaktor
+        for i in range(len(predictedValues[0])):
+            predictedValues[0][i] = predictedValues[0][i] * streckfaktor
+            predictedValues[1][i] = predictedValues[1][i] * streckfaktor
+        
+        for i in range(len(linEins[1])):
+            linEins[1][i] = linEins[1][i] * streckfaktor
+        for i in range(len(linZwei[1])):
+            linZwei[1][i] = linZwei[1][i] * streckfaktor
+        steigung1 = modelLinReg[0].coef_ * streckfaktor
+        steigung2 = modelLinReg[1].coef_ * streckfaktor
+        steigung = [steigung1, steigung2]    
+        return [xVectors, yVectors, linEins, linZwei, predictedValues, steigung]
+
+
+    def determineGapsThresholdFunktion(self, relEaList, xList, xListWachstum=None, relEaListWachstum=0):
+        if relEaListWachstum == 0:
+            relEaListWachstum = [0 for _ in range(len(relEaList))]
+            model1 = 0
+            model2 = 0
+        
+        else:
+            print(len(xList))
+            print(len(relEaListWachstum))
+            model1 = np.poly1d(np.polyfit(xListWachstum[:len(xListWachstum)//2], relEaListWachstum[:len(relEaListWachstum)//2], 2))
+            npRelEaListWachstum = []
+            for item in xList[:len(xList)//2]:
+                npRelEaListWachstum.append(np.polyval(model1, [item]))
+
+            model2 = np.poly1d(np.polyfit(xListWachstum[len(xListWachstum)//2:], relEaListWachstum[len(relEaListWachstum)//2:], 2))
+            for item in xList[len(xList)//2:]:
+                npRelEaListWachstum.append(np.polyval(model2, [item]))
+            
+            relEaListWachstum = []
+            for i in npRelEaListWachstum:
+                relEaListWachstum.append(i)      
+        
+        gapBereiche = []
+    
+        for relEaIndex in range(len(relEaList)):
+            if relEaList[relEaIndex] - relEaListWachstum[relEaIndex] >= self.thresholdLuecke:  # wenn die Abweichung zu stark ist -> Lücke
+                gap = relEaIndex
+                anfang = xList[gap]
+                if anfang < 0.005:
+                    anfang = 0
+                if gap >= len(xList) - 1:
+                    ende = 1
+                else:
+                    ende = xList[gap+1]
+                gapBereiche.append([anfang, ende])
+            elif relEaList[relEaIndex] - relEaListWachstum[relEaIndex] <= self.thresholdUeberschuss:  # -> Überschuss
+                gap = relEaIndex
+                anfang = xList[gap]
+                if anfang < 0.005:
+                    anfang = 0
+
+                if gap >= len(xList) - 1:
+                    ende = 1
+                else:
+                    ende = xList[gap+1]
+                gapBereiche.append([anfang, ende])
+        return [gapBereiche, [model1, model2]]
+
 
     # Berechnet die Wachstumsrate anhand der Standardabweichung der Winkeldifferenzen
     def calcGrowthStabw(self, datasetList, standardAbw):
@@ -559,9 +668,49 @@ class UltraClass:
 
         return [rNormalisiert, theta]
 
+    def iterativGapFilling(self, filename, relEaListWachstum, xListWachstum, thresholdLuecke, thresholdUeberschuss, iteration, originalUltraClass, assumedGrowth):
+        file = open(filename)
+        csvreader = csv.reader(file)
+        csvreaderlist = list(csvreader)
+        datasetLength = len(csvreaderlist)
+        readsPerWindow = int(datasetLength/self.anzahlWindows)
+        if 1 <= assumedGrowth < 9:
+            if assumedGrowth < 3: assumedGrowth=3
+            relEaListGrowth = relEaListWachstum[assumedGrowth-2]
+            xListGrowth = xListWachstum[assumedGrowth-2]
+            subUltraClass = UltraClass(filename, thresholdLuecke, -thresholdUeberschuss, readsPerWindow)
+            # Erste Ermittlung aller wichtigen Daten nach Auslesen des Datensatzes
+            datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = subUltraClass.readFile()
+
+            degreeDiffList, xList, avg, standardAbw, relEaList = subUltraClass.calcDegreeDifferences(datasetList)
+            gapBereiche, thresholdFunktion = subUltraClass.determineGapsThresholdFunktion(relEaList, xList, xListGrowth, relEaListGrowth)
+            linReg1, linReg2, filledGaps, predictedValues, steigung, modelLinReg = subUltraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram, 0, 1)
+            readAbweichungProWindow = subUltraClass.windowQualität(readsPerSectionDict)
+            windowAbwDict, betterDataFileName = subUltraClass.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles=True, iteration=iteration, originalUltraClass=originalUltraClass)
+            if len(gapBereiche) == 0:
+                return [filename, thresholdFunktion]
+            else:
+                subUltraClass.iterativGapFilling(betterDataFileName, relEaListWachstum, xListWachstum, thresholdLuecke-0.05, thresholdUeberschuss-0.05, iteration+1, originalUltraClass, assumedGrowth)
+    
+        else:
+            print("Fehlerhafte Wachstumrate!")
+        
     # Get-Methoden
     def getAnzahlWindows(self):
         return self.anzahlWindows
 
     def getReadsPerWindow(self):
         return self.readsPerWindow
+
+    def getFilename(self):
+        return self.filename
+
+    def getThresholdUeberschuss(self):
+        return self.thresholdUeberschuss
+
+    def getThresholdLuecke(self):
+        return self.thresholdLuecke
+
+    def getDatasetLength(self):
+        return self.datasetLength
+    

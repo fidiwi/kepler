@@ -1,8 +1,9 @@
+from numpy import linspace
 from UltraClass import UltraClass
 import matplotlib.pyplot as pyplot
 import os
-
-
+import numpy as np
+ 
 # Eingaben: Dateiname, Anzahl Windows, Treshold
 filename = r'Probedaten/Hirnet_subsample/Hirnet4_S4.subsample.csv'  # Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv' #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/verschobeneDatensätze/verschoben_0.2_5000_4.0_0.0,0.0_pos.csv #Probedaten/Beispiesamples/Mail_lutz_3/Luecken/20_percent/10000_2.0_20_.20000,.40000_pos.csv
 readsPerWindow = 100  # Wieviele Reads in einem Window erwartet werden sollen, Windowanzahl passt sich der Datensatzgröße dynamisch an.
@@ -13,42 +14,45 @@ thresholdUeberschuss = 1
 wachstumsdiagramme = False  # True-> Wachstumsdiagramme werden angezeigt
 createFiles = False  # Ob BetterDataset/AnalyseReads -Dateien erstellt werden sollen
 windowQuality = False  # Ob die Windowqualität ermittelt werden soll
-legende = True # Ob die Legende bei jedem Graphen angezeigt werden soll
+legende = False # Ob die Legende bei jedem Graphen angezeigt werden soll
 
 # Erstellung der Wachstumsdiagramme
-if wachstumsdiagramme:
-    folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/5000")  # ./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken || ./Probedaten/Beispiesamples/Mail_lutz_3/5000
-    folderPosFiles.sort()
-    regressionList = []
-    vectorsList = []
-    filledGapsList = []
-    filledEllipseList = []
-    steigungList = []
-    xValuesList = []
-    yValuesList = []
-    wachstumsratenList = []
-    for file in folderPosFiles:
-        ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/5000/"+str(file), 10, -1, readsPerWindow)
-        if len(folderPosFiles) == 3:
-            wachstumsratenList.append(str(file[6]))
-        elif len(folderPosFiles) == 7:
-            wachstumsratenList.append(str(file[5]))
-        else:
-            print('[WARNING] anderen Ordner für die Wachstumsdiagramme verwenden!')
+folderPosFiles = os.listdir("./Probedaten/Beispiesamples/Mail_lutz_3/5000")  # ./Probedaten/Beispiesamples/Mail_lutz_3/testdateienLücken || ./Probedaten/Beispiesamples/Mail_lutz_3/5000
+folderPosFiles.sort()
+regressionList = []
+vectorsList = []
+filledGapsList = []
+filledEllipseList = []
+steigungList = []
+xValuesList = []
+yValuesList = []
+wachstumsratenList = []
+relEaListWachstum = []
+xListWachstum=[]
+for file in folderPosFiles:
+    ultraClass = UltraClass("Probedaten/Beispiesamples/Mail_lutz_3/5000/"+str(file), 10, -1, readsPerWindow)
+    if len(folderPosFiles) == 3:
+        wachstumsratenList.append(str(file[6]))
+    elif len(folderPosFiles) == 7:
+        wachstumsratenList.append(str(file[5]))
+    else:
+        print('[WARNING] anderen Ordner für die Wachstumsdiagramme verwenden!')
 
-        datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
-        degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcDegreeDifferences(datasetList)
-        gapBereiche = ultraClass.determineGaps(relEaList, xList)
-        linReg1, linReg2, filledGaps, predictedValues, steigung, modelLinReg = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
-        windowAbwDict = ultraClass.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict)
-        regressionList.append([linReg1, linReg2])
-        filledGapsList.append(filledGaps)
-        # liste2.append([xVectors, yVectors])
-        xValuesRegression, yValuesRegression = ultraClass.calcDataFromRegression(linReg1[1])
-        xValuesList.append(xValuesRegression)  # gute Bezeichner!
-        yValuesList.append(yValuesRegression)
-        steigungList.append(steigung)
-        # filledEllipseListe.append(filledEllipse)
+    datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
+    degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcDegreeDifferences(datasetList)
+    gapBereiche = ultraClass.determineGapsThresholdFunktion(relEaList, xList)[0]
+    linReg1, linReg2, filledGaps, predictedValues, steigung, modelLinReg = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram)
+    windowAbwDict = ultraClass.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict)
+    regressionList.append([linReg1, linReg2])
+    filledGapsList.append(filledGaps)
+    # liste2.append([xVectors, yVectors])
+    xValuesRegression, yValuesRegression = ultraClass.calcDataFromRegression(linReg1[1])
+    xValuesList.append(xValuesRegression)  # gute Bezeichner!
+    yValuesList.append(yValuesRegression)
+    steigungList.append(steigung)
+    relEaListWachstum.append(relEaList)
+    xListWachstum.append(xList)
+    # filledEllipseListe.append(filledEllipse)
 
 
 # Beginn der eigentlichen Datenbehandlung
@@ -59,7 +63,7 @@ ultraClass = UltraClass(filename, thresholdLuecke, -thresholdUeberschuss, readsP
 datasetList, readAmountPerSection, readAmountPerSectionDict, readsPerSectionDict, xVectors, yVectors, xAxisDiagram, readAmountPerSectionPercentage = ultraClass.readFile()
 
 degreeDiffList, xList, avg, standardAbw, relEaList = ultraClass.calcDegreeDifferences(datasetList)
-gapBereiche = ultraClass.determineGaps(relEaList, xList)
+gapBereiche = ultraClass.determineGapsThresholdFunktion(relEaList, xList)[0]
 linReg1, linReg2, filledGaps, predictedValues, steigung, modelLinReg = ultraClass.fillGaps(gapBereiche, readAmountPerSection, xAxisDiagram, start, end)
 readAbweichungProWindow = ultraClass.windowQualität(readsPerSectionDict)
 windowAbwDict, betterDataFileName = ultraClass.createOutputFiles(filledGaps[0], filledGaps[1], readAmountPerSectionDict, readsPerSectionDict, createFiles)
@@ -74,7 +78,11 @@ if wachstumsdiagramme:
     #wachstumsrateDiff = ultraClass.calcGrowthStreuungGraphen(xVectors, yVectors, xValuesList, yValuesList)
     #print("Wachstumrate Differenz: " + str(wachstumsrateDiff))
 
-    
+assumedGrowth = round(ultraClass.calcGrowthSteigung(steigung)[0])
+for i in range(1):
+    finalFileName, thresholdFunktion = ultraClass.iterativGapFilling(filename, relEaListWachstum, xListWachstum, thresholdLuecke, thresholdUeberschuss, 1, ultraClass, assumedGrowth)
+
+
 # Wachstumsrate wird über Standardabweichung bestimmt, zur Verfeinerung des Ergebnisses
 # wird der ausgebesserte Datensatz ein zweites mal analysiert.
 if createFiles:
@@ -142,6 +150,10 @@ pyplot.plot(xList, [avg] * len(xList), label='Durschnittswert')
 pyplot.plot(xList, [thresholdLuecke] * len(xList), label='Lücke')
 # Schwellenwert Überschuss (Threshold)
 pyplot.plot(xList, [thresholdUeberschuss] * len(xList), label='Überschuss')
+fn1 = thresholdFunktion[0](np.linspace(0, 0.5, 50))
+fn2 = thresholdFunktion[1](np.linspace(0.5, 1, 50))
+thresholdFunktion = np.concatenate((fn1, fn2), axis=0)
+pyplot.plot(np.linspace(0, 1, 100), thresholdFunktion, color='red')
 
 pyplot.title(f"Messabstand: {ultraClass.getReadsPerWindow()}; Standardabw: {standardAbw} Durchschn: {avg};")
 pyplot.xlabel("Position")
@@ -152,8 +164,9 @@ if legende:
 #print(' '.join(str(i)+" " for i in relEaList[:len(relEaList)//2]))
 
 #print(' '.join(str(i)+" " for i in xList[:len(xList)//2]))
-print(degreeDiffList[:len(degreeDiffList)//2])
-print(xList[:len(xList)//2])
+
+#print(xList[:len(xList)//2])
+#print(relEaList[:len(relEaList)//2])
 # #########################################
 # # Vektorengraph inkl. Wachstumsdigramme #
 # #########################################
