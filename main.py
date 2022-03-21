@@ -10,7 +10,7 @@ start = 0
 end = 1
 thresholdLuecke = 1
 thresholdUeberschuss = 1
-wachstumsdiagramme = True  # True-> Wachstumsdiagramme werden angezeigt
+wachstumsdiagramme = False  # True-> Wachstumsdiagramme werden angezeigt
 createFiles = False  # Ob BetterDataset/AnalyseReads -Dateien erstellt werden sollen
 windowQuality = False  # Ob die Windowqualität ermittelt werden soll
 legende = True # Ob die Legende bei jedem Graphen angezeigt werden soll
@@ -74,7 +74,7 @@ if wachstumsdiagramme:
     #wachstumsrateDiff = ultraClass.calcGrowthStreuungGraphen(xVectors, yVectors, xValuesList, yValuesList)
     #print("Wachstumrate Differenz: " + str(wachstumsrateDiff))
 
-
+    
 # Wachstumsrate wird über Standardabweichung bestimmt, zur Verfeinerung des Ergebnisses
 # wird der ausgebesserte Datensatz ein zweites mal analysiert.
 if createFiles:
